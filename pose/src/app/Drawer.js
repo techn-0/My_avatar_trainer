@@ -87,10 +87,12 @@ export default function PersistentDrawerLeft() {
   // 페이지 이동 함수 모음 ///////////////////////////
 
   const handleLoginClick = () => {
+    setOpen(false);
     navigate("/login"); // /login 경로로 이동
   };
 
   const handleHomeClick = () => {
+    setOpen(false);
     navigate("/"); // home 경로로 이동
   };
 
@@ -124,7 +126,7 @@ export default function PersistentDrawerLeft() {
             <MenuIcon />
           </IconButton>
           {/* 홈버튼 */}
-          <div onClick={handleHomeClick}>
+          <div onClick={handleHomeClick} className="homeClick">
             <Typography variant="h6" noWrap component="div">
               Namanmu My Little PT
             </Typography>
