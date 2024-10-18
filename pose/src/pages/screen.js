@@ -1,137 +1,184 @@
 import * as THREE from "three";
 import { WEBGL } from "../webgl";
-import { useEffect, useRef } from "react";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { useEffect, useRef, useState } from "react";
+import Buttons from "./buttons";
+import { animateCameraMove } from "./cameraMove";
+import { loadCharacter } from "./loadCharacter";
+import { addLights } from "./lights";
+import { createPlane } from "./createPlane";
+import { createCube } from "./createCube";
+import { initOrbitControls } from "./initOrbitControls";
+import MediapipeMotionTracking from "./cam";
 
 function ThreeScene() {
   const mountRef = useRef(null);
+  const [canvas1, setCanvas1] = useState(null);
+  const [canvas2, setCanvas2] = useState(null);
+  let camera;
+  let controls;
+  let mixer;
+  let model;
+  let cube; // 큐브를 전역으로 선언
+  let raycaster = new THREE.Raycaster();
+  let mouse = new THREE.Vector2();
+  let loadedAnimations;
+  let scene;
+
+  const handleCanvasUpdate = (canvas1, canvas2) => {
+    setCanvas1(canvas1);
+    setCanvas2(canvas2);
+  };
 
   useEffect(() => {
     if (WEBGL.isWebGLAvailable()) {
-      // orbit 확인
-      console.log(OrbitControls);
+      scene = new THREE.Scene();
+      const axesHelper = new THREE.AxesHelper(5);
+      scene.add(axesHelper);
 
-      // 장면
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color("white");
-
-      // 카메라
-      // 게임에 자주 나오는 그거
-      const fov = 70;
-      // 종횡비
+      const fov = 60;
       const aspect = window.innerWidth / window.innerHeight;
-      // 카메라의 시점이 시작되는 위치 - 이것보다 가까우면 렌더링 안됨.
-      const near = 0.1;
-      // 카메라의 시점이 끝나는 위치 - 이것보다 멀면 렌더링 안됨.
-      const far = 1000;
-      const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-      camera.position.set(0, 1.5, 3); // 순서대로 좌우, 상하, 앞뒤
-      // 카메라가 어디에 있던, 해당 위치를 바라보게 함.
-      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      const near = 1;
+      const far = 4000;
 
-      // 랜더러 - 지글거림을 해결하기 위해 안티얼라이싱 사용.
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.set(0, 2, 4);
+
+      scene.add(camera);
+      camera.rotation.x = 10;
+
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
       });
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-      // OrbitControls 추가 -> 카메라 설정 이후에 해줘야 함.
-      const controls = new OrbitControls(camera, renderer.domElement);
-      // 줌인 최소값
-      controls.minDistance = 2;
-      // 줌인 최대값
-      controls.maxDistance = 6;
-      // 최대 각도 지정
-      controls.maxPolarAngle = Math.PI / 2;
-      // 최소 각도 지정 -> minPolarAngle
-      controls.update();
+      controls = initOrbitControls(camera, renderer);
 
-      // 빛 추가
-      const pointLight = new THREE.PointLight(0xffffff, 11);
-      pointLight.position.set(0, 2, 0);
-      scene.add(pointLight);
+      addLights(scene);
 
-      mountRef.current.appendChild(renderer.domElement);
-
-      // 매쉬
-      const geometry01 = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-      const material01 = new THREE.MeshStandardMaterial({
-        color: 0xff7f00,
-      });
-      const obj01 = new THREE.Mesh(geometry01, material01);
-      obj01.position.x = -1;
-      scene.add(obj01);
-
-      const geometry02 = new THREE.TorusGeometry(0.3, 0.15, 16, 40);
-      const material02 = new THREE.MeshPhongMaterial({
-        shininess: 300,
-        color: 0xff7f00,
-      });
-      const obj02 = new THREE.Mesh(geometry02, material02);
-      scene.add(obj02);
-
-      const geometry03 = new THREE.IcosahedronGeometry(0.3, 0);
-      const material03 = new THREE.MeshLambertMaterial({
-        color: 0xff7f00,
-      });
-      const obj03 = new THREE.Mesh(geometry03, material03);
-      obj03.position.x = 1;
-      scene.add(obj03);
-
-      // 바닥 추가
-      const planeGeometry = new THREE.PlaneGeometry(30, 30, 1, 1);
-      const planeMaterial = new THREE.MeshStandardMaterial({ color: 0xaeeeee });
-      const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-      plane.rotation.x = -0.5 * Math.PI;
-      plane.position.y = -0.5;
+      const plane = createPlane();
       scene.add(plane);
 
-      // Orbit Controls 해서 주석처리. orbit안쓸거면 이거 쓰면 될듯
-      //   function render(time) {
-      //     time *= 0.0005;
+      // 캔버스가 준비되면 큐브 생성
+      if (canvas1 && canvas2) {
+        cube = createCube(canvas1, canvas2);
+        scene.add(cube);
+      }
 
-      //     // obj01.rotation.x = time;
-      //     obj01.rotation.y = time;
+      loadCharacter(scene, function (loadedMixer, loadedModel, animations) {
+        mixer = loadedMixer;
+        model = loadedModel;
+        loadedAnimations = animations;
 
-      //     // obj02.rotation.x = time;
-      //     obj02.rotation.y = time;
+        if (animations && animations.length > 0) {
+          console.log("Animations loaded:", animations);
+        } else {
+          console.error("No animations available.");
+        }
+      });
 
-      //     // obj03.rotation.x = time;
-      //     obj03.rotation.y = time;
+      window.addEventListener("click", onMouseClick);
 
-      //     renderer.render(scene, camera);
-      //     requestAnimationFrame(render);
-      //   }
+      let clock = new THREE.Clock();
 
-      //   requestAnimationFrame(render);
       function animate() {
         requestAnimationFrame(animate);
-        // required if controls.enableDamping or controls.autoRotate are set to true
-        controls.update();
+        const delta = clock.getDelta();
+
+        if (mixer) {
+          mixer.update(delta);
+        }
+
+        // 큐브가 존재하고, 텍스처 업데이트 함수가 있다면 업데이트
+        if (cube && cube.updateTextures) {
+          cube.updateTextures();
+        }
+
         renderer.render(scene, camera);
       }
-      animate();
-      return () => {
-        // 정리 작업
-        mountRef.current.removeChild(renderer.domElement);
-      };
 
-      // 반응형 처리 함수
+      animate();
+
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
       }
-      // 함수를 이벤트리스너에 추가, resize가(윈도우가) 될때마다 실행시켜라.
       window.addEventListener("resize", onWindowResize);
+
+      mountRef.current.appendChild(renderer.domElement);
+
+      return () => {
+        mountRef.current.removeChild(renderer.domElement);
+        window.removeEventListener("click", onMouseClick);
+      };
     } else {
       const warning = WEBGL.getWebGLErrorMessage();
       mountRef.current.appendChild(warning);
     }
-  }, []);
+  }, [canvas1, canvas2]);
 
-  return <div ref={mountRef}></div>;
+  const onMouseClick = (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children, true);
+
+    if (intersects.length > 0) {
+      const point = intersects[0].point;
+      console.log(
+        `Clicked coordinates: x=${point.x}, y=${point.y}, z=${point.z}`
+      );
+    }
+  };
+
+  const playIdleAnimation = () => {
+    if (mixer && loadedAnimations && loadedAnimations.length > 1) {
+      mixer.stopAllAction();
+      const action = mixer.clipAction(loadedAnimations[1]);
+      action.reset().fadeIn(0.5).play();
+    }
+  };
+
+  const playRunAnimation = () => {
+    if (mixer && loadedAnimations && loadedAnimations.length > 4) {
+      mixer.stopAllAction();
+      const action = mixer.clipAction(loadedAnimations[4]);
+      action.reset().fadeIn(0.5).play();
+    }
+  };
+
+  const moveCameraToLoginPage = () => {
+    animateCameraMove(camera, controls, { x: 500, y: 20, z: 500 });
+  };
+
+  const moveCameraToExercise = () => {
+    animateCameraMove(camera, controls, { x: 0, y: 2, z: 430 });
+  };
+
+  const moveCameraToResult = () => {
+    animateCameraMove(camera, controls, { x: 500, y: 0, z: -500 });
+  };
+
+  return (
+    <div ref={mountRef} style={{ position: "relative" }}>
+      <MediapipeMotionTracking onCanvasUpdate={handleCanvasUpdate} />
+      <div
+        style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
+      >
+        <Buttons
+          onLoginPageClick={moveCameraToLoginPage}
+          onExerciseClick={moveCameraToExercise}
+          onResultClick={moveCameraToResult}
+          onPlayIdleClick={playIdleAnimation}
+          onPlayRunClick={playRunAnimation}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default ThreeScene;

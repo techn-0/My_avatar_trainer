@@ -184,11 +184,11 @@ export default function PersistentDrawerLeft() {
           ))}
         </List>
       </Drawer>
-      <Main open={open}>
+      {/* <Main open={open}>
         <DrawerHeader />
         <Typography sx={{ marginBottom: 2 }}>공통내용1</Typography>
         <Typography sx={{ marginBottom: 2 }}>공통내용2</Typography>
-      </Main>
+      </Main> */}
     </Box>
   );
 }
