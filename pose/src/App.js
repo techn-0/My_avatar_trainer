@@ -4,12 +4,10 @@ import * as React from "react";
 // mui
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 //pages
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import MainHeader from "./app/MainHeader";
 import ThreeScene from "./pages/screen";
-import PoseTracker from "./pages/login";
 import PoseTracker3DBox from "./pages/camOnBox";
 
 function App() {
@@ -18,6 +16,7 @@ function App() {
       <CssBaseline />
       <MainHeader />
       <Routes>
+        {/* 경로를 절대 경로로 수정 */}
         <Route path="/login" element={<Login />} />
       </Routes>
       {/* three.js 연습 씬 */}

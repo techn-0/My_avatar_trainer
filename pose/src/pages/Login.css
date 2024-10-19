@@ -1,0 +1,226 @@
+/* 전체 컨테이너 스타일 */
+.wrapper {
+  --input-focus: #2d8cf0;
+  --font-color: #323232;
+  --font-color-sub: #666666;
+  --bg-color: #ffff80;
+  --bg-color-alt: #666;
+  --main-color: #323232;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* 수직 중앙 정렬 */
+  position: fixed; /* 화면 최상단에 고정 */
+  top: 0;
+  left: 0;
+  width: 100%; /* 화면 전체 너비 차지 */
+  height: 100vh; /* 전체 높이 차지 */
+  z-index: 999; /* 다른 요소들보다 위에 배치 */
+  background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 오버레이 */
+}
+
+/* 로그인 창 자체를 중앙에서 약간 위로 이동시키기 위한 스타일 */
+.card-switch {
+  position: relative;
+  z-index: 1000; /* 오버레이보다 위에 배치 */
+  transform: translateY(-300px); /* 로그인 박스만 위로 이동 */
+}
+
+/* 스위치 버튼을 포함하는 카드 */
+.switch {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 50px;
+  height: 20px;
+}
+
+/* 로그인 텍스트 스타일 */
+.card-side::before {
+  position: absolute;
+  content: "Log in";
+  left: -70px;
+  top: 0;
+  width: 100px;
+  text-decoration: underline;
+  color: var(--font-color);
+  font-weight: 600;
+}
+
+/* 회원가입 텍스트 스타일 */
+.card-side::after {
+  position: absolute;
+  content: "Sign up";
+  left: 70px;
+  top: 0;
+  width: 100px;
+  text-decoration: none;
+  color: var(--font-color);
+  font-weight: 600;
+}
+
+/* 토글 스위치 */
+.toggle {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 스위치의 슬라이더 */
+.slider {
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-color);
+  transition: 0.3s;
+}
+
+/* 슬라이더의 버튼(토글 핸들) */
+.slider:before {
+  box-sizing: border-box;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  border: 2px solid var(--main-color);
+  border-radius: 5px;
+  left: -2px;
+  bottom: 2px;
+  background-color: var(--bg-color);
+  box-shadow: 0 3px 0 var(--main-color);
+  transition: 0.3s;
+}
+
+/* 토글이 체크되었을 때 슬라이더의 배경색 */
+.toggle:checked + .slider {
+  background-color: var(--input-focus);
+}
+
+/* 토글이 체크되었을 때 슬라이더 핸들의 이동 */
+.toggle:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+/* 토글이 체크되었을 때 로그인 텍스트의 밑줄 해제 */
+.toggle:checked ~ .card-side:before {
+  text-decoration: none;
+}
+
+/* 토글이 체크되었을 때 회원가입 텍스트에 밑줄 표시 */
+.toggle:checked ~ .card-side:after {
+  text-decoration: underline;
+}
+
+/* 플립 카드 내부 (로그인/회원가입) */
+.flip-card__inner {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  background-color: transparent;
+  perspective: 1000px;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* 토글이 체크되었을 때 카드 회전 */
+.toggle:checked ~ .flip-card__inner {
+  transform: rotateY(180deg);
+}
+
+/* 플립 카드 앞면 스타일 */
+.flip-card__front,
+.flip-card__back {
+  padding: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  background: rgb(104, 183, 205);
+  gap: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+}
+
+/* 플립 카드 뒷면 스타일 */
+.flip-card__back {
+  width: 100%;
+  transform: rotateY(180deg);
+}
+
+/* 로그인/회원가입 폼 스타일 */
+.flip-card__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 제목 스타일 */
+.title {
+  margin: 20px 0;
+  font-size: 25px;
+  font-weight: 900;
+  text-align: center;
+  color: var(--main-color);
+}
+
+/* 입력 필드 스타일 */
+.flip-card__input {
+  width: 250px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--font-color);
+  padding: 5px 10px;
+  outline: none;
+}
+
+/* 입력 필드의 플레이스홀더 텍스트 스타일 */
+.flip-card__input::placeholder {
+  color: var(--font-color-sub);
+  opacity: 0.8;
+}
+
+/* 입력 필드에 포커스 시 보더 색상 변경 */
+.flip-card__input:focus {
+  border: 2px solid var(--input-focus);
+}
+
+/* 버튼을 클릭했을 때 스타일 */
+.flip-card__btn:active,
+.button-confirm:active {
+  box-shadow: 0px 0px var(--main-color);
+  transform: translate(3px, 3px);
+}
+
+/* 버튼 기본 스타일 */
+.flip-card__btn {
+  margin: 20px 0;
+  width: 120px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--font-color);
+  cursor: pointer;
+}

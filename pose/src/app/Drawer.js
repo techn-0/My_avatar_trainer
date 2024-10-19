@@ -160,7 +160,7 @@ export default function PersistentDrawerLeft() {
           {["Login", "Starred", "Send email", "Drafts"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
-                onClick={text === "Login" ? handleLoginClick : undefined} // Login 버튼에만 클릭 핸들러 추가
+                onClick={text === "Login" ? handleLoginClick : handleLoginClick} // Login 버튼에만 클릭 핸들러 추가
               >
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
