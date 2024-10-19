@@ -18,14 +18,13 @@ export function createCube(canvas1, canvas2) {
   ];
 
   const cube = new THREE.Mesh(cubeGeometry, materials);
-  cube.position.set(2, 2, 424);
-  cube.rotation.set(0, Math.PI / 3, 0);
+  cube.position.set(4, 2, 0);
   cube.castShadow = true;
   cube.receiveShadow = true;
 
   // 텍스처의 업데이트를 위한 함수
   cube.updateTextures = () => {
-    canvasTexture1.needsUpdate = true;
+    canvasTexture1.needsUpdate = true; // 텍스처를 업데이트하도록 설정
     canvasTexture2.needsUpdate = true;
   };
 

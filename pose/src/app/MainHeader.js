@@ -6,14 +6,14 @@ import PersistentDrawerLeft from "./Drawer";
 const MainHeader = () => {
   return (
     <header>
-      <nav>
+      {/* <nav>
         <ul>
           <li>
             <Link to="/login">Login!!</Link>
           </li>
         </ul>
         <PersistentDrawerLeft />
-      </nav>
+      </nav> */}
     </header>
   );
 };
