@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { WEBGL } from "../webgl";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Buttons from "./buttons";
 import { animateCameraMove } from "./cameraMove";
 import { loadCharacter } from "./loadCharacter";
@@ -14,11 +15,12 @@ function ThreeScene() {
   const mountRef = useRef(null);
   const [canvas1, setCanvas1] = useState(null);
   const [canvas2, setCanvas2] = useState(null);
+  const navigate = useNavigate();
   let camera;
   let controls;
   let mixer;
   let model;
-  let cube; // 큐브를 전역으로 선언
+  let cube = null; // 큐브를 null로 초기화
   let raycaster = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
   let loadedAnimations;
@@ -60,12 +62,6 @@ function ThreeScene() {
 
       const plane = createPlane();
       scene.add(plane);
-
-      // 캔버스가 준비되면 큐브 생성
-      if (canvas1 && canvas2) {
-        cube = createCube(canvas1, canvas2);
-        scene.add(cube);
-      }
 
       loadCharacter(scene, function (loadedMixer, loadedModel, animations) {
         mixer = loadedMixer;
@@ -152,15 +148,26 @@ function ThreeScene() {
   };
 
   const moveCameraToLoginPage = () => {
-    animateCameraMove(camera, controls, { x: 500, y: 20, z: 500 });
+    // animateCameraMove(camera, controls, { x: 500, y: 20, z: 500 });
+    navigate("/login");
   };
 
   const moveCameraToExercise = () => {
     animateCameraMove(camera, controls, { x: 0, y: 2, z: 430 });
+
+    // 큐브가 아직 생성되지 않았을 때만 생성
+    if (!cube && canvas1 && canvas2) {
+      cube = createCube(canvas1, canvas2);
+      scene.add(cube);
+    }
   };
 
   const moveCameraToResult = () => {
     animateCameraMove(camera, controls, { x: 500, y: 0, z: -500 });
+  };
+
+  const moveCameraToMainPage = () => {
+    animateCameraMove(camera, controls, { x: 0, y: 2, z: 4 });
   };
 
   return (
@@ -170,6 +177,7 @@ function ThreeScene() {
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
       >
         <Buttons
+          onMainPageClick={moveCameraToMainPage}
           onLoginPageClick={moveCameraToLoginPage}
           onExerciseClick={moveCameraToExercise}
           onResultClick={moveCameraToResult}
