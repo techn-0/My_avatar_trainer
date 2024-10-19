@@ -8,6 +8,7 @@ function Buttons({
   onPlayIdleClick,
   onPlayRunClick,
 }) {
+  // yes
   return (
     <div>
       <button onClick={onMainPageClick}>메인 페이지</button>
