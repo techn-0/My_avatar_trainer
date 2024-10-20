@@ -114,6 +114,18 @@ function ExerciseScene() {
     };
   }, []);
 
+  // 로그인 모달 열기 함수
+  const openLoginDialog = () => {
+    setMediapipeActive(false); // Mediapipe 비활성화
+    setOpenLogin(true);
+  };
+
+  // 로그인 모달 닫기 함수
+  const closeLoginDialog = () => {
+    setOpenLogin(false);
+    setMediapipeActive(true); // Mediapipe 재활성화
+  };
+
   // Three.js 씬을 전환할 때 리소스를 해제하고 페이지 이동
   const moveToMainScene = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
@@ -139,13 +151,11 @@ function ExerciseScene() {
       >
         <Buttons
           onMainPageClick={moveToMainScene}
-          onLoginPageClick={() => setOpenLogin(true)}
+          onLoginPageClick={openLoginDialog} // 수정된 부분
         />
       </div>
-
       {/* Three.js 씬이 마운트되는 부분 */}
       <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
-
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
       {mediapipeActive && (
         <>
@@ -168,9 +178,9 @@ function ExerciseScene() {
           <MediapipeMotionTracking onCanvasUpdate={handleCanvasUpdate} />
         </>
       )}
-
       {/* 로그인 모달 */}
-      <LoginModal open={openLogin} onClose={() => setOpenLogin(false)} />
+      <LoginModal open={openLogin} onClose={closeLoginDialog} />{" "}
+      {/* 수정된 부분 */}
     </div>
   );
 }
