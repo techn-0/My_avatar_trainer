@@ -9,6 +9,7 @@ import { createPlane } from "../app/createPlane";
 import { initOrbitControls } from "../shared/initOrbitControls";
 import LoginModal from "./login/LoginModal"; // Import the new component
 import ExerciseGraph from "./ExerciseGraph/ExerciseGraph";
+import { setBackgroundColor } from "../shared/background";
 
 function ThreeScene() {
   const mountRef = useRef(null);
@@ -52,6 +53,9 @@ function ThreeScene() {
       controlsRef.current = controls;
 
       addLights(scene);
+
+      // background
+      setBackgroundColor(scene);
 
       const plane = createPlane();
       scene.add(plane);

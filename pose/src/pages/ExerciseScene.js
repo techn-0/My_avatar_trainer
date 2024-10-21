@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import MediapipeMotionTracking from "../app/cam"; // Mediapipe 컴포넌트
 import Buttons from "./ui/exerciseButtons";
 import LoginModal from "./login/LoginModal";
+import { setBackgroundColor } from "../shared/background";
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -97,6 +98,9 @@ function ExerciseScene() {
     addLights(scene);
     const plane = createPlane();
     scene.add(plane);
+
+    // 배경색 설정
+    setBackgroundColor(scene);
 
     // 캐릭터 로드
     loadCharacter(scene, (mixer, model, animations) => {
@@ -195,9 +199,6 @@ function ExerciseScene() {
   // 선택 완료 핸들러
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
-      // 카운트다운 시작
-      startCountdown();
-
       // 서버로 선택한 종목과 시간 전송
       fetch("/api/start-exercise", {
         method: "POST",
@@ -217,13 +218,15 @@ function ExerciseScene() {
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
         });
+      // 카운트다운 시작
+      startCountdown();
     }
   };
 
   // 카운트다운 진행
   useEffect(() => {
-    setMediapipeActive(true);
     let timer;
+    setMediapipeActive(true);
     if (
       currentCountdownIndex !== null &&
       currentCountdownIndex < countdownImages.length
@@ -233,7 +236,6 @@ function ExerciseScene() {
         setCurrentCountdownIndex(currentCountdownIndex + 1);
       }, 1000);
     } else if (currentCountdownIndex === countdownImages.length) {
-      // 카운트다운 완료 후 Mediapipe 활성화
       setCurrentCountdownIndex(null); // 카운트다운 초기화
     }
 
