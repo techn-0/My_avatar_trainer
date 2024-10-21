@@ -201,7 +201,7 @@ function ExerciseScene() {
   // 성장 추이 보기 클릭 핸들러
   const moveToResultPage = () => {
     // 성장 추이 페이지로 이동
-    navigate("/result");
+    navigate("/progress");
   };
 
   return (

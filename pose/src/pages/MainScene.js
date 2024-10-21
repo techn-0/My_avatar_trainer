@@ -8,6 +8,7 @@ import { addLights } from "../shared/lights";
 import { createPlane } from "./createPlane";
 import { initOrbitControls } from "../shared/initOrbitControls";
 import LoginModal from "./login/LoginModal"; // Import the new component
+import ExerciseGraph from "./ExerciseGraph/ExerciseGraph";
 
 function ThreeScene() {
   const mountRef = useRef(null);
@@ -107,10 +108,6 @@ function ThreeScene() {
     setOpenLogin(false);
   };
 
-  const moveToExerciseScene = () => {
-    navigate("/exercise");
-  };
-
   // Add the click event listener
   useEffect(() => {
     function onClick(event) {
@@ -150,7 +147,6 @@ function ThreeScene() {
         <Buttons
           onMainPageClick={() => navigate("/")}
           onLoginPageClick={openLoginDialog}
-          onExerciseClick={moveToExerciseScene}
         />
       </div>
 
