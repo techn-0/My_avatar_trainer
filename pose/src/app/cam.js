@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
-import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"; // Mediapipe 그리기 유틸리티
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 
 const POSE_CONNECTIONS = [
   [11, 13],
@@ -18,61 +18,41 @@ const POSE_CONNECTIONS = [
   [28, 30],
   [29, 31],
   [30, 32],
-]; // 포즈 연결점
+];
 
-function MediapipeMotionTracking({ onCanvasUpdate }) {
+let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
+
+function MediapipeMotionTracking({ onCanvasUpdate, active }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const poseRef = useRef(null);
-  const isComponentMounted = useRef(true); // 컴포넌트 마운트 여부 추적
+  const cameraRef = useRef(null);
 
   useEffect(() => {
-    isComponentMounted.current = true; // 컴포넌트가 마운트되었음을 표시
-
-    const pose = new Pose({
-      locateFile: (file) =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-    });
-
-    pose.setOptions({
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      enableSegmentation: false,
-      smoothSegmentation: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
-    pose.onResults(onResults);
-
-    poseRef.current = pose; // pose 인스턴스를 참조에 저장
-
-    let camera = null;
-
-    if (typeof videoRef.current !== "undefined" && videoRef.current !== null) {
-      camera = new Camera(videoRef.current, {
-        onFrame: async () => {
-          if (
-            videoRef.current &&
-            poseRef.current &&
-            isComponentMounted.current
-          ) {
-            await poseRef.current.send({ image: videoRef.current });
-          }
-        },
-        width: 640,
-        height: 480,
+    // Pose 싱글톤 인스턴스 초기화
+    if (!poseSingleton) {
+      poseSingleton = new Pose({
+        locateFile: (file) =>
+          `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
       });
 
-      camera.start();
+      poseSingleton.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        smoothSegmentation: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      poseSingleton.onResults(onResults);
     }
 
     function onResults(results) {
-      if (!canvasRef.current || !isComponentMounted.current) return;
+      if (!canvasRef.current) return;
 
       const canvasCtx = canvasRef.current.getContext("2d");
 
-      // 캠 화면 지우기
+      // 캔버스 클리어
       canvasCtx.clearRect(
         0,
         0,
@@ -87,7 +67,7 @@ function MediapipeMotionTracking({ onCanvasUpdate }) {
         canvasRef.current.height
       );
 
-      // 관절 및 연결선 그리기
+      // 랜드마크와 연결선 그리기
       if (results.poseLandmarks) {
         drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
           color: "white",
@@ -98,27 +78,48 @@ function MediapipeMotionTracking({ onCanvasUpdate }) {
           lineWidth: 2,
         });
 
-        // 부모 컴포넌트로 캔버스 전달
+        // 부모 컴포넌트로 업데이트된 캔버스 전달
         if (onCanvasUpdate) {
           onCanvasUpdate(canvasRef.current);
         }
       }
     }
 
-    // 컴포넌트 언마운트 시 클린업
-    return () => {
-      isComponentMounted.current = false; // 컴포넌트가 언마운트되었음을 표시
+    // active 상태에 따라 카메라 시작/중지
+    if (active) {
+      let camera = cameraRef.current;
+      const videoElement = videoRef.current;
 
-      if (camera) {
-        camera.stop();
-        camera = null;
+      if (videoElement && !camera) {
+        camera = new Camera(videoElement, {
+          onFrame: async () => {
+            if (poseSingleton) {
+              await poseSingleton.send({ image: videoElement });
+            }
+          },
+          width: 640,
+          height: 480,
+        });
+
+        camera.start();
+        cameraRef.current = camera;
       }
-      if (poseRef.current) {
-        poseRef.current.close();
-        poseRef.current = null;
+    } else {
+      // active가 false일 때 카메라 중지
+      if (cameraRef.current) {
+        cameraRef.current.stop();
+        cameraRef.current = null;
+      }
+    }
+
+    // 컴포넌트 언마운트 시 카메라 중지
+    return () => {
+      if (cameraRef.current) {
+        cameraRef.current.stop();
+        cameraRef.current = null;
       }
     };
-  }, [onCanvasUpdate]);
+  }, [active, onCanvasUpdate]);
 
   return (
     <div>

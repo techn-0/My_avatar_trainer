@@ -21,16 +21,33 @@ function ExerciseScene() {
   const sceneRef = useRef();
   const rendererRef = useRef(null); // 렌더러 참조 저장
   const [openLogin, setOpenLogin] = useState(false);
-  const [mediapipeActive, setMediapipeActive] = useState(true); // Mediapipe 활성화 상태
+
+  // 운동 종목 및 시간 선택 상태
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [selectedDuration, setSelectedDuration] = useState(null);
+
+  // Mediapipe 활성화 상태
+  const [mediapipeActive, setMediapipeActive] = useState(false);
+
+  // 운동 종목 리스트
+  const exercises = [
+    "스쿼트",
+    "팔굽혀펴기",
+    "플랭크",
+    "윗몸일으키기",
+    "레그레이즈",
+  ];
+
+  // 운동 시간 리스트
+  const durations = ["1분", "2분"];
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
-    if (!mediapipeActive || !canvasRef.current || !updatedCanvas) return; // Mediapipe 비활성화 또는 canvas가 없으면 리턴
+    if (!mediapipeActive || !canvasRef.current || !updatedCanvas) return;
 
     const ctx = canvasRef.current.getContext("2d");
-    if (!ctx || !updatedCanvas.width || !updatedCanvas.height) return; // updatedCanvas가 유효하지 않으면 리턴
+    if (!ctx || !updatedCanvas.width || !updatedCanvas.height) return;
 
-    // 캔버스가 존재할 경우에만 업데이트 수행
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     ctx.drawImage(
       updatedCanvas,
@@ -116,19 +133,16 @@ function ExerciseScene() {
 
   // 로그인 모달 열기 함수
   const openLoginDialog = () => {
-    setMediapipeActive(false); // Mediapipe 비활성화
     setOpenLogin(true);
   };
 
   // 로그인 모달 닫기 함수
   const closeLoginDialog = () => {
     setOpenLogin(false);
-    setMediapipeActive(true); // Mediapipe 재활성화
   };
 
-  // Three.js 씬을 전환할 때 리소스를 해제하고 페이지 이동
+  // 메인 페이지로 이동
   const moveToMainScene = () => {
-    setMediapipeActive(false); // Mediapipe 비활성화
     // Three.js 리소스 해제
     if (rendererRef.current) {
       rendererRef.current.dispose();
@@ -144,21 +158,83 @@ function ExerciseScene() {
     navigate("/");
   };
 
+  // 운동 종목 선택 핸들러
+  const handleExerciseSelect = (exercise) => {
+    setSelectedExercise(exercise);
+  };
+
+  // 운동 시간 선택 핸들러
+  const handleDurationSelect = (duration) => {
+    setSelectedDuration(duration);
+  };
+
+  // 선택 완료 핸들러
+  const handleSelectionComplete = () => {
+    if (selectedExercise && selectedDuration) {
+      setMediapipeActive(false); // 냅따 Mediapipe 비활성화
+
+      // 서버로 선택한 종목과 시간 전송
+      fetch("/api/start-exercise", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          exercise: selectedExercise,
+          duration: selectedDuration,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Server response:", data);
+          // 서버 응답 처리
+        })
+        .catch((error) => {
+          console.error("Error sending exercise data to server:", error);
+        });
+
+      // Mediapipe 활성화
+      setMediapipeActive(true);
+    }
+  };
+
+  // 성장 추이 보기 클릭 핸들러
+  const moveToResultPage = () => {
+    // 성장 추이 페이지로 이동
+    navigate("/result");
+  };
+
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+      {/* 버튼 영역 및 운동 선택 UI */}
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
       >
         <Buttons
           onMainPageClick={moveToMainScene}
-          onLoginPageClick={openLoginDialog} // 수정된 부분
+          onLoginPageClick={openLoginDialog}
+          onResultClick={moveToResultPage}
+          selectedExercise={selectedExercise}
+          handleExerciseSelect={handleExerciseSelect}
+          selectedDuration={selectedDuration}
+          handleDurationSelect={handleDurationSelect}
+          exercises={exercises}
+          durations={durations}
+          onSelectionComplete={handleSelectionComplete}
         />
       </div>
+
       {/* Three.js 씬이 마운트되는 부분 */}
       <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
+
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
       {mediapipeActive && (
         <>
+          <MediapipeMotionTracking
+            onCanvasUpdate={handleCanvasUpdate}
+            active={mediapipeActive}
+          />
+
           <canvas
             ref={canvasRef}
             width="640"
@@ -169,18 +245,15 @@ function ExerciseScene() {
               right: "10px",
               width: "320px",
               height: "240px",
-              zIndex: 2, // 캔버스를 Three.js 씬 위에 표시
+              zIndex: 2,
               border: "2px solid white",
             }}
           />
-
-          {/* MediapipeMotionTracking 컴포넌트 - Mediapipe 트래킹 */}
-          <MediapipeMotionTracking onCanvasUpdate={handleCanvasUpdate} />
         </>
       )}
+
       {/* 로그인 모달 */}
-      <LoginModal open={openLogin} onClose={closeLoginDialog} />{" "}
-      {/* 수정된 부분 */}
+      <LoginModal open={openLogin} onClose={closeLoginDialog} />
     </div>
   );
 }
