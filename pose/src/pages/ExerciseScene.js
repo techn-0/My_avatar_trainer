@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { loadCharacter } from "../shared/loadCharacter"; // 캐릭터 로드
 import { addLights } from "../shared/lights"; // 조명 추가
-import { createPlane } from "./createPlane"; // 바닥 추가
+import { createPlane } from "../app/createPlane"; // 바닥 추가
 import { initOrbitControls } from "../shared/initOrbitControls"; // 카메라 컨트롤
 import { useNavigate } from "react-router-dom";
 import MediapipeMotionTracking from "../app/cam"; // Mediapipe 컴포넌트

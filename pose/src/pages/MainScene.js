@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Buttons from "./ui/mainButtons";
 import { loadCharacter } from "../shared/loadCharacter";
 import { addLights } from "../shared/lights";
-import { createPlane } from "./createPlane";
+import { createPlane } from "../app/createPlane";
 import { initOrbitControls } from "../shared/initOrbitControls";
 import LoginModal from "./login/LoginModal"; // Import the new component
 import ExerciseGraph from "./ExerciseGraph/ExerciseGraph";
