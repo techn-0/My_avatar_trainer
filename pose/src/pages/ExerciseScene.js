@@ -202,7 +202,7 @@ function ExerciseScene() {
       // 서버로 보낼 데이터 콘솔에 출력
       console.log("Data to send to server:", requestData);
       // 서버로 선택한 종목과 시간 전송
-      fetch("/api/start-exercise", {
+      fetch("/auth/start_exercise", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
