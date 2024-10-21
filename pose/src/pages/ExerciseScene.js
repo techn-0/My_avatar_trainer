@@ -7,7 +7,7 @@ import { initOrbitControls } from "../shared/initOrbitControls"; // 카메라 �
 import { useNavigate } from "react-router-dom";
 import MediapipeMotionTracking from "../app/cam"; // Mediapipe 컴포넌트
 import Buttons from "./ui/exerciseButtons";
-import LoginModal from "./LoginModal";
+import LoginModal from "./login/LoginModal";
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소

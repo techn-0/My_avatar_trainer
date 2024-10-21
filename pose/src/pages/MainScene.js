@@ -7,7 +7,7 @@ import { loadCharacter } from "../shared/loadCharacter";
 import { addLights } from "../shared/lights";
 import { createPlane } from "./createPlane";
 import { initOrbitControls } from "../shared/initOrbitControls";
-import LoginModal from "./LoginModal"; // Import the new component
+import LoginModal from "./login/LoginModal"; // Import the new component
 
 function ThreeScene() {
   const mountRef = useRef(null);

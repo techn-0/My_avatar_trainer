@@ -5,9 +5,9 @@ import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 //pages
-import Login from "./pages/Login";
+import Login from "./pages/login/Login";
 import MainHeader from "./app/MainHeader";
-import ThreeScene from "./pages/screen";
+import ThreeScene from "./pages/MainScene";
 import PoseTracker3DBox from "./app/camOnBox";
 import ExerciseScene from "./pages/ExerciseScene";
 
