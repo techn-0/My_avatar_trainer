@@ -233,7 +233,7 @@ function ExerciseScene() {
       currentCountdownIndex !== null &&
       currentCountdownIndex < countdownImages.length
     ) {
-      // 0.5초마다 이미지 변경
+      // 1초마다 이미지 변경
       timer = setTimeout(() => {
         setCurrentCountdownIndex(currentCountdownIndex + 1);
       }, 1000);
