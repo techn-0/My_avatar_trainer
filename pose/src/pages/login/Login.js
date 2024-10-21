@@ -15,7 +15,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("Login data:", loginData);
 
     try {
-      const response = await fetch("/login", {
+      const response = await fetch("http://localhost:3002/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -36,7 +36,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("SignUp data:", signUpData);
 
     try {
-      const response = await fetch("/signup", {
+      const response = await fetch("http://localhost:3002/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signUpData),
