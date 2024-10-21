@@ -40,16 +40,10 @@ function ExerciseScene() {
   const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
 
   // 운동 종목 리스트
-  const exercises = [
-    "스쿼트",
-    "팔굽혀펴기",
-    "플랭크",
-    "윗몸일으키기",
-    "레그레이즈",
-  ];
+  const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
 
   // 운동 시간 리스트
-  const durations = ["1분", "2분"];
+  const durations = ["1min", "2min"];
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -199,6 +193,14 @@ function ExerciseScene() {
   // 선택 완료 핸들러
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
+      // 보낼데이터 콘솔에 출력
+      const requestData = {
+        exercise: selectedExercise,
+        duration: selectedDuration,
+      };
+
+      // 서버로 보낼 데이터 콘솔에 출력
+      console.log("Data to send to server:", requestData);
       // 서버로 선택한 종목과 시간 전송
       fetch("/api/start-exercise", {
         method: "POST",
