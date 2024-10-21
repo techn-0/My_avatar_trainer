@@ -21,3 +21,4 @@ npm install react-router-dom@^6.27.0
 npm install react-scripts@5.0.1
 npm install three@^0.169.0
 npm install web-vitals@^2.1.4
+npm install react-chartjs-2 chart.js

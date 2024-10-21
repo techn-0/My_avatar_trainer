@@ -10,6 +10,7 @@ import MainHeader from "./app/MainHeader";
 import ThreeScene from "./pages/MainScene";
 import PoseTracker3DBox from "./app/camOnBox";
 import ExerciseScene from "./pages/ExerciseScene";
+import ExerciseGraph from "./pages/ExerciseGraph/ExerciseGraph";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         {/* ThreeScene을 루트 경로에 렌더링 */}
         <Route path="/login" element={<Login />} />
         <Route path="/exercise" element={<ExerciseScene />} />
+        <Route path="/progress" element={<ExerciseGraph />} />
       </Routes>
     </React.Fragment>
   );
