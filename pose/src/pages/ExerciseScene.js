@@ -29,6 +29,15 @@ function ExerciseScene() {
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
 
+  // 카운트다운 상태 추가
+  const [countdownImages, setCountdownImages] = useState([
+    "count3.png",
+    "count2.png",
+    "count1.png",
+    "countStart.png",
+  ]);
+  const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
+
   // 운동 종목 리스트
   const exercises = [
     "스쿼트",
@@ -114,7 +123,17 @@ function ExerciseScene() {
 
     animate();
 
+    // 창 크기 변경 시 카메라 및 렌더러 업데이트
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      // 이벤트 리스너 제거
+      window.removeEventListener("resize", handleResize);
       // 페이지 전환 시 리소스 해제
       if (rendererRef.current) {
         rendererRef.current.dispose();
@@ -168,10 +187,16 @@ function ExerciseScene() {
     setSelectedDuration(duration);
   };
 
+  // 카운트다운 시작 함수
+  const startCountdown = () => {
+    setCurrentCountdownIndex(0); // 카운트다운 시작
+  };
+
   // 선택 완료 핸들러
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
-      setMediapipeActive(false); // 냅따 Mediapipe 비활성화
+      // 카운트다운 시작
+      startCountdown();
 
       // 서버로 선택한 종목과 시간 전송
       fetch("/api/start-exercise", {
@@ -192,11 +217,30 @@ function ExerciseScene() {
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
         });
-
-      // Mediapipe 활성화
-      setMediapipeActive(true);
     }
   };
+
+  // 카운트다운 진행
+  useEffect(() => {
+    setMediapipeActive(true);
+    let timer;
+    if (
+      currentCountdownIndex !== null &&
+      currentCountdownIndex < countdownImages.length
+    ) {
+      // 0.5초마다 이미지 변경
+      timer = setTimeout(() => {
+        setCurrentCountdownIndex(currentCountdownIndex + 1);
+      }, 1000);
+    } else if (currentCountdownIndex === countdownImages.length) {
+      // 카운트다운 완료 후 Mediapipe 활성화
+      setCurrentCountdownIndex(null); // 카운트다운 초기화
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentCountdownIndex]);
 
   // 성장 추이 보기 클릭 핸들러
   const moveToResultPage = () => {
@@ -251,6 +295,27 @@ function ExerciseScene() {
           />
         </>
       )}
+
+      {/* 카운트다운 이미지 표시 */}
+      {currentCountdownIndex !== null &&
+        currentCountdownIndex < countdownImages.length && (
+          <img
+            src={
+              process.env.PUBLIC_URL +
+              `/ExerciseCountdown/${countdownImages[currentCountdownIndex]}`
+            }
+            alt="Countdown"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "300px",
+              height: "300px",
+              zIndex: 3,
+            }}
+          />
+        )}
 
       {/* 로그인 모달 */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
