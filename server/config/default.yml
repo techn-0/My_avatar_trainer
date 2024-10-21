@@ -1,0 +1,10 @@
+server:
+  port: 3002
+
+db:
+  type: 'mongoDB'
+  port: 27017
+  database: 'test'
+
+jwt:
+  expiersIn: 3600
