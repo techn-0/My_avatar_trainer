@@ -7,17 +7,21 @@ export class WorkOut extends Document {
   @Prop({ required: true })
   exercise: string;
 
-  @Prop()
-  duration: number;
 
-  @Prop()
-  count: number;
+    @Prop()
+    duration: string;
+    
+    @Prop()
+    count: number;
+
 
   @Prop()
   date: Date;
+  
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true})
+    owner : User;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  id: User;
+
 }
 
 export const WorkOutSchema = SchemaFactory.createForClass(WorkOut);

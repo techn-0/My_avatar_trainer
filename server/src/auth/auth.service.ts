@@ -17,32 +17,33 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(
-    userCredentialDto: UserCredentialDto,
-  ): Promise<{ message: string }> {
-    const { id, password, email } = userCredentialDto;
-    try {
-      await this.userModel.create({
-        id,
-        password,
-        email,
-      });
-      return { message: 'success' };
-    } catch (error) {
-      console.log(error);
-      if (error.code === 11000) {
-        throw new ConflictException('존재하는 ID입니다!');
-      } else {
-        throw new InternalServerErrorException();
-      }
+
+    async signUp(userCredentialDto: UserCredentialDto): Promise<{message: string}>{
+        const { id, password, email } = userCredentialDto;
+        try{
+            await this.userModel.create({
+                username : id,
+                password,
+                email,
+            });
+            return { message: 'success'};
+        } catch (error){
+            console.log(error);
+            if(error.code === 11000){
+                throw new ConflictException('존재하는 ID입니다!');
+            } else{
+                throw new InternalServerErrorException();
+            }
+        }
+
     }
   }
 
-  async signIn(
-    userCredentialDto: UserCredentialDto,
-  ): Promise<{ accessToken: string }> {
-    const { id, password } = userCredentialDto;
-    const user = await this.userModel.findOne({ id });
+
+    async signIn(userCredentialDto: UserCredentialDto): Promise<{ accessToken : string}>{
+        const { id, password } = userCredentialDto;
+        const user = await this.userModel.findOne({username : id});
+
 
     if (user && user.password === password) {
       const payload = { id };
