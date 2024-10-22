@@ -14,7 +14,7 @@ const LoginToggle = ({ onClose }) => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     console.log("Login data:", loginData);
-    sessionStorage.setItem("userId", loginData.id); // let userId = sessionStorage.getItem('userId');
+    sessionStorage.setItem("userId", loginData.id); // 사용방법 : let userId = sessionStorage.getItem('userId');
 
     try {
       const response = await fetch("http://localhost:3002/auth/signin", {
@@ -71,7 +71,6 @@ const LoginToggle = ({ onClose }) => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
-  
 
   return (
     <React.Fragment>
