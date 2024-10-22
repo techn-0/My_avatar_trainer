@@ -37,20 +37,21 @@ export class AuthService {
         }
 
     }
+
+  async signIn(userCredentialDto: UserCredentialDto): Promise<{ accessToken : string}>{
+      const { id, password } = userCredentialDto;
+      const user = await this.userModel.findOne({username : id});
+
+
+  if (user && user.password === password) {
+    const payload = { id };
+    const accessToken = await this.jwtService.sign(payload);
+    return { accessToken };
+  } else {
+    throw new UnauthorizedException('로그인 실패');
+  }
+  }
   }
 
 
-    async signIn(userCredentialDto: UserCredentialDto): Promise<{ accessToken : string}>{
-        const { id, password } = userCredentialDto;
-        const user = await this.userModel.findOne({username : id});
 
-
-    if (user && user.password === password) {
-      const payload = { id };
-      const accessToken = await this.jwtService.sign(payload);
-      return { accessToken };
-    } else {
-      throw new UnauthorizedException('로그인 실패');
-    }
-  }
-}

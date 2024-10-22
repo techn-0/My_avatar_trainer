@@ -7,14 +7,11 @@ export class WorkOut extends Document {
   @Prop({ required: true })
   exercise: string;
 
-
-    @Prop()
+  @Prop()
     duration: string;
     
-    @Prop()
+  @Prop()
     count: number;
-
-
   @Prop()
   date: Date;
   
