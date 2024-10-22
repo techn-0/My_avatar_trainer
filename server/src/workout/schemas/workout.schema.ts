@@ -11,12 +11,12 @@ export class WorkOut extends Document {
     duration: string;
     
   @Prop()
-    count: number;
+  count: number;
   @Prop()
-  date: Date;
+  date: string;
   
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true})
-    owner : User;
+  @Prop({ type: Types.ObjectId, ref: 'User',})
+  owner : User;
 
 
 }

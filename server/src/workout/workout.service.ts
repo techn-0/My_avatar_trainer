@@ -10,7 +10,7 @@ export class WorkoutService {
         @InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>,
     ){}
 
-    async getRecord( exercise: string, duration: string ): Promise<{ count: number, date: Date}>{
+    async getRecord( exercise: string, duration: string, ): Promise<{ count: number, date: string}>{
         try{
             const workout = await this.workoutModel
             .findOne({exercise, duration})
@@ -27,6 +27,20 @@ export class WorkoutService {
             };
         } catch (error){
             throw new Error(`기록을 가져오는데 실패했습니다! : ${error.message}`);
+        }
+    }
+
+    async createRecord( exercise: string, duration: string, count: number, date: string) : Promise<{ message : string}>{
+        try{
+            await this.workoutModel.create({
+                exercise,
+                duration,
+                count,
+                date
+            });
+            return { message : '기록 저장 성공!'};    
+        } catch (error){
+            console.log(error);
         }
     }
 }
