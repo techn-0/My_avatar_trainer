@@ -8,7 +8,6 @@ export function loadCharacter(scene, onLoadComplete) {
   }
 
   const gltfLoader = new GLTFLoader();
-  const textureLoader = new THREE.TextureLoader(); // 텍스처 로더
 
   gltfLoader.load(
     "blackGirl/girl.glb",
@@ -24,13 +23,26 @@ export function loadCharacter(scene, onLoadComplete) {
         }
       });
 
-      scene.add(model); // scene이 올바르게 추가됨을 확인
+      scene.add(model);
 
       let mixer;
+      let animations = {};
+
       if (gltf.animations && gltf.animations.length > 0) {
         mixer = new THREE.AnimationMixer(model);
-        const action = mixer.clipAction(gltf.animations[1]); // 첫 번째 애니메이션 선택
-        action.play(); // 애니메이션 시작
+
+        // 모든 애니메이션을 로드하여 이름 또는 인덱스로 접근할 수 있도록 저장
+        gltf.animations.forEach((clip, index) => {
+          const action = mixer.clipAction(clip);
+          animations[index] = action;
+        });
+
+        // 기본 애니메이션 (예: 번호 5) 재생
+        if (animations[5]) {
+          animations[5].play();
+        } else {
+          console.warn("Animation 5 is not available.");
+        }
 
         // 애니메이션 목록을 콘솔에 출력
         console.log("Animations found in the model:");
@@ -42,7 +54,7 @@ export function loadCharacter(scene, onLoadComplete) {
       }
 
       if (onLoadComplete) {
-        onLoadComplete(mixer, model, gltf.animations); // 애니메이션 믹서, 모델, 애니메이션을 반환
+        onLoadComplete(mixer, model, animations); // 애니메이션 믹서, 모델, 애니메이션 액션 객체를 반환
       }
     },
     undefined,
