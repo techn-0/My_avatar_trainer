@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
@@ -28,19 +28,42 @@ ChartJS.register(
 
 const ExerciseGraph = () => {
   const navigate = useNavigate();
-  // 임의의 운동 기록 데이터 (꺾은선 그래프용)
-  const data = {
-    labels: [
-      "2024-10-10",
-      "2024-10-11",
-      "2024-10-12",
-      "2024-10-13",
-      "2024-10-14",
-    ],
+  const [workoutData, setWorkoutData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // sessionStorage에서 로그인된 유저의 ID 가져오기
+  const userId = sessionStorage.getItem('userId');
+
+  // 운동 기록 데이터를 백엔드에서 가져오기
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const response = await fetch(`http://localhost:3002/workout?userId=${userId}`); // userId로 필터링
+        const data = await response.json();
+        setWorkoutData(data);  // 운동 기록 데이터를 상태로 저장
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchWorkouts();
+  }, [userId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // 가져온 운동 기록 데이터를 그래프용 데이터로 변환
+  const lineData = {
+    labels: workoutData.map((entry) => new Date(entry.date).toLocaleDateString()),  // 날짜 라벨
     datasets: [
       {
         label: "Push-ups",
-        data: [20, 25, 30, 35, 40],
+        data: workoutData
+          .filter((entry) => entry.exercise === "Push-ups")
+          .map((entry) => entry.count),
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -48,7 +71,9 @@ const ExerciseGraph = () => {
       },
       {
         label: "Squats",
-        data: [15, 20, 25, 30, 35],
+        data: workoutData
+          .filter((entry) => entry.exercise === "Squats")
+          .map((entry) => entry.count),
         borderColor: "rgba(153, 102, 255, 1)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
         fill: true,
@@ -56,7 +81,9 @@ const ExerciseGraph = () => {
       },
       {
         label: "Plank(minutes)",
-        data: [1, 1.5, 2, 2.5, 3],
+        data: workoutData
+          .filter((entry) => entry.exercise === "Plank")
+          .map((entry) => entry.duration),
         borderColor: "rgba(255, 159, 64, 1)",
         backgroundColor: "rgba(255, 159, 64, 0.2)",
         fill: true,
@@ -71,7 +98,23 @@ const ExerciseGraph = () => {
     datasets: [
       {
         label: "최고 기록",
-        data: [40, 35, 3], // 각 운동의 최고 기록
+        data: [
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "Push-ups")
+              .map((entry) => entry.count)
+          ),
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "Squats")
+              .map((entry) => entry.count)
+          ),
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "Plank")
+              .map((entry) => entry.duration)
+          ),
+        ], // 각 운동의 최고 기록
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 2,
@@ -104,9 +147,9 @@ const ExerciseGraph = () => {
     },
   };
 
-  // redirection
+  // 페이지 이동
   const handleMainClick = () => {
-    navigate("/"); // /progress 경로로 이동
+    navigate("/"); // 메인 페이지로 이동
   };
 
   return (
@@ -149,7 +192,7 @@ const ExerciseGraph = () => {
             >
               나의 기록
             </h2>
-            <Line data={data} options={options} />
+            <Line data={lineData} options={options} />
           </div>
 
           {/* 레이더 차트 */}
