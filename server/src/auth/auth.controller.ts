@@ -9,6 +9,13 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/signup')
+  signUp(
+    @Body() userCredentialDto: UserCredentialDto,
+  ): Promise<{ message: string }> {
+    return this.authService.signUp(userCredentialDto);
+  }
+
+  @Post('/signup')
   singUp(
     @Body() userCredentialDto: UserCredentialDto,
   ): Promise<{ message: string }> {

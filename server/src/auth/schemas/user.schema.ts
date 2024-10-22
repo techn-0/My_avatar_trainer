@@ -15,6 +15,9 @@ export class User extends Document {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Board' }] })
   boards: Board[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'WorkOut' }] })
+  workout: WorkOut[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
