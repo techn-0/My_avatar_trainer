@@ -25,6 +25,11 @@ function ThreeScene() {
   const mouse = useRef(new THREE.Vector2());
 
   const navigate = useNavigate();
+  if (getToken()) {
+    console.log("token exists");
+  } else {
+    console.log("token does not exists");
+  }
 
   useEffect(() => {
     // Three.js scene setup
@@ -102,9 +107,6 @@ function ThreeScene() {
         }
         window.removeEventListener("resize", onWindowResize);
       };
-    }
-    if (getToken()) {
-      console.log("token exists");
     }
   }, []);
 
