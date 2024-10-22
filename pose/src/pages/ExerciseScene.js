@@ -5,7 +5,7 @@ import { addLights } from "../shared/lights"; // 조명 추가
 import { createPlane } from "../app/createPlane"; // 바닥 추가
 import { initOrbitControls } from "../shared/initOrbitControls"; // 카메라 컨트롤
 import { useNavigate } from "react-router-dom";
-import MediapipeMotionTracking from "../app/cam"; // Mediapipe 컴포넌트
+import MediapipeSquatTracking from "../app/workoutCam/squatCam"; // Mediapipe 컴포넌트
 import Buttons from "./ui/exerciseButtons";
 import LoginModal from "./login/LoginModal";
 import { setBackgroundColor } from "../shared/background";
@@ -287,7 +287,7 @@ function ExerciseScene() {
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
       {mediapipeActive && (
         <>
-          <MediapipeMotionTracking
+          <MediapipeSquatTracking
             onCanvasUpdate={handleCanvasUpdate}
             active={mediapipeActive}
           />
