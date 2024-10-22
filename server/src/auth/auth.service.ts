@@ -16,7 +16,7 @@ export class AuthService {
         const { id, password, email } = userCredentialDto;
         try{
             await this.userModel.create({
-                id,
+                username : id,
                 password,
                 email,
             });
@@ -31,9 +31,9 @@ export class AuthService {
         }
     }
 
-    async signIn(userCredentialDto: UserCredentialDto): Promise<{ accessToken : string }>{
+    async signIn(userCredentialDto: UserCredentialDto): Promise<{ accessToken : string}>{
         const { id, password } = userCredentialDto;
-        const user = await this.userModel.findOne({id});
+        const user = await this.userModel.findOne({username : id});
 
         if(user && user.password === password){
             const payload = {id};

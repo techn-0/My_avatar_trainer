@@ -18,7 +18,7 @@ export class WorkOut extends Document {
     date: Date;
 
     @Prop({ type: Types.ObjectId, ref: 'User', required: true})
-    id : User;
+    owner : User;
 }
 
 export const WorkOutSchema = SchemaFactory.createForClass(WorkOut)
