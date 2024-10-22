@@ -55,7 +55,7 @@ const angleCalc = (data, side) => {
 };
 
 // MediapipeSquatTracking 컴포넌트
-function MediapipeSquatTracking({ onCanvasUpdate, active }) {
+function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -110,12 +110,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active }) {
         // 왼쪽과 오른쪽 다리의 각도 계산
         const leftSquatAngle = angleCalc(results.poseLandmarks, "left");
         const rightSquatAngle = angleCalc(results.poseLandmarks, "right");
-        const averageSquatAngle = (leftSquatAngle + rightSquatAngle) / 2;
 
-        // // 스쿼트 상태 전환 및 카운트 업데이트
-        // if (averageSquatAngle < 70 && squatStateRef.current === "up") {
-        //   squatStateRef.current = "down";
-        // }
         // 스쿼트 상태 전환 및 카운트 업데이트
         if (
           (leftSquatAngle < 90 && squatStateRef.current === "up") ||
@@ -129,7 +124,13 @@ function MediapipeSquatTracking({ onCanvasUpdate, active }) {
           (rightSquatAngle > 140 && squatStateRef.current === "down")
         ) {
           squatStateRef.current = "up";
-          setSquatCount((prevCount) => prevCount + 1);
+          setSquatCount((prevCount) => {
+            const newCount = prevCount + 1;
+            if (onCountUpdate) {
+              onCountUpdate(newCount); // 부모 컴포넌트로 카운트 업데이트 전달
+            }
+            return newCount;
+          });
         }
 
         // 부모 컴포넌트로 업데이트된 캔버스 전달
@@ -139,14 +140,21 @@ function MediapipeSquatTracking({ onCanvasUpdate, active }) {
       }
     }
 
+    // Mediapipe 처리 주기 조절
     if (active) {
       let camera = cameraRef.current;
       const videoElement = videoRef.current;
       if (videoElement && !camera) {
+        let lastPoseTime = 0;
+        const poseInterval = 100; // 100ms마다 Pose 처리 (초당 10회)
         camera = new Camera(videoElement, {
           onFrame: async () => {
-            if (poseSingleton) {
-              await poseSingleton.send({ image: videoElement });
+            const now = Date.now();
+            if (now - lastPoseTime > poseInterval) {
+              lastPoseTime = now;
+              if (poseSingleton) {
+                await poseSingleton.send({ image: videoElement });
+              }
             }
           },
           width: 640,
@@ -168,7 +176,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active }) {
         cameraRef.current = null;
       }
     };
-  }, [active, onCanvasUpdate]);
+  }, [active, onCanvasUpdate, onCountUpdate]);
 
   return (
     <div>
@@ -180,6 +188,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active }) {
         style={{ display: "none" }}
       ></canvas>
 
+      {/* 스쿼트 카운트 출력 */}
       <div
         style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}
       >

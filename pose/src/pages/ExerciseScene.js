@@ -27,6 +27,12 @@ function ExerciseScene() {
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
 
+  // 운동 종목 리스트
+  const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
+
+  // 운동 시간 리스트
+  const durations = ["1min", "2min", "3min", "4min", "5min"];
+
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
 
@@ -39,11 +45,11 @@ function ExerciseScene() {
   ]);
   const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
 
-  // 운동 종목 리스트
-  const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
+  // 스쿼트 카운트 상태
+  const [squatCount, setSquatCount] = useState(0);
 
-  // 운동 시간 리스트
-  const durations = ["1min", "2min"];
+  // **운동 타이머 상태 추가**
+  const [exerciseTimer, setExerciseTimer] = useState(null);
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -60,6 +66,11 @@ function ExerciseScene() {
       canvasRef.current.width,
       canvasRef.current.height
     );
+  };
+
+  // 스쿼트 카운트 업데이트 핸들러
+  const handleSquatCountUpdate = (count) => {
+    setSquatCount(count);
   };
 
   useEffect(() => {
@@ -107,15 +118,19 @@ function ExerciseScene() {
     const controls = initOrbitControls(camera, renderer);
     controlsRef.current = controls;
 
-    // 애니메이션 루프
+    // Three.js 애니메이션 루프
+    const clock = new THREE.Clock();
+
     const animate = () => {
       requestAnimationFrame(animate);
 
       if (mixerRef.current) {
-        mixerRef.current.update(0.015);
+        const delta = clock.getDelta();
+        mixerRef.current.update(delta);
       }
 
-      controls.update();
+      // 필요한 경우에만 컨트롤 업데이트
+      // controls.update();
       renderer.render(scene, camera);
     };
 
@@ -202,7 +217,7 @@ function ExerciseScene() {
   // 선택 완료 핸들러
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
-      // 보낼데이터 콘솔에 출력
+      // 보낼 데이터 콘솔에 출력
       const requestData = {
         exercise: selectedExercise,
         duration: selectedDuration,
@@ -216,10 +231,7 @@ function ExerciseScene() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          exercise: selectedExercise,
-          duration: selectedDuration,
-        }),
+        body: JSON.stringify(requestData),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -248,12 +260,68 @@ function ExerciseScene() {
     } else if (currentCountdownIndex === countdownImages.length) {
       setCurrentCountdownIndex(null); // 카운트다운 초기화
       setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
+
+      // 운동 시간(초 단위) 설정 (예: "1min" -> 60)
+      const durationInSeconds = parseInt(selectedDuration) * 60;
+
+      // 운동 타이머 시작
+      startExerciseTimer(durationInSeconds);
     }
 
     return () => {
       clearTimeout(timer);
     };
   }, [currentCountdownIndex]);
+
+  // 운동 타이머 시작 함수
+  const startExerciseTimer = (durationInSeconds) => {
+    const timer = setTimeout(() => {
+      endExercise(); // 운동 종료 처리
+    }, durationInSeconds * 1000);
+
+    setExerciseTimer(timer); // **운동 타이머 상태 업데이트**
+  };
+
+  // 운동 종료 처리 함수
+  const endExercise = () => {
+    setMediapipeActive(false); // Mediapipe 비활성화
+    // 현재 날짜 및 시간
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(
+      2,
+      "0"
+    )}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+      currentDate.getMinutes()
+    ).padStart(2, "0")}`;
+
+    // 서버로 보낼 데이터
+    const requestData = {
+      exercise: selectedExercise,
+      duration: selectedDuration,
+      count: squatCount,
+      date: formattedDate,
+    };
+
+    // 서버로 데이터 전송
+    fetch("/workout/end_exercise", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Exercise ended, server response:", data);
+        // 운동 종료 후 처리 (예: 알림 표시 등)
+        alert("운동이 완료되었습니다!");
+      })
+      .catch((error) => {
+        console.error("Error ending exercise:", error);
+      });
+  };
 
   // 성장 추이 보기 클릭 핸들러
   const moveToResultPage = () => {
@@ -290,6 +358,7 @@ function ExerciseScene() {
           <MediapipeSquatTracking
             onCanvasUpdate={handleCanvasUpdate}
             active={mediapipeActive}
+            onCountUpdate={handleSquatCountUpdate} // 스쿼트 카운트 업데이트 함수 전달
           />
 
           <canvas
