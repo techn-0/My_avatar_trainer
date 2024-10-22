@@ -30,6 +30,7 @@ const ExerciseGraph = () => {
   const navigate = useNavigate();
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem('userId');
@@ -38,7 +39,8 @@ const ExerciseGraph = () => {
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/workout?userId=${userId}`); // userId로 필터링
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(`http://localhost:3002/workout?userId=${userId}&duration=${selectedDuration}`);
         const data = await response.json();
         setWorkoutData(data);  // 운동 기록 데이터를 상태로 저장
         setLoading(false);
@@ -49,11 +51,16 @@ const ExerciseGraph = () => {
     };
 
     fetchWorkouts();
-  }, [userId]);
+  }, [userId, selectedDuration]);  // 선택한 시간에 따라 데이터 다시 불러오기
 
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  // 시간 선택 옵션 
+  const handleDurationChange = (e) => {
+    setSelectedDuration(Number(e.target.value));  // 선택한 시간 업데이트
+  };
 
   // 가져온 운동 기록 데이터를 그래프용 데이터로 변환
   const lineData = {
@@ -83,7 +90,7 @@ const ExerciseGraph = () => {
         label: "Plank(minutes)",
         data: workoutData
           .filter((entry) => entry.exercise === "Plank")
-          .map((entry) => entry.duration),
+          .map((entry) => entry.count),
         borderColor: "rgba(255, 159, 64, 1)",
         backgroundColor: "rgba(255, 159, 64, 0.2)",
         fill: true,
@@ -112,7 +119,7 @@ const ExerciseGraph = () => {
           Math.max(
             ...workoutData
               .filter((entry) => entry.exercise === "Plank")
-              .map((entry) => entry.duration)
+              .map((entry) => entry.count)
           ),
         ], // 각 운동의 최고 기록
         backgroundColor: "rgba(255, 99, 132, 0.2)",
@@ -164,6 +171,18 @@ const ExerciseGraph = () => {
           borderRadius: "8px",
         }}
       >
+        {/* 운동 시간 선택 */}
+        <label>
+          운동 시간:
+          <select value={selectedDuration} onChange={handleDurationChange}>
+            <option value={1}>1분 기록</option>
+            <option value={2}>2분 기록</option>
+            <option value={3}>3분 기록</option>
+            <option value={4}>4분 기록</option>
+            <option value={5}>5분 기록</option>
+          </select>
+        </label>
+
         {/* Return 버튼 */}
         <button
           className="Btn"

@@ -8,9 +8,9 @@ import { CreateWorkoutDto } from './dto/create-workout.dto';
 export class WorkoutService {
   constructor(@InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>) {}
 
-  // 특정 유저의 운동 기록 조회
-  async findWorkoutsByUser(userId: string): Promise<WorkOut[]> {
-    return this.workoutModel.find({ userId }).exec();  // userId로 필터링하여 반환
+   // userId와 duration에 따른 운동 기록 조회
+   async findWorkoutsByUserAndDuration(userId: string, duration: number): Promise<WorkOut[]> {
+    return this.workoutModel.find({ userId, duration }).exec();  // userId와 duration으로 필터링
   }
 
   // 새로운 운동 기록 생성
