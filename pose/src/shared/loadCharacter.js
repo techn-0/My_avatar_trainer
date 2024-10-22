@@ -29,8 +29,14 @@ export function loadCharacter(scene, onLoadComplete) {
       let mixer;
       if (gltf.animations && gltf.animations.length > 0) {
         mixer = new THREE.AnimationMixer(model);
-        const action = mixer.clipAction(gltf.animations[5]); // 첫 번째 애니메이션 선택
+        const action = mixer.clipAction(gltf.animations[1]); // 첫 번째 애니메이션 선택
         action.play(); // 애니메이션 시작
+
+        // 애니메이션 목록을 콘솔에 출력
+        console.log("Animations found in the model:");
+        gltf.animations.forEach((clip, index) => {
+          console.log(`Animation ${index}: ${clip.name}`);
+        });
       } else {
         console.warn("No animations found in this GLB model.");
       }

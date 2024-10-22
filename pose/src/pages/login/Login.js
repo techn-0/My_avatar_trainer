@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css";
+import { saveToken } from "./AuthContext"; // 쿠키에 저장하는 saveToken 사용
 
 const LoginToggle = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -15,7 +16,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("Login data:", loginData);
 
     try {
-      const response = await fetch("/login", {
+      const response = await fetch("http://localhost:3002/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -25,6 +26,10 @@ const LoginToggle = ({ onClose }) => {
 
       if (data.message) {
         alert(data.message);
+      }
+      if (data.accessToken) {
+        saveToken(data.accessToken); // JWT 토큰 쿠키에 저장
+        window.location.href = "/"; // 리다이렉트
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -36,7 +41,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("SignUp data:", signUpData);
 
     try {
-      const response = await fetch("/signup", {
+      const response = await fetch("http://localhost:3002/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signUpData),
@@ -81,10 +86,9 @@ const LoginToggle = ({ onClose }) => {
             <span className="card-side" onClick={handleToggle}></span>
             <div className="flip-card__inner">
               <div className="flip-card__front">
-                {/* 로그인 박스 우측 상단에 X 버튼 추가 */}
                 <button
                   className="close-btn"
-                  onClick={onClose} // 팝업 닫기
+                  onClick={onClose}
                   style={{
                     position: "absolute",
                     top: "10px",
@@ -122,10 +126,9 @@ const LoginToggle = ({ onClose }) => {
                 </form>
               </div>
               <div className="flip-card__back">
-                {/* 회원가입 박스에도 동일하게 X 버튼 추가 */}
                 <button
                   className="close-btn"
-                  onClick={onClose} // 팝업 닫기
+                  onClick={onClose}
                   style={{
                     position: "absolute",
                     top: "10px",
