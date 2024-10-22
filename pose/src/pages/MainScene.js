@@ -10,7 +10,7 @@ import { initOrbitControls } from "../shared/initOrbitControls";
 import LoginModal from "./login/LoginModal"; // Import the new component
 import ExerciseGraph from "./ExerciseGraph/ExerciseGraph";
 import { setBackgroundColor } from "../shared/background";
-import { getToken } from "./login/AuthContext";
+import { getToken } from "./login/AuthContext"; // 토큰
 
 function ThreeScene() {
   const mountRef = useRef(null);
