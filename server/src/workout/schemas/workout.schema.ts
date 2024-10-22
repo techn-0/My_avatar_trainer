@@ -9,7 +9,7 @@ export class WorkOut extends Document {
     exercise: string;
 
     @Prop()
-    duration: number;
+    duration: string;
     
     @Prop()
     count: number;

@@ -3,7 +3,7 @@ import { WorkoutService } from './workout.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('workout')
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
 export class WorkoutController {
     constructor(private workOutService: WorkoutService){}
 
