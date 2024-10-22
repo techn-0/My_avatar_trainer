@@ -231,7 +231,7 @@ function ExerciseScene() {
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
       // 서버로 선택한 종목과 시간 전송
-      fetch("/workout/start_exercise", {
+      fetch("http://localhost:3002/workout/start_exercise", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -337,7 +337,7 @@ function ExerciseScene() {
     };
 
     // 서버로 데이터 전송
-    fetch("/workout/end_exercise", {
+    fetch("http://localhost:3002/workout/end_exercise", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
