@@ -71,9 +71,12 @@ function ExerciseScene() {
     );
   };
 
+  const squatCountRef = useRef(0); // squatCount를 저장할 ref 생성
+
   // 스쿼트 카운트 업데이트 핸들러
   const handleSquatCountUpdate = (count) => {
     setSquatCount(count);
+    squatCountRef.current = count; // ref에 최신 카운트 값 저장
   };
 
   useEffect(() => {
@@ -332,10 +335,10 @@ function ExerciseScene() {
     const requestData = {
       exercise: selectedExercise,
       duration: selectedDuration,
-      count: squatCount,
+      count: squatCountRef.current, // 최신 카운트 값 사용
       date: formattedDate,
     };
-
+    console.log("Request data:", requestData);
     // 서버로 데이터 전송
     fetch("http://localhost:3002/workout/end_exercise", {
       method: "POST",
