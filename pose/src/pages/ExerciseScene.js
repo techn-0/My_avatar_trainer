@@ -5,9 +5,10 @@ import { addLights } from "../shared/lights"; // 조명 추가
 import { createPlane } from "../app/createPlane"; // 바닥 추가
 import { initOrbitControls } from "../shared/initOrbitControls"; // 카메라 컨트롤
 import { useNavigate } from "react-router-dom";
-import MediapipeMotionTracking from "../app/cam"; // Mediapipe 컴포넌트
+import MediapipeSquatTracking from "../app/workoutCam/squatCam"; // Mediapipe 컴포넌트
 import Buttons from "./ui/exerciseButtons";
 import LoginModal from "./login/LoginModal";
+import { setBackgroundColor } from "../shared/background";
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -29,17 +30,20 @@ function ExerciseScene() {
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
 
+  // 카운트다운 상태 추가
+  const [countdownImages, setCountdownImages] = useState([
+    "count3.png",
+    "count2.png",
+    "count1.png",
+    "countStart.png",
+  ]);
+  const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
+
   // 운동 종목 리스트
-  const exercises = [
-    "스쿼트",
-    "팔굽혀펴기",
-    "플랭크",
-    "윗몸일으키기",
-    "레그레이즈",
-  ];
+  const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
 
   // 운동 시간 리스트
-  const durations = ["1분", "2분"];
+  const durations = ["1min", "2min"];
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -89,6 +93,9 @@ function ExerciseScene() {
     const plane = createPlane();
     scene.add(plane);
 
+    // 배경색 설정
+    setBackgroundColor(scene);
+
     // 캐릭터 로드
     loadCharacter(scene, (mixer, model, animations) => {
       mixerRef.current = mixer;
@@ -114,7 +121,17 @@ function ExerciseScene() {
 
     animate();
 
+    // 창 크기 변경 시 카메라 및 렌더러 업데이트
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      // 이벤트 리스너 제거
+      window.removeEventListener("resize", handleResize);
       // 페이지 전환 시 리소스 해제
       if (rendererRef.current) {
         rendererRef.current.dispose();
@@ -130,6 +147,14 @@ function ExerciseScene() {
       }
     };
   }, []);
+
+  // 이미지 프리로드
+  useEffect(() => {
+    countdownImages.forEach((image) => {
+      const img = new Image();
+      img.src = process.env.PUBLIC_URL + `/ExerciseCountdown/${image}`;
+    });
+  }, [countdownImages]);
 
   // 로그인 모달 열기 함수
   const openLoginDialog = () => {
@@ -168,13 +193,25 @@ function ExerciseScene() {
     setSelectedDuration(duration);
   };
 
+  // 카운트다운 시작 함수
+  const startCountdown = () => {
+    setCurrentCountdownIndex(0); // 카운트다운 시작
+    setMediapipeActive(false); // Mediapipe 비활성화
+  };
+
   // 선택 완료 핸들러
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
-      setMediapipeActive(false); // 냅따 Mediapipe 비활성화
+      // 보낼데이터 콘솔에 출력
+      const requestData = {
+        exercise: selectedExercise,
+        duration: selectedDuration,
+      };
 
+      // 서버로 보낼 데이터 콘솔에 출력
+      console.log("Data to send to server:", requestData);
       // 서버로 선택한 종목과 시간 전송
-      fetch("/api/start-exercise", {
+      fetch("/workout/start_exercise", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -192,11 +229,31 @@ function ExerciseScene() {
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
         });
-
-      // Mediapipe 활성화
-      setMediapipeActive(true);
+      // 카운트다운 시작
+      startCountdown();
     }
   };
+
+  // 카운트다운 진행
+  useEffect(() => {
+    let timer;
+    if (
+      currentCountdownIndex !== null &&
+      currentCountdownIndex < countdownImages.length
+    ) {
+      // 1초마다 이미지 변경
+      timer = setTimeout(() => {
+        setCurrentCountdownIndex(currentCountdownIndex + 1);
+      }, 1000);
+    } else if (currentCountdownIndex === countdownImages.length) {
+      setCurrentCountdownIndex(null); // 카운트다운 초기화
+      setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentCountdownIndex]);
 
   // 성장 추이 보기 클릭 핸들러
   const moveToResultPage = () => {
@@ -230,7 +287,7 @@ function ExerciseScene() {
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
       {mediapipeActive && (
         <>
-          <MediapipeMotionTracking
+          <MediapipeSquatTracking
             onCanvasUpdate={handleCanvasUpdate}
             active={mediapipeActive}
           />
@@ -251,6 +308,28 @@ function ExerciseScene() {
           />
         </>
       )}
+
+      {/* 카운트다운 이미지 표시 */}
+      {currentCountdownIndex !== null &&
+        currentCountdownIndex < countdownImages.length && (
+          <img
+            src={
+              process.env.PUBLIC_URL +
+              `/ExerciseCountdown/${countdownImages[currentCountdownIndex]}`
+            }
+            alt="Countdown"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "300px",
+              height: "300px",
+              zIndex: 3,
+              animation: "fadeInOut 1s linear",
+            }}
+          />
+        )}
 
       {/* 로그인 모달 */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
