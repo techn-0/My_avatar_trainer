@@ -280,7 +280,7 @@ function ExerciseScene() {
       const durationInSeconds = parseInt(selectedDuration) * 60;
 
       // 애니메이션 번호 8을 운동 시간 동안 재생
-      playAnimation(8, THREE.LoopRepeat);
+      playAnimation(11, THREE.LoopRepeat);
 
       // 운동 타이머 시작
       startExerciseTimer(durationInSeconds);
@@ -304,16 +304,16 @@ function ExerciseScene() {
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
 
-    // 애니메이션 번호 9를 한 번 재생하고, 이후 번호 5를 기본으로 설정
-    playAnimation(9, THREE.LoopOnce);
+    // 애니메이션 번호 3를 한 번 재생하고, 이후 번호 5를 기본으로 설정
+    playAnimation(3, THREE.LoopOnce);
 
-    // 애니메이션 번호 9가 끝난 후 번호 5를 기본으로 재생
-    if (animationsRef.current[9]) {
-      animationsRef.current[9].getMixer().addEventListener("finished", () => {
+    // 애니메이션 번호 3가 끝난 후 번호 5를 기본으로 재생
+    if (animationsRef.current[3]) {
+      animationsRef.current[3].getMixer().addEventListener("finished", () => {
         playAnimation(5, THREE.LoopRepeat);
       });
     } else {
-      // 번호 9 애니메이션이 없을 경우 즉시 번호 5를 재생
+      // 번호 3 애니메이션이 없을 경우 즉시 번호 5를 재생
       playAnimation(5, THREE.LoopRepeat);
     }
 
