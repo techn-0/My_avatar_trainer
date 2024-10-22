@@ -1,14 +1,20 @@
-import { Controller, UseGuards, Get, Post, Body } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateWorkoutDto } from './dto/create-workout.dto';
 
 @Controller('workout')
-// @UseGuards(AuthGuard())
 export class WorkoutController {
-    constructor(private workOutService: WorkoutService){}
+  constructor(private readonly workoutService: WorkoutService) {}
 
-    @Post('/start_exercise')
-    getRecord(@Body() body: { exercise: string, duration: string}): Promise<{ count: number; date: Date }> {
-        return this.workOutService.getRecord(body.exercise, body.duration);
-    }
+  // userId와 duration에 따른 운동 기록 가져오기
+  @Get()
+  async getWorkouts(@Query('userId') userId: string, @Query('duration') duration: number) {
+    return this.workoutService.findWorkoutsByUserAndDuration(userId, duration);
+  }
+
+  // 새로운 운동 기록 생성 ***백엔드 작업자가 수정 가능!
+  @Post()
+  async createWorkout(@Body() createWorkoutDto: CreateWorkoutDto) {
+    return this.workoutService.createWorkout(createWorkoutDto);
+  }
 }

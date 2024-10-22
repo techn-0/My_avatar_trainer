@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
@@ -28,19 +28,49 @@ ChartJS.register(
 
 const ExerciseGraph = () => {
   const navigate = useNavigate();
-  // 임의의 운동 기록 데이터 (꺾은선 그래프용)
-  const data = {
-    labels: [
-      "2024-10-10",
-      "2024-10-11",
-      "2024-10-12",
-      "2024-10-13",
-      "2024-10-14",
-    ],
+  const [workoutData, setWorkoutData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
+
+  // sessionStorage에서 로그인된 유저의 ID 가져오기
+  const userId = sessionStorage.getItem('userId');
+
+  // 운동 기록 데이터를 백엔드에서 가져오기
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(`http://localhost:3002/workout?userId=${userId}&duration=${selectedDuration}`);
+        const data = await response.json();
+        setWorkoutData(data);  // 운동 기록 데이터를 상태로 저장
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchWorkouts();
+  }, [userId, selectedDuration]);  // 선택한 시간에 따라 데이터 다시 불러오기
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // 시간 선택 옵션 
+  const handleDurationChange = (e) => {
+    setSelectedDuration(Number(e.target.value));  // 선택한 시간 업데이트
+  };
+
+  // 가져온 운동 기록 데이터를 그래프용 데이터로 변환
+  const lineData = {
+    labels: workoutData.map((entry) => new Date(entry.date).toLocaleDateString()),  // 날짜 라벨
     datasets: [
       {
         label: "Push-ups",
-        data: [20, 25, 30, 35, 40],
+        data: workoutData
+          .filter((entry) => entry.exercise === "Push-ups")
+          .map((entry) => entry.count),
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -48,7 +78,9 @@ const ExerciseGraph = () => {
       },
       {
         label: "Squats",
-        data: [15, 20, 25, 30, 35],
+        data: workoutData
+          .filter((entry) => entry.exercise === "Squats")
+          .map((entry) => entry.count),
         borderColor: "rgba(153, 102, 255, 1)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
         fill: true,
@@ -56,7 +88,9 @@ const ExerciseGraph = () => {
       },
       {
         label: "Plank(minutes)",
-        data: [1, 1.5, 2, 2.5, 3],
+        data: workoutData
+          .filter((entry) => entry.exercise === "Plank")
+          .map((entry) => entry.count),
         borderColor: "rgba(255, 159, 64, 1)",
         backgroundColor: "rgba(255, 159, 64, 0.2)",
         fill: true,
@@ -71,7 +105,23 @@ const ExerciseGraph = () => {
     datasets: [
       {
         label: "최고 기록",
-        data: [40, 35, 3], // 각 운동의 최고 기록
+        data: [
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "Push-ups")
+              .map((entry) => entry.count)
+          ),
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "Squats")
+              .map((entry) => entry.count)
+          ),
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "Plank")
+              .map((entry) => entry.count)
+          ),
+        ], // 각 운동의 최고 기록
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 2,
@@ -104,9 +154,9 @@ const ExerciseGraph = () => {
     },
   };
 
-  // redirection
+  // 페이지 이동
   const handleMainClick = () => {
-    navigate("/"); // /progress 경로로 이동
+    navigate("/"); // 메인 페이지로 이동
   };
 
   return (
@@ -121,6 +171,18 @@ const ExerciseGraph = () => {
           borderRadius: "8px",
         }}
       >
+        {/* 운동 시간 선택 */}
+        <label>
+          운동 시간:
+          <select value={selectedDuration} onChange={handleDurationChange}>
+            <option value={1}>1분 기록</option>
+            <option value={2}>2분 기록</option>
+            <option value={3}>3분 기록</option>
+            <option value={4}>4분 기록</option>
+            <option value={5}>5분 기록</option>
+          </select>
+        </label>
+
         {/* Return 버튼 */}
         <button
           className="Btn"
@@ -149,7 +211,7 @@ const ExerciseGraph = () => {
             >
               나의 기록
             </h2>
-            <Line data={data} options={options} />
+            <Line data={lineData} options={options} />
           </div>
 
           {/* 레이더 차트 */}
