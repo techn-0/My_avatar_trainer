@@ -148,6 +148,14 @@ function ExerciseScene() {
     };
   }, []);
 
+  // 이미지 프리로드
+  useEffect(() => {
+    countdownImages.forEach((image) => {
+      const img = new Image();
+      img.src = process.env.PUBLIC_URL + `/ExerciseCountdown/${image}`;
+    });
+  }, [countdownImages]);
+
   // 로그인 모달 열기 함수
   const openLoginDialog = () => {
     setOpenLogin(true);
@@ -188,6 +196,7 @@ function ExerciseScene() {
   // 카운트다운 시작 함수
   const startCountdown = () => {
     setCurrentCountdownIndex(0); // 카운트다운 시작
+    setMediapipeActive(false); // Mediapipe 비활성화
   };
 
   // 선택 완료 핸들러
@@ -228,7 +237,6 @@ function ExerciseScene() {
   // 카운트다운 진행
   useEffect(() => {
     let timer;
-    setMediapipeActive(true);
     if (
       currentCountdownIndex !== null &&
       currentCountdownIndex < countdownImages.length
@@ -239,6 +247,7 @@ function ExerciseScene() {
       }, 1000);
     } else if (currentCountdownIndex === countdownImages.length) {
       setCurrentCountdownIndex(null); // 카운트다운 초기화
+      setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
     }
 
     return () => {
@@ -317,6 +326,7 @@ function ExerciseScene() {
               width: "300px",
               height: "300px",
               zIndex: 3,
+              animation: "fadeInOut 1s linear",
             }}
           />
         )}
