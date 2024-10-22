@@ -11,25 +11,10 @@ export class BoardsService {
         @InjectModel(Board.name) private boardModel: Model<Board>,
     ){}
 
-    // getAllBoards(): Board[] {
-    //     return this.boards;
-    // }
-
     async getAllBoards(): Promise <Board[]>{
         return this.boardModel.find();
     }
-    // createBoard(createBoardDto: CreateBoardDto){
-    //     const { title, description } = createBoardDto; 
-    //     const board: Board = {
-    //         id : uuid(),
-    //         title,
-    //         description,
-    //         status : BoardStatus.PUBLIC
-    //     }
 
-    //     this.boards.push(board);
-    //     return board;
-    // }
     async createBoard(createBoardDto: CreateBoardDto, user: User ): Promise<Board>{
         const {title, description} = createBoardDto;
 
@@ -37,11 +22,12 @@ export class BoardsService {
             title,
             description,
             status: BoardStatus.PUBLIC,
-            user
+            id : user
         });
 
         return board;
     }
+
     async getBoardByTitle(title: string): Promise <Board> {
         const found = await this.boardModel.findOne({title});
 
@@ -50,15 +36,7 @@ export class BoardsService {
         }
         return found;
     }
-    // getBoardById(id: string): Board{
-    //     const found = this.boards.find((board) => board.id === id);
-    //     //find(function(board){return board.id === id})
-    //     if(!found){
-    //         throw new NotFoundException(`찾는 게시물이 없습니다!`);
-    //     }
-    //     return found;
-        
-    // }
+  
     async deleteBoard(title: string, user: User): Promise<void> {
         const result = await this.boardModel.deleteOne({title, user});
 
@@ -66,10 +44,7 @@ export class BoardsService {
             throw new NotFoundException(`게시물을 찾을 수 없습니다!`);
         }
     }
-    // deleteBoard(id: string): void{
-    //     const found = this.getBoardById(id);
-    //     this.boards = this.boards.filter((board) => board.id !== found.id);
-    // }
+   
     async updateBoardStatus(title: string, status: BoardStatus): Promise<Board>{
         const board = await this.getBoardByTitle(title);
 
@@ -78,9 +53,4 @@ export class BoardsService {
 
         return board;
     }
-    // updateBoardStatus(id: string, status: BoardStatus): Board{
-    //     const board = this.getBoardById(id);
-    //     board.status = status;
-    //     return board;
-    // }
 }
