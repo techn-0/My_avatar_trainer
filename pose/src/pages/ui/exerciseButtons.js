@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
 
 function Buttons({
   onMainPageClick,
-  onLoginPageClick,
   onResultClick,
   selectedExercise,
   handleExerciseSelect,
@@ -15,7 +16,6 @@ function Buttons({
   return (
     <div>
       <button onClick={onMainPageClick}>메인 페이지</button>
-      <button onClick={onLoginPageClick}>로그인 페이지</button>
       <button onClick={onResultClick}>성장 추이 보기</button>
 
       {/* 운동 선택 UI */}
