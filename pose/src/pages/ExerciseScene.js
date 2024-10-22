@@ -15,7 +15,7 @@ function ExerciseScene() {
   const canvasRef = useRef(null); // Mediapipe 캔버스
   const mixerRef = useRef(null);
   const modelRef = useRef(null);
-  const loadedAnimations = useRef();
+  const animationsRef = useRef({}); // 애니메이션 액션 객체들 저장
   const navigate = useNavigate();
   const cameraRef = useRef(); // Three.js 카메라 참조
   const controlsRef = useRef();
@@ -31,7 +31,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
 
   // 운동 시간 리스트
-  const durations = ["1min", "2min", "3min", "4min", "5min"];
+  const durations = ["1min", "2min"];
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -48,8 +48,11 @@ function ExerciseScene() {
   // 스쿼트 카운트 상태
   const [squatCount, setSquatCount] = useState(0);
 
-  // **운동 타이머 상태 추가**
+  // 운동 타이머 상태
   const [exerciseTimer, setExerciseTimer] = useState(null);
+
+  // 애니메이션 상태
+  const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -111,7 +114,7 @@ function ExerciseScene() {
     loadCharacter(scene, (mixer, model, animations) => {
       mixerRef.current = mixer;
       modelRef.current = model;
-      loadedAnimations.current = animations;
+      animationsRef.current = animations;
     });
 
     // 카메라 컨트롤 추가
@@ -129,8 +132,6 @@ function ExerciseScene() {
         mixerRef.current.update(delta);
       }
 
-      // 필요한 경우에만 컨트롤 업데이트
-      // controls.update();
       renderer.render(scene, camera);
     };
 
@@ -208,35 +209,43 @@ function ExerciseScene() {
     setSelectedDuration(duration);
   };
 
-  // 카운트다운 시작 함수
-  const startCountdown = () => {
-    setCurrentCountdownIndex(0); // 카운트다운 시작
-    setMediapipeActive(false); // Mediapipe 비활성화
+  // 애니메이션 변경 함수
+  const playAnimation = (animationIndex, loop = THREE.LoopRepeat) => {
+    if (animationsRef.current && mixerRef.current) {
+      // 모든 애니메이션 정지
+      mixerRef.current.stopAllAction();
+
+      const action = animationsRef.current[animationIndex];
+
+      if (action) {
+        action.reset();
+        action.setLoop(loop);
+        action.play();
+      } else {
+        console.warn(`Animation ${animationIndex} is not available.`);
+      }
+    }
   };
 
   // 선택 완료 핸들러
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
-      // 보낼 데이터 콘솔에 출력
-      const requestData = {
-        exercise: selectedExercise,
-        duration: selectedDuration,
-      };
-
-      // 서버로 보낼 데이터 콘솔에 출력
-      console.log("Data to send to server:", requestData);
       // 서버로 선택한 종목과 시간 전송
       fetch("/workout/start_exercise", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({
+          exercise: selectedExercise,
+          duration: selectedDuration,
+        }),
       })
         .then((response) => response.json())
         .then((data) => {
           console.log("Server response:", data);
-          // 서버 응답 처리
+          // 애니메이션 번호 6을 한 번 재생하고 대기
+          playAnimation(6, THREE.LoopOnce);
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
@@ -244,6 +253,12 @@ function ExerciseScene() {
       // 카운트다운 시작
       startCountdown();
     }
+  };
+
+  // 카운트다운 시작 함수
+  const startCountdown = () => {
+    setCurrentCountdownIndex(0); // 카운트다운 시작
+    setMediapipeActive(false); // Mediapipe 비활성화
   };
 
   // 카운트다운 진행
@@ -264,6 +279,9 @@ function ExerciseScene() {
       // 운동 시간(초 단위) 설정 (예: "1min" -> 60)
       const durationInSeconds = parseInt(selectedDuration) * 60;
 
+      // 애니메이션 번호 8을 운동 시간 동안 재생
+      playAnimation(8, THREE.LoopRepeat);
+
       // 운동 타이머 시작
       startExerciseTimer(durationInSeconds);
     }
@@ -279,12 +297,26 @@ function ExerciseScene() {
       endExercise(); // 운동 종료 처리
     }, durationInSeconds * 1000);
 
-    setExerciseTimer(timer); // **운동 타이머 상태 업데이트**
+    setExerciseTimer(timer);
   };
 
   // 운동 종료 처리 함수
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
+
+    // 애니메이션 번호 9를 한 번 재생하고, 이후 번호 5를 기본으로 설정
+    playAnimation(9, THREE.LoopOnce);
+
+    // 애니메이션 번호 9가 끝난 후 번호 5를 기본으로 재생
+    if (animationsRef.current[9]) {
+      animationsRef.current[9].getMixer().addEventListener("finished", () => {
+        playAnimation(5, THREE.LoopRepeat);
+      });
+    } else {
+      // 번호 9 애니메이션이 없을 경우 즉시 번호 5를 재생
+      playAnimation(5, THREE.LoopRepeat);
+    }
+
     // 현재 날짜 및 시간
     const currentDate = new Date();
     const formattedDate = `${currentDate.getFullYear()}-${String(
