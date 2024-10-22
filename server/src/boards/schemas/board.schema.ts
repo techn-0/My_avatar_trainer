@@ -15,7 +15,7 @@ export class Board extends Document {
     status : BoardStatus
 
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-    id: User;
+    id: User; 
 }
 
 export const BoardSchema = SchemaFactory.createForClass(Board);
