@@ -18,16 +18,10 @@ export class WorkoutService {
     return this.workoutModel.find({ userId, duration }).exec(); // userId와 duration으로 필터링
   }
 
-  // 새로운 운동 기록 생성
-  async createWorkout(createWorkoutDto: CreateWorkoutDto): Promise<WorkOut> {
-    const workout = new this.workoutModel(createWorkoutDto);
-    return workout.save(); // 새로운 운동 기록 저장
-  }
-
   async getRecord(
     exercise: string,
-    duration: string,
-  ): Promise<{ count: number; date: Date }> {
+    duration: number,
+  ): Promise<{ count: number; date: string }> {
     try {
       const workout = await this.workoutModel
         .findOne({ exercise, duration })
@@ -44,6 +38,19 @@ export class WorkoutService {
       };
     } catch (error) {
       throw new Error(`기록을 가져오는데 실패했습니다! : ${error.message}`);
+    }
+  }
+  async createRecord( exercise: string, duration: number, count: number, date: string) : Promise<{ message : string}>{
+    try{
+        await this.workoutModel.create({
+            exercise,
+            duration,
+            count,
+            date
+        });
+        return { message : '기록 저장 성공!'};    
+    } catch (error){
+        console.log(error);
     }
   }
 }

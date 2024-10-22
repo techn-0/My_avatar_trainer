@@ -12,9 +12,17 @@ export class WorkoutController {
     return this.workoutService.findWorkoutsByUserAndDuration(userId, duration);
   }
 
-  // 새로운 운동 기록 생성 ***백엔드 작업자가 수정 가능!
-  @Post()
-  async createWorkout(@Body() createWorkoutDto: CreateWorkoutDto) {
-    return this.workoutService.createWorkout(createWorkoutDto);
+  @Post('/start_exercise')
+    getRecord(@Body() body: { exercise: string, duration: number}): Promise<{ count: number; date: string }> {
+        return this.workoutService.getRecord(body.exercise, body.duration);
+    }
+
+
+  // 운동 기록 생성 (end_exercise)
+  @Post('/end_exercise')
+  createRecord(@Body() body: { exercise: string, duration: number, count: number, date: string }): Promise<{ message: string }> {
+    return this.workoutService.createRecord(body.exercise,  Number(body.duration), body.count, body.date);
   }
+
+
 }

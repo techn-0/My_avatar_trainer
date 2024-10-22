@@ -14,9 +14,9 @@ export class WorkOut extends Document {
   count: number;  // 운동 횟수
 
   @Prop()
-  date: Date;  // 운동 날짜
+  date: string;  // 운동 날짜
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })  // 유저와의 참조
+  @Prop({ type: Types.ObjectId, ref: 'User',  })  // 유저와의 참조
   userId: User;
 }
 
