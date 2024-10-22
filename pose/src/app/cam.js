@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
@@ -26,6 +26,19 @@ function MediapipeMotionTracking({ onCanvasUpdate, active }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
+
+  const [squatCount, setSquatCount] = useState(0); // 스쿼트 카운트 상태
+  const squatStateRef = useRef("up"); // 스쿼트 상태를 추적하기 위한 변수 (up 또는 down)
+
+  // 스쿼트 각도 계산 함수
+  const calculateAngle = (point1, point2, point3) => {
+    const radians =
+      Math.atan2(point3.y - point2.y, point3.x - point2.x) -
+      Math.atan2(point1.y - point2.y, point1.x - point2.x);
+    let angle = (radians * 180) / Math.PI;
+    if (angle < 0) angle += 360;
+    return angle;
+  };
 
   useEffect(() => {
     // Pose 싱글톤 인스턴스 초기화
@@ -77,6 +90,21 @@ function MediapipeMotionTracking({ onCanvasUpdate, active }) {
           color: "blue",
           lineWidth: 2,
         });
+
+        // 스쿼트 감지 로직 추가
+        const leftHip = results.poseLandmarks[23];
+        const leftKnee = results.poseLandmarks[25];
+        const leftAnkle = results.poseLandmarks[27];
+
+        const kneeAngle = calculateAngle(leftHip, leftKnee, leftAnkle);
+
+        if (kneeAngle < 70 && squatStateRef.current === "up") {
+          squatStateRef.current = "down";
+        }
+        if (kneeAngle > 160 && squatStateRef.current === "down") {
+          squatStateRef.current = "up";
+          setSquatCount((prevCount) => prevCount + 1);
+        }
 
         // 부모 컴포넌트로 업데이트된 캔버스 전달
         if (onCanvasUpdate) {
@@ -130,6 +158,13 @@ function MediapipeMotionTracking({ onCanvasUpdate, active }) {
         height="480"
         style={{ display: "none" }}
       ></canvas>
+
+      {/* 스쿼트 카운트 출력 */}
+      <div
+        style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}
+      >
+        <h1>스쿼트 횟수: {squatCount}</h1>
+      </div>
     </div>
   );
 }
