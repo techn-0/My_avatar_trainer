@@ -40,6 +40,7 @@ export class WorkoutService {
       throw new Error(`기록을 가져오는데 실패했습니다! : ${error.message}`);
     }
   }
+  
   async createRecord( exercise: string, duration: number, count: number, date: string) : Promise<{ message : string}>{
     try{
         await this.workoutModel.create({
