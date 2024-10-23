@@ -55,11 +55,11 @@ const angleCalc = (data, side) => {
 };
 
 // MediapipeSquatTracking 컴포넌트
-function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const [squatCount, setSquatCount] = useState(0);
+  const [situpCount, setSitupCount] = useState(0);
   const squatStateRef = useRef("up");
 
   useEffect(() => {
@@ -124,7 +124,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           (rightSquatAngle > 140 && squatStateRef.current === "down")
         ) {
           squatStateRef.current = "up";
-          setSquatCount((prevCount) => {
+          setSitupCount((prevCount) => {
             const newCount = prevCount + 1;
             if (onCountUpdate) {
               onCountUpdate(newCount); // 부모 컴포넌트로 카운트 업데이트 전달
@@ -188,24 +188,14 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         style={{ display: "none" }}
       ></canvas>
 
-      {/* 스쿼트 카운트 출력 */}
+      {/* 윗몸일으키기 카운트 출력 */}
       <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
+        style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}
       >
-        <h1>스쿼트 횟수: {squatCount}</h1>
+        <h1>윗몸일으키기 횟수: {situpCount}</h1>
       </div>
     </div>
   );
 }
 
-export default MediapipeSquatTracking;
+export default MediapipeSitupTracking;
