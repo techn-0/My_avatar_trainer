@@ -65,8 +65,11 @@
 }
 
 .input:hover + .btn {
-  --primary: #cc133c;
-  --font-size: 11px;
+  --primary: #8B00FF;
+  --shadow-primary: #fff020;
+  --font-size: 25px;
+  line-height: 57px;
+  
 }
 
 .btn:after, .btn:before {
