@@ -111,8 +111,10 @@
 }
 
 .container {
-  width: 100%;
-  height: 100%;
+  width: 100vw; /* 화면 전체 너비 */
+  height: 100vh; /* 화면 전체 높이 */
+  display: flex; /* 컨텐츠를 중앙으로 맞추기 위한 플렉스박스 */
+
   --s: 194px; /* control the size */
   --c1: #ffef84;
   --c2: #71d9ff;
@@ -133,4 +135,78 @@
     ),
     linear-gradient(-150deg, var(--_l)) #e0fff7 /* third color here */;
   background-size: calc(0.866 * var(--s)) var(--s);
+}
+
+.cta {
+  position: relative;
+  margin: auto;
+  padding: 12px 18px;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: inline-block; /* 라벨을 가로로 배치하기 위해 추가 */
+}
+
+.cta:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  border-radius: 50px;
+  background: #b1dae7;
+  width: 45px;
+  height: 45px;
+  transition: all 0.3s ease;
+}
+
+.cta span {
+  position: relative;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #234567;
+  margin-left: -7px;
+}
+
+.cta svg {
+  position: relative;
+  top: -5px;
+  margin-left: 15px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: #234567;
+  stroke-width: 2;
+  transform: translateX(-5px);
+  transition: all 0.3s ease;
+}
+
+.cta:hover:before {
+  width: 200%;
+  background: #b1dae7;
+}
+
+.cta:hover svg {
+  transform: translateX(0);
+}
+
+.cta:active {
+  transform: scale(0.95);
+}
+
+.cta select {
+  display: none;
+  margin: 5px;
+}
+/* 라벨에 마우스 호버 시 select 표시 */
+.cta:hover select {
+  display: inline-block;
+  margin-right: 10px; /* 시간 선택 셀렉트 사이 간격 추가 */
+}
+
+.time-selection {
+  display: flex; /* 시간 선택 셀렉트 요소를 가로로 배치하기 위해 flex 사용 */
+  gap: 10px; /* 시간 선택 셀렉트 사이의 간격 */
 }

@@ -33,16 +33,18 @@ const ExerciseGraph = () => {
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
-  const userId = sessionStorage.getItem('userId');
+  const userId = sessionStorage.getItem("userId");
 
   // 운동 기록 데이터를 백엔드에서 가져오기
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
-        const response = await fetch(`http://localhost:3002/workout?userId=${userId}&duration=${selectedDuration}`);
+        const response = await fetch(
+          `http://localhost:3002/workout?userId=${userId}&duration=${selectedDuration}`
+        );
         const data = await response.json();
-        setWorkoutData(data);  // 운동 기록 데이터를 상태로 저장
+        setWorkoutData(data); // 운동 기록 데이터를 상태로 저장
         setLoading(false);
       } catch (error) {
         console.error("Error fetching workout data:", error);
@@ -51,20 +53,22 @@ const ExerciseGraph = () => {
     };
 
     fetchWorkouts();
-  }, [userId, selectedDuration]);  // 선택한 시간에 따라 데이터 다시 불러오기
+  }, [userId, selectedDuration]); // 선택한 시간에 따라 데이터 다시 불러오기
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // 시간 선택 옵션 
+  // 시간 선택 옵션
   const handleDurationChange = (e) => {
-    setSelectedDuration(Number(e.target.value));  // 선택한 시간 업데이트
+    setSelectedDuration(Number(e.target.value)); // 선택한 시간 업데이트
   };
 
   // 가져온 운동 기록 데이터를 그래프용 데이터로 변환
   const lineData = {
-    labels: workoutData.map((entry) => new Date(entry.date).toLocaleDateString()),  // 날짜 라벨
+    labels: workoutData.map((entry) =>
+      new Date(entry.date).toLocaleDateString()
+    ), // 날짜 라벨
     datasets: [
       {
         label: "Push-ups",
@@ -160,33 +164,37 @@ const ExerciseGraph = () => {
   };
 
   return (
-    <>
+    <div className="container">
       <div
         style={{
           padding: "20px",
           maxWidth: "1200px",
-          margin: "0 auto",
-          background: "#fff",
+          margin: "8% auto",
           boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "White",
           borderRadius: "8px",
         }}
       >
         {/* 운동 시간 선택 */}
-        <label>
-          운동 시간:
-          <select value={selectedDuration} onChange={handleDurationChange}>
+        <label className="cta">
+          <span>⏰</span>
+          <svg width="15px" height="10px" viewBox="0 0 13 10">
+            <path d="M1,5 L11,5"></path>
+            <polyline points="8 1 12 5 8 9"></polyline>
+          </svg>
+          <select
+            value={selectedDuration}
+            onChange={handleDurationChange}
+            style={{ position: "absolute", zIndex: 2 , margin: "3px 5px 10px 10px" }}
+          >
             <option value={1}>1분 기록</option>
             <option value={2}>2분 기록</option>
-            <option value={3}>3분 기록</option>
-            <option value={4}>4분 기록</option>
-            <option value={5}>5분 기록</option>
           </select>
         </label>
 
         {/* Return 버튼 */}
         <button
           className="Btn"
-          style={{ marginBottom: "20px" }}
           onClick={handleMainClick}
         >
           <div className="sign">
@@ -200,7 +208,14 @@ const ExerciseGraph = () => {
         {/* 그래프 블록 */}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           {/* 꺾은선 그래프 */}
-          <div style={{ padding: "20px", width: "600px", background: "#fff" }}>
+          <div
+            style={{
+              padding: "20px",
+              width: "600px",
+              background: "#fff",
+              borderRadius: "15px",
+            }}
+          >
             <h2
               style={{
                 fontSize: "24px",
@@ -215,7 +230,14 @@ const ExerciseGraph = () => {
           </div>
 
           {/* 레이더 차트 */}
-          <div style={{ padding: "20px", width: "400px", background: "#fff" }}>
+          <div
+            style={{
+              padding: "20px",
+              width: "400px",
+              background: "#fff",
+              borderRadius: "15px",
+            }}
+          >
             <h2
               style={{
                 fontSize: "24px",
@@ -230,7 +252,7 @@ const ExerciseGraph = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
