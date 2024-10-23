@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import "./glitch-container.css";
 
 const ExerciseTimer = React.memo(
   ({ durationInSeconds, onTimerEnd, startTimeRef }) => {
@@ -28,25 +29,20 @@ const ExerciseTimer = React.memo(
       };
     }, [durationInSeconds, onTimerEnd, startTimeRef]);
 
+    // 글자 색상 동적으로 설정
+    const textColor = remainingTime <= 10 ? "#ff0000" : "#00ffff"; // 10초 이하일 때 색상 변경
+
     return (
       <div
         style={{
           textAlign: "center",
         }}
       >
-        <h2
-          style={{
-            color: "black",
-            fontSize: "70px",
-            border: "4px solid",
-            borderRadius: "30px",
-            height: "110px",
-            width: "150px",
-            backgroundColor: "white",
-          }}
-        >
+        <div class="glitch-container" style={{ color: textColor }}>
           {remainingTime}
-        </h2>
+          <span>{remainingTime}</span>
+          <span>{remainingTime}</span>
+        </div>
       </div>
     );
   }
