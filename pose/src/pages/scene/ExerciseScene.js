@@ -9,6 +9,7 @@ import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // Mediapipe
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
 import { setBackgroundColor } from "../../shared/background";
+import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -47,12 +48,10 @@ function ExerciseScene() {
 
   // 스쿼트 카운트 상태
   const [squatCount, setSquatCount] = useState(0);
+  const squatCountRef = useRef(0); // squatCount를 저장할 ref 생성
 
-  // 운동 타이머 상태
-  const [exerciseTimer, setExerciseTimer] = useState(null);
-
-  // 애니메이션 상태
-  const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
+  // 운동 타이머 표시 상태
+  const [showTimer, setShowTimer] = useState(false);
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -70,8 +69,6 @@ function ExerciseScene() {
       canvasRef.current.height
     );
   };
-
-  const squatCountRef = useRef(0); // squatCount를 저장할 ref 생성
 
   // 스쿼트 카운트 업데이트 핸들러
   const handleSquatCountUpdate = (count) => {
@@ -247,7 +244,7 @@ function ExerciseScene() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Server response:", data);
-          // 애니메이션 번호 3을 한 번 재생하고 대기
+          // 애니메이션 번호 4를 한 번 재생하고 대기
           playAnimation(4, THREE.LoopOnce);
         })
         .catch((error) => {
@@ -282,7 +279,7 @@ function ExerciseScene() {
       // 운동 시간(초 단위) 설정 (예: "1min" -> 60)
       const durationInSeconds = parseInt(selectedDuration) * 60;
 
-      // 애니메이션 번호 8을 운동 시간 동안 재생
+      // 애니메이션 번호 11을 운동 시간 동안 재생
       playAnimation(11, THREE.LoopRepeat);
 
       // 운동 타이머 시작
@@ -296,29 +293,29 @@ function ExerciseScene() {
 
   // 운동 타이머 시작 함수
   const startExerciseTimer = (durationInSeconds) => {
-    const timer = setTimeout(() => {
-      endExercise(); // 운동 종료 처리
-    }, durationInSeconds * 1000);
-
-    setExerciseTimer(timer);
+    setShowTimer(true); // 타이머 표시
+    // ExerciseTimer 컴포넌트에서 타이머 관리
   };
 
   // 운동 종료 처리 함수
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
 
-    // 애니메이션 번호 3를 한 번 재생하고, 이후 번호 5를 기본으로 설정
+    // 애니메이션 번호 3을 한 번 재생하고, 이후 번호 5를 기본으로 설정
     playAnimation(3, THREE.LoopOnce);
 
-    // 애니메이션 번호 3가 끝난 후 번호 5를 기본으로 재생
+    // 애니메이션 번호 3이 끝난 후 번호 5를 기본으로 재생
     if (animationsRef.current[3]) {
-      animationsRef.current[3].getMixer().addEventListener("finished", () => {
+      mixerRef.current.addEventListener("finished", () => {
         playAnimation(5, THREE.LoopRepeat);
       });
     } else {
       // 번호 3 애니메이션이 없을 경우 즉시 번호 5를 재생
       playAnimation(5, THREE.LoopRepeat);
     }
+
+    // 운동 종료 후 타이머 숨기기
+    setShowTimer(false);
 
     // 현재 날짜 및 시간
     const currentDate = new Date();
@@ -387,6 +384,25 @@ function ExerciseScene() {
       {/* Three.js 씬이 마운트되는 부분 */}
       <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
 
+      {/* 운동 타이머 표시 */}
+      {showTimer && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "50%",
+            transform: "translateX(50%)",
+            zIndex: 2,
+            color: "white",
+          }}
+        >
+          <ExerciseTimer
+            durationInSeconds={parseInt(selectedDuration) * 60}
+            onTimerEnd={endExercise}
+          />
+        </div>
+      )}
+
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
       {mediapipeActive && (
         <>
@@ -394,22 +410,35 @@ function ExerciseScene() {
             onCanvasUpdate={handleCanvasUpdate}
             active={mediapipeActive}
             onCountUpdate={handleSquatCountUpdate} // 스쿼트 카운트 업데이트 함수 전달
+            canvasRef={canvasRef} // canvasRef 전달
           />
 
-          <canvas
-            ref={canvasRef}
-            width="640"
-            height="480"
+          <div
             style={{
               position: "absolute",
-              top: "10px",
-              right: "10px",
+              top: "0",
+              right: "0",
               width: "40%",
-
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               zIndex: 2,
-              border: "2px solid white",
             }}
-          />
+          >
+            <canvas
+              ref={canvasRef}
+              width="640"
+              height="480"
+              style={{
+                width: "100%",
+                height: "auto",
+                border: "2px solid white",
+              }}
+            />
+            <div style={{ marginTop: "10px", textAlign: "center" }}>
+              {/* <h1>스쿼트 횟수: {squatCount}</h1> */}
+            </div>
+          </div>
         </>
       )}
 
