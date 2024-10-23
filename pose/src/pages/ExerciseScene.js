@@ -9,6 +9,7 @@ import MediapipeSquatTracking from "../app/workoutCam/squatCam"; // Mediapipe �
 import Buttons from "./ui/exerciseButtons";
 import LoginModal from "./login/LoginModal";
 import { setBackgroundColor } from "../shared/background";
+import "./MainScene.css"
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
