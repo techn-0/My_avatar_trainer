@@ -32,18 +32,28 @@ const ExerciseTimer = React.memo(
     // 글자 색상 동적으로 설정
     const textColor = remainingTime <= 10 ? "#ff0000" : "#00ffff"; // 10초 이하일 때 색상 변경
 
+    // 20초 이하일 때만 글리치 효과를 적용
+    const glitchClass =
+      remainingTime <= 20 ? "glitch-container" : "normal-container";
+
     return (
       <div
-        style={{
-          textAlign: "center",
-        }}
-      >
-        <div class="glitch-container" style={{ color: textColor }}>
+      style={{
+        textAlign: "center",
+      }}
+    >
+      {remainingTime <= 20 ? (
+        <div className={glitchClass} style={{ color: textColor }}>
           {remainingTime}
           <span>{remainingTime}</span>
           <span>{remainingTime}</span>
         </div>
-      </div>
+      ) : (
+        <div className={glitchClass} style={{ color: textColor }}>
+          {remainingTime}
+        </div>
+      )}
+    </div>
     );
   }
 );
