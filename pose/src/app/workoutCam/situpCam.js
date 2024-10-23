@@ -3,7 +3,6 @@ import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { NormalizedLandmarkList } from "@mediapipe/pose";
-import { angleCalc } from "./angleCalc";
 
 const POSE_CONNECTIONS = [
   [11, 13],
@@ -24,12 +23,43 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
+// 스쿼트 각도 계산 함수 (왼쪽/오른쪽 다리 모두 고려)
+const angleCalc = (data, side) => {
+  const index1 = side === "left" ? 11 : 12; // 목
+  const index2 = side === "left" ? 23 : 24; // 허리
+  const index3 = side === "left" ? 25 : 26; // 무릎
+
+  const neck = [data[index1].x, data[index1].y, data[index1].z];
+  const waist = [data[index2].x, data[index2].y, data[index2].z];
+  const knee = [data[index3].x, data[index3].y, data[index3].z];
+
+  const dotProduct =
+    (neck[0] - waist[0]) * (knee[0] - waist[0]) +
+    (neck[1] - waist[1]) * (knee[1] - waist[1]) +
+    (neck[2] - waist[2]) * (knee[2] - neck[2]);
+
+  const waistNeckLength = Math.sqrt(
+    Math.pow(neck[0] - waist[0], 2) +
+      Math.pow(neck[1] - waist[1], 2) +
+      Math.pow(neck[2] - waist[2], 2)
+  );
+
+  const waistKneeLength = Math.sqrt(
+    Math.pow(knee[0] - waist[0], 2) +
+      Math.pow(knee[1] - waist[1], 2) +
+      Math.pow(knee[2] - waist[2], 2)
+  );
+
+  const cos = dotProduct / (waistNeckLength * waistKneeLength);
+  return Math.acos(cos) * (180 / Math.PI); // 각도 계산
+};
+
 // MediapipeSquatTracking 컴포넌트
-function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const [squatCount, setSquatCount] = useState(0);
+  const [situpCount, setSitupCount] = useState(0);
   const squatStateRef = useRef("up");
 
   useEffect(() => {
@@ -78,8 +108,8 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         });
 
         // 왼쪽과 오른쪽 다리의 각도 계산
-        const leftSquatAngle = angleCalc(results.poseLandmarks, "left", 1, 3, 4);
-        const rightSquatAngle = angleCalc(results.poseLandmarks, "right", 1, 3, 4);
+        const leftSquatAngle = angleCalc(results.poseLandmarks, "left");
+        const rightSquatAngle = angleCalc(results.poseLandmarks, "right");
 
         // 스쿼트 상태 전환 및 카운트 업데이트
         if (
@@ -94,7 +124,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           (rightSquatAngle > 140 && squatStateRef.current === "down")
         ) {
           squatStateRef.current = "up";
-          setSquatCount((prevCount) => {
+          setSitupCount((prevCount) => {
             const newCount = prevCount + 1;
             if (onCountUpdate) {
               onCountUpdate(newCount); // 부모 컴포넌트로 카운트 업데이트 전달
@@ -158,24 +188,14 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         style={{ display: "none" }}
       ></canvas>
 
-      {/* 스쿼트 카운트 출력 */}
+      {/* 윗몸일으키기 카운트 출력 */}
       <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
+        style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}
       >
-        <h1>스쿼트 횟수: {squatCount}</h1>
+        <h1>윗몸일으키기 횟수: {situpCount}</h1>
       </div>
     </div>
   );
 }
 
-export default MediapipeSquatTracking;
+export default MediapipeSitupTracking;

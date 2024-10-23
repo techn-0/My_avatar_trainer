@@ -7,9 +7,8 @@ import Box from "@mui/material/Box";
 //pages
 import Login from "./pages/login/Login";
 import MainHeader from "./app/MainHeader";
-import ThreeScene from "./pages/MainScene";
-import PoseTracker3DBox from "./app/camOnBox";
-import ExerciseScene from "./pages/ExerciseScene";
+import ThreeScene from "./pages/scene/MainScene";
+import ExerciseScene from "./pages/scene/ExerciseScene";
 import ExerciseGraph from "./pages/ExerciseGraph/ExerciseGraph";
 
 function App() {

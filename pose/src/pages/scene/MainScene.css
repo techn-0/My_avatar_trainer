@@ -5,9 +5,16 @@
   font-weight: normal;
   font-style: normal;
 }
+.font{
+    font-family: "GangwonEduPowerExtraBoldA";
+}
 
 .btn_box {
-  background-color: rgba(214, 214, 214, 0.778);
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.623);
+  margin: 0px;
+  width: auto;
+  height: auto;
   clip-path: polygon(
     20px 0%,
     100% 0%,
@@ -16,6 +23,4 @@
     0% 100%,
     0% 20px
   );
-  padding: 20px;
-  font-family: "GangwonEduPowerExtraBoldA";
 }
