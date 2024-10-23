@@ -374,7 +374,7 @@ function ExerciseScene() {
   };
 
   return (
-    <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+    <div className="font" style={{ width: "100vw", height: "100vh", position: "relative"}}>
       {/* 버튼 영역 및 운동 선택 UI */}
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}

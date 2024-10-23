@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
+import "./mainButtons.css";
+import "./exerciseButtons.css"
 
 function Buttons({
   onMainPageClick,
@@ -14,58 +16,92 @@ function Buttons({
   onSelectionComplete,
 }) {
   return (
-    <div>
-      <button onClick={onMainPageClick}>메인 페이지</button>
-      <button onClick={onResultClick}>성장 추이 보기</button>
+    <div className="btn_box">
+      <div>
+        <div >
+          {/* 글리치 버튼 - 메인 페이지 */}
+          <div className="radio-wrapper">
+            <input
+              className="input"
+              type="radio"
+              name="btn"
+              id="mainPage"
+              onClick={onMainPageClick}
+            />
+            <div className="btn">
+              <span aria-hidden="true"></span>메인 페이지
+              <span className="btn__glitch" aria-hidden="true">
+                _메인_페이지_
+              </span>
+            </div>
+          </div>
 
-      {/* 운동 선택 UI */}
-      <div
-        style={{
-          marginTop: "20px",
-          background: "rgba(255, 255, 255, 0.8)",
-          padding: "20px",
-          borderRadius: "8px",
-        }}
-      >
-        <h3>운동 종목 선택</h3>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {exercises.map((exercise) => (
-            <label key={exercise} style={{ marginBottom: "8px" }}>
-              <input
-                type="radio"
-                name="exercise"
-                value={exercise}
-                checked={selectedExercise === exercise}
-                onChange={() => handleExerciseSelect(exercise)}
-              />
-              {exercise}
-            </label>
-          ))}
+          {/* 글리치 버튼 - 성장 추이 보기 */}
+          <div className="radio-wrapper">
+            <input
+              className="input"
+              type="radio"
+              name="btn"
+              id="progress"
+              onClick={onResultClick}
+            />
+            <div className="btn">
+              성장 추이 보기
+              <span className="btn__glitch" aria-hidden="true">
+                _성장_추이_보기_
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <h3>운동 시간 선택</h3>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {durations.map((duration) => (
-            <label key={duration} style={{ marginBottom: "8px" }}>
-              <input
-                type="radio"
-                name="duration"
-                value={duration}
-                checked={selectedDuration === duration}
-                onChange={() => handleDurationSelect(duration)}
-              />
-              {duration}
-            </label>
-          ))}
-        </div>
+      <div>
+        {/* 운동 선택 UI */}
+        <div
+          style={{
 
-        <button
-          onClick={onSelectionComplete}
-          disabled={!selectedExercise || !selectedDuration}
-          style={{ marginTop: "10px" }}
+          }}
         >
-          선택 완료
-        </button>
+          <h3>운동 종목 선택</h3>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {exercises.map((exercise) => (
+              <label key={exercise} style={{ marginBottom: "8px" }}>
+                <input
+                  type="radio"
+                  name="exercise"
+                  value={exercise}
+                  checked={selectedExercise === exercise}
+                  onChange={() => handleExerciseSelect(exercise)}
+                />
+                {exercise}
+              </label>
+            ))}
+          </div>
+
+          <h3>운동 시간 선택</h3>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {durations.map((duration) => (
+              <label key={duration} style={{ marginBottom: "8px" }}>
+                <input
+                  type="radio"
+                  name="duration"
+                  value={duration}
+                  checked={selectedDuration === duration}
+                  onChange={() => handleDurationSelect(duration)}
+                />
+                {duration}
+              </label>
+            ))}
+          </div>
+
+          <button
+            onClick={onSelectionComplete}
+            disabled={!selectedExercise || !selectedDuration}
+            style={{ marginTop: "10px" }}
+          >
+            선택 완료
+          </button>
+        </div>
       </div>
     </div>
   );

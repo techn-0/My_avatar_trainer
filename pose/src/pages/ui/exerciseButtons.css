@@ -1,21 +1,21 @@
-.button-container {
-  position: absolute;
-  left: 20px;
-  top: 100px;
-  display: flex;
-  flex-direction: column;
+@font-face {
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
-.btn {
-  margin-bottom: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background-color: #45a049;
+.btn_box {
+  background-color: rgba(214, 214, 214, 0.778);
+  clip-path: polygon(
+    20px 0%,
+    100% 0%,
+    100% calc(100% - 20px),
+    calc(100% - 20px) 100%,
+    0% 100%,
+    0% 20px
+  );
+  padding: 20px;
+  font-family: "GangwonEduPowerExtraBoldA";
 }
