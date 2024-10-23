@@ -44,7 +44,8 @@ function ThreeScene() {
         1,
         4000
       );
-      camera.position.set(0, 2, 4);
+      camera.position.set(2, 2, 4);
+      camera.lookAt(20, 7, -30);
       cameraRef.current = camera;
       scene.add(camera);
 
