@@ -32,7 +32,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
 
   // 운동 시간 리스트
-  const durations = [1, 2];
+  const durations = [1, 2, 0.1];
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -90,7 +90,9 @@ function ExerciseScene() {
     const far = 1000;
 
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 2, 4);
+    // 애니메이션 루프 외부에서 카메라 설정
+    camera.rotation.set(0, 0, 0);
+    camera.position.set(0, 1, 0);
     cameraRef.current = camera;
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -111,19 +113,21 @@ function ExerciseScene() {
     // 배경색 설정
     setBackgroundColor(scene);
 
-    // 캐릭터 로드
+    // 캐릭터 로드 캐릭터나 카메라 둘중 하나만 옮기자.
     loadCharacter(scene, (mixer, model, animations) => {
       mixerRef.current = mixer;
       modelRef.current = model;
       animationsRef.current = animations;
-      model.position.x = -1.5;
-      model.position.z = 1.5;
-      model.rotation.y = THREE.MathUtils.degToRad(25);
+      model.position.x = -1.4;
+      model.position.y = 0;
+      model.position.z = -3;
+      model.rotation.y = THREE.MathUtils.degToRad(20);
     });
 
-    // 카메라 컨트롤 추가
-    const controls = initOrbitControls(camera, renderer);
-    controlsRef.current = controls;
+    // // 카메라 컨트롤 추가
+    // const controls = initOrbitControls(camera, renderer);
+    // controls.enableRotate = false;
+    // controlsRef.current = controls;
 
     // Three.js 애니메이션 루프
     const clock = new THREE.Clock();
