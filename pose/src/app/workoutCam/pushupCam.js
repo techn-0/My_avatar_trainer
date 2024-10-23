@@ -190,17 +190,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
 
       {/* 스쿼트 카운트 출력 */}
       <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
+        style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}
       >
         <h1>스쿼트 횟수: {squatCount}</h1>
       </div>

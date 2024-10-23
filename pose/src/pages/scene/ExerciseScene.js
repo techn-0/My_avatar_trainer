@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { loadCharacter } from "../shared/loadCharacter"; // 캐릭터 로드
-import { addLights } from "../shared/lights"; // 조명 추가
-import { createPlane } from "../app/createPlane"; // 바닥 추가
-import { initOrbitControls } from "../shared/initOrbitControls"; // 카메라 컨트롤
+import { loadCharacter } from "../../shared/loadCharacter"; // 캐릭터 로드
+import { addLights } from "../../shared/lights"; // 조명 추가
+import { createPlane } from "../../app/createPlane"; // 바닥 추가
+import { initOrbitControls } from "../../shared/initOrbitControls"; // 카메라 컨트롤
 import { useNavigate } from "react-router-dom";
-import MediapipeSquatTracking from "../app/workoutCam/squatCam"; // Mediapipe 컴포넌트
-import Buttons from "./ui/exerciseButtons";
-import LoginModal from "./login/LoginModal";
-import { setBackgroundColor } from "../shared/background";
+import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // Mediapipe 컴포넌트
+import Buttons from "../ui/exerciseButtons";
+import LoginModal from "../login/LoginModal";
+import { setBackgroundColor } from "../../shared/background";
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -404,8 +404,8 @@ function ExerciseScene() {
               position: "absolute",
               top: "10px",
               right: "10px",
-              width: "320px",
-              height: "240px",
+              width: "40%",
+
               zIndex: 2,
               border: "2px solid white",
             }}
