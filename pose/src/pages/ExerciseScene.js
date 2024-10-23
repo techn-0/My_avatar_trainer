@@ -247,8 +247,8 @@ function ExerciseScene() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Server response:", data);
-          // 애니메이션 번호 6을 한 번 재생하고 대기
-          playAnimation(6, THREE.LoopOnce);
+          // 애니메이션 번호 3을 한 번 재생하고 대기
+          playAnimation(4, THREE.LoopOnce);
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
