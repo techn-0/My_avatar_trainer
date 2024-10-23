@@ -52,6 +52,7 @@ function ExerciseScene() {
 
   // 운동 타이머 표시 상태
   const [showTimer, setShowTimer] = useState(false);
+  const timerStartTimeRef = useRef(null); // 타이머 시작 시간 저장
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -115,6 +116,9 @@ function ExerciseScene() {
       mixerRef.current = mixer;
       modelRef.current = model;
       animationsRef.current = animations;
+      model.position.x = -1.5;
+      model.position.z = 1.5;
+      model.rotation.y = THREE.MathUtils.degToRad(25);
     });
 
     // 카메라 컨트롤 추가
@@ -294,7 +298,7 @@ function ExerciseScene() {
   // 운동 타이머 시작 함수
   const startExerciseTimer = (durationInSeconds) => {
     setShowTimer(true); // 타이머 표시
-    // ExerciseTimer 컴포넌트에서 타이머 관리
+    timerStartTimeRef.current = Date.now(); // 현재 시간을 시작 시간으로 설정
   };
 
   // 운동 종료 처리 함수
@@ -399,6 +403,7 @@ function ExerciseScene() {
           <ExerciseTimer
             durationInSeconds={parseInt(selectedDuration) * 60}
             onTimerEnd={endExercise}
+            startTimeRef={timerStartTimeRef} // 시작 시간 참조 전달
           />
         </div>
       )}
