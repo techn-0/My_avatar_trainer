@@ -44,8 +44,8 @@ function ThreeScene() {
         1,
         4000
       );
-      camera.position.set(2, 2, 4);
-      camera.lookAt(20, 7, -30);
+      camera.rotation.set(0, 0, 0);
+      camera.position.set(0, 1, 0);
       cameraRef.current = camera;
       scene.add(camera);
 
@@ -57,8 +57,8 @@ function ThreeScene() {
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-      const controls = initOrbitControls(camera, renderer);
-      controlsRef.current = controls;
+      // const controls = initOrbitControls(camera, renderer);
+      // controlsRef.current = controls;
 
       addLights(scene);
 
@@ -71,6 +71,10 @@ function ThreeScene() {
       loadCharacter(scene, (loadedMixer, loadedModel, animations) => {
         mixerRef.current = loadedMixer;
         modelRef.current = loadedModel;
+        loadedModel.position.x = -1.4;
+        loadedModel.position.y = 0;
+        loadedModel.position.z = -3;
+        loadedModel.rotation.y = THREE.MathUtils.degToRad(20);
         loadedAnimations.current = animations;
       });
 
