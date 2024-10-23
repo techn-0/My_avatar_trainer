@@ -51,7 +51,7 @@ function Buttons({
         <div className="btn" onClick={onMainPageClick}>
           <span aria-hidden="true"></span>메인 페이지
           <span className="btn__glitch" aria-hidden="true">
-            _메인_페이지_
+            _메인 페이지_
           </span>
         </div>
       </div>
@@ -61,7 +61,7 @@ function Buttons({
         <div className="btn" onClick={handleLoginPageClick}>
           {isLoggedIn ? "로그 아웃" : "로그인"}
           <span className="btn__glitch" aria-hidden="true">
-            {isLoggedIn ? "로그_아웃_" : "로그인"}
+            {isLoggedIn ? "_로그 아웃_" : "로그인"}
           </span>
         </div>
       </div>

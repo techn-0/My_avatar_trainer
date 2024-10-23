@@ -31,7 +31,7 @@ function Buttons({
             <div className="btn">
               <span aria-hidden="true"></span>메인 페이지
               <span className="btn__glitch" aria-hidden="true">
-                _메인_페이지_
+                _메인 페이지_
               </span>
             </div>
           </div>
@@ -46,9 +46,9 @@ function Buttons({
               onClick={onResultClick}
             />
             <div className="btn">
-              성장 추이 보기
+              스테이터스
               <span className="btn__glitch" aria-hidden="true">
-                _성장_추이_보기_
+                _스테이터스_
               </span>
             </div>
           </div>
