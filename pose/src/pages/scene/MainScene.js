@@ -11,6 +11,7 @@ import LoginModal from "../login/LoginModal"; // Import the new component
 import ExerciseGraph from "../ExerciseGraph/ExerciseGraph";
 import { setBackgroundColor } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
+import "./MainScene.css";
 
 function ThreeScene() {
   const mountRef = useRef(null);
@@ -43,7 +44,8 @@ function ThreeScene() {
         1,
         4000
       );
-      camera.position.set(0, 2, 4);
+      camera.position.set(2, 2, 4);
+      camera.lookAt(20, 7, -30);
       cameraRef.current = camera;
       scene.add(camera);
 
@@ -154,10 +156,12 @@ function ThreeScene() {
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
       >
-        <Buttons
-          onMainPageClick={() => navigate("/")}
-          onLoginPageClick={openLoginDialog}
-        />
+        <div className="btn_box">
+          <Buttons
+            onMainPageClick={() => navigate("/")}
+            onLoginPageClick={openLoginDialog}
+          />
+        </div>
       </div>
 
       {/* Use the new LoginModal component */}

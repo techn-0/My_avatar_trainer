@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
+import "./mainButtons.css";
 
 function Buttons({
   onMainPageClick,
@@ -44,13 +45,46 @@ function Buttons({
   };
 
   return (
-    <div>
-      <button onClick={onMainPageClick}>메인 페이지</button>
-      <button onClick={handleLoginPageClick}>
-        {isLoggedIn ? "로그 아웃" : "로그인 페이지"}
-      </button>
-      <button onClick={handleExerciseClick}>운동하러 가기</button>
-      <button onClick={handleResultClick}>성장 추이 보기</button>
+    <div className="button-container">
+      <div className="radio-wrapper">
+        <input className="input" type="radio" name="btn" id="mainPage" />
+        <div className="btn" onClick={onMainPageClick}>
+          <span aria-hidden="true"></span>메인 페이지
+          <span className="btn__glitch" aria-hidden="true">
+            _메인_페이지_
+          </span>
+        </div>
+      </div>
+
+      <div className="radio-wrapper">
+        <input className="input" type="radio" name="btn" id="loginPage" onClick={handleLoginPageClick} />
+        <div className="btn" onClick={handleLoginPageClick}>
+          {isLoggedIn ? "로그 아웃" : "로그인"}
+          <span className="btn__glitch" aria-hidden="true">
+            {isLoggedIn ? "로그_아웃_" : "로그인"}
+          </span>
+        </div>
+      </div>
+
+      <div className="radio-wrapper">
+        <input className="input" type="radio" name="btn" id="exercise" onClick={handleExerciseClick} />
+        <div className="btn" onClick={handleExerciseClick}>
+          운동하기
+          <span className="btn__glitch" aria-hidden="true">
+            _운동하기_
+          </span>
+        </div>
+      </div>
+
+      <div className="radio-wrapper">
+        <input className="input" type="radio" name="btn" id="progress" onClick={handleResultClick}/>
+        <div className="btn" onClick={handleResultClick}>
+          스테이터스
+          <span className="btn__glitch" aria-hidden="true">
+            _스테이터스_
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
