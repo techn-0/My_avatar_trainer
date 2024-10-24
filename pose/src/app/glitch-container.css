@@ -12,6 +12,14 @@
       0.025em 0.04em 0 #00ffff;
     animation: glitch 725ms infinite;
   }
+  .normal-container {
+    position: relative;
+    font-family: "Orbitron", sans-serif;
+    font-size: 100px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #00ffff;
+  }
   
   .glitch-container span {
     position: absolute;

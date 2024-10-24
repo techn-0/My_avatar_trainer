@@ -26,7 +26,7 @@ export class AuthService {
                 password,
                 email,
             });
-            return { message: 'success'};
+            return { message: '회원가입 성공!'};
         } catch (error){
             console.log(error);
             if(error.code === 11000){
@@ -41,7 +41,6 @@ export class AuthService {
   async signIn(userCredentialDto: UserCredentialDto): Promise<{ accessToken : string}>{
       const { id, password } = userCredentialDto;
       const user = await this.userModel.findOne({username : id});
-
 
   if (user && user.password === password) {
     const payload = { id };
