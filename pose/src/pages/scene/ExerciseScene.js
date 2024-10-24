@@ -33,7 +33,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
 
   // 운동 시간 리스트
-  const durations = [1, 2, 0.1];
+  const durations = [1, 2, 0.2];
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -54,6 +54,9 @@ function ExerciseScene() {
   // 운동 타이머 표시 상태
   const [showTimer, setShowTimer] = useState(false);
   const timerStartTimeRef = useRef(null); // 타이머 시작 시간 저장
+
+  // **3초 카운트 효과음 재생을 위한 참조**
+  const countdownMusicRef = useRef(null); // 카운트다운 중에 재생될 노래 참조
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -279,6 +282,11 @@ function ExerciseScene() {
       currentCountdownIndex !== null &&
       currentCountdownIndex < countdownImages.length
     ) {
+      // **3초 카운트 효과음 재생**
+      if (countdownMusicRef.current && currentCountdownIndex === 0) {
+        countdownMusicRef.current.currentTime = 0; // 처음부터 재생
+        countdownMusicRef.current.play();
+      }
       // 1초마다 이미지 변경
       timer = setTimeout(() => {
         setCurrentCountdownIndex(currentCountdownIndex + 1);
@@ -287,8 +295,13 @@ function ExerciseScene() {
       setCurrentCountdownIndex(null); // 카운트다운 초기화
       setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
 
+      // **카운트다운 종료 시 노래 정지**
+      // if (countdownMusicRef.current) {
+      //   countdownMusicRef.current.pause();
+      // }
+
       // 운동 시간(초 단위) 설정 (예: "1min" -> 60)
-      const durationInSeconds = parseInt(selectedDuration) * 60;
+      const durationInSeconds = parseFloat(selectedDuration) * 60;
 
       // 애니메이션 번호 11을 운동 시간 동안 재생
       playAnimation(11, THREE.LoopRepeat);
@@ -374,7 +387,10 @@ function ExerciseScene() {
   };
 
   return (
-    <div className="font" style={{ width: "100vw", height: "100vh", position: "relative"}}>
+    <div
+      className="font"
+      style={{ width: "100vw", height: "100vh", position: "relative" }}
+    >
       {/* 버튼 영역 및 운동 선택 UI */}
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
@@ -409,7 +425,7 @@ function ExerciseScene() {
           }}
         >
           <ExerciseTimer
-            durationInSeconds={parseInt(selectedDuration) * 60}
+            durationInSeconds={parseFloat(selectedDuration) * 60}
             onTimerEnd={endExercise}
             startTimeRef={timerStartTimeRef} // 시작 시간 참조 전달
           />
@@ -476,6 +492,9 @@ function ExerciseScene() {
             }}
           />
         )}
+
+      {/* **카운트다운 중 효과음 재생** */}
+      <audio ref={countdownMusicRef} src="/sound/3secCount.mp3" />
 
       {/* 로그인 모달 */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
