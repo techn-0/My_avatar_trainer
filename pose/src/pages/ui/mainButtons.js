@@ -43,7 +43,11 @@ function Buttons({
   };
 
   const handleResultClick = () => {
-    navigate("/progress");
+    if (getToken()) {
+      navigate("/progress");
+    } else {
+      alert("로그인 먼저 해주세요.");
+    }
   };
 
   const handleMouseEnter = () => {
