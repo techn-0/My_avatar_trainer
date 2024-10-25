@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
 import "./mainButtons.css";
@@ -11,6 +11,8 @@ function Buttons({
 }) {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+
+  const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
 
   useEffect(() => {
     // Check if token exists on initial load
@@ -44,11 +46,21 @@ function Buttons({
     navigate("/progress");
   };
 
+  const handleMouseEnter = () => {
+    if (glitchSoundRef.current) {
+      glitchSoundRef.current.currentTime = 0;
+      glitchSoundRef.current.play().catch((error) => {
+        // play() failed due to lack of user interaction. We can ignore this error.
+        console.log("Sound play prevented due to user interaction requirement.");
+      });
+    }
+  };
+
   return (
-    <div className="button-container">
+    <div className="button-container r_card-container">
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="mainPage" />
-        <div className="btn" onClick={onMainPageClick}>
+        <input className="input" type="radio" name="btn" id="mainPage" onMouseEnter={handleMouseEnter} />
+        <div className="btn" onClick={onMainPageClick} >
           <span aria-hidden="true"></span>메인 페이지
           <span className="btn__glitch" aria-hidden="true">
             _메인 페이지_
@@ -57,8 +69,8 @@ function Buttons({
       </div>
 
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="loginPage" onClick={handleLoginPageClick} />
-        <div className="btn" onClick={handleLoginPageClick}>
+        <input className="input" type="radio" name="btn" id="loginPage" onClick={handleLoginPageClick} onMouseEnter={handleMouseEnter} />
+        <div className="btn" onClick={handleLoginPageClick} >
           {isLoggedIn ? "로그 아웃" : "로그인"}
           <span className="btn__glitch" aria-hidden="true">
             {isLoggedIn ? "_로그 아웃_" : "로그인"}
@@ -67,8 +79,8 @@ function Buttons({
       </div>
 
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="exercise" onClick={handleExerciseClick} />
-        <div className="btn" onClick={handleExerciseClick}>
+        <input className="input" type="radio" name="btn" id="exercise" onClick={handleExerciseClick} onMouseEnter={handleMouseEnter} />
+        <div className="btn" onClick={handleExerciseClick} >
           운동하기
           <span className="btn__glitch" aria-hidden="true">
             _운동하기_
@@ -77,16 +89,19 @@ function Buttons({
       </div>
 
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="progress" onClick={handleResultClick}/>
-        <div className="btn" onClick={handleResultClick}>
+        <input className="input" type="radio" name="btn" id="progress" onClick={handleResultClick} onMouseEnter={handleMouseEnter} />
+        <div className="btn" onClick={handleResultClick} >
           스테이터스
           <span className="btn__glitch" aria-hidden="true">
             _스테이터스_
           </span>
         </div>
       </div>
+      {/* Hidden audio element for glitch sound */}
+      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );
 }
+
 
 export default Buttons;
