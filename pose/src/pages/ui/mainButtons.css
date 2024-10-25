@@ -140,14 +140,14 @@
   font-family: "GangwonEduPowerExtraBoldA";
 }
 
-.input:checked + .btn {
+/* .input:checked + .btn {
   --primary: #8b00ff;
   --shadow-primary: #00e572;
-}
+} */
 
 .input:hover + .btn {
   --primary: #8b00ff;
-  --shadow-primary: #fff020;
+  --shadow-primary: #00e572;
   --font-size: 25px;
   line-height: 57px;
 }
