@@ -5,6 +5,9 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Controller('workout')
 @UseGuards(AuthGuard())
+@UseGuards(AuthGuard('google'))
+@UseGuards(AuthGuard('kakao'))
+@UseGuards(AuthGuard('naver'))
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 

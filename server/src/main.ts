@@ -1,14 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
-import * as config from 'config';
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
-  const serveConfig = config.get('server');
-  const port = serveConfig.port;
-  app.enableCors();
-  await app.listen(port);
-  Logger.log(`server is running on port ${port}`);
+async function bootstrap() {
+  // Create a NestExpressApplication instance
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  
+  // Serve static assets from the 'public' directory
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+
+  await app.listen(3000);
 }
 bootstrap();
