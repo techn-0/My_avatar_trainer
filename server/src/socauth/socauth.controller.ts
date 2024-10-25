@@ -64,4 +64,4 @@ export class SocauthController {
     
   //     return res.status(500).send('internal server error during kakao login');
   //   }
-  // }s
+  // }
