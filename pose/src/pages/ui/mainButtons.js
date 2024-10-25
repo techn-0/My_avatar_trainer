@@ -57,7 +57,7 @@ function Buttons({
   };
 
   return (
-    <div className="button-container">
+    <div className="button-container r_card-container">
       <div className="radio-wrapper">
         <input className="input" type="radio" name="btn" id="mainPage" onMouseEnter={handleMouseEnter} />
         <div className="btn" onClick={onMainPageClick} >
@@ -102,5 +102,6 @@ function Buttons({
     </div>
   );
 }
+
 
 export default Buttons;
