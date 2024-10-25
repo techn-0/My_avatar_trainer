@@ -28,7 +28,7 @@ const ExerciseTimer = React.memo(
 
       // 운동 시작 시 음악 재생
       if (audioRef.current) {
-        audioRef.current.volume = 0.7;
+        audioRef.current.volume = 0.4;
         audioRef.current.play();
       }
 
