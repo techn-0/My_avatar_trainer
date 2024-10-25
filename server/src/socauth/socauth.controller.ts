@@ -6,12 +6,6 @@ import { SocauthService } from './socauth.service';
 export class SocauthController {
   constructor(private readonly socauthService: SocauthService) {}
 
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleLogin() {
-    // Initiates Google OAuth login
-  }
-
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {
@@ -22,23 +16,11 @@ export class SocauthController {
     return res.redirect('http://localhost:3000');
   }
 
-  @Get('kakao')
-  @UseGuards(AuthGuard('kakao'))
-  async kakaoLogin() {
-    // Initiates Kakao OAuth login
-  }
-
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoLoginCallback(@Req() req, @Res() res) {
     await this.socauthService.handleLogin(req.user);
     return res.redirect('http://localhost:3000') 
-  }
-
-  @Get('naver')
-  @UseGuards(AuthGuard('naver'))
-  async naverLogin() {
-    // Initiates Naver OAuth login
   }
 
   @Get('naver/callback')
