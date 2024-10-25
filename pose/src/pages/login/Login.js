@@ -72,6 +72,12 @@ const LoginToggle = ({ onClose }) => {
     setSignUpData({ ...signUpData, [name]: value });
   };
 
+  // 소셜 로그인 버튼 클릭 핸들러
+  const handleSocialLogin = (provider) => {
+    const baseURL = "http://localhost:3002/socauth"; // 소셜 로그인 엔드포인트의 베이스 URL
+    window.location.href = `${baseURL}/${provider}`;
+  };
+
   return (
     <React.Fragment>
       <div className="wrapper">
@@ -125,6 +131,18 @@ const LoginToggle = ({ onClose }) => {
                     Log in
                   </button>
                 </form>
+                {/* 소셜 로그인 버튼 추가 */}
+                <div className="social-login">
+                  <button onClick={() => handleSocialLogin("google")}>
+                    Google 로그인
+                  </button>
+                  <button onClick={() => handleSocialLogin("kakao")}>
+                    Kakao 로그인
+                  </button>
+                  <button onClick={() => handleSocialLogin("naver")}>
+                    Naver 로그인
+                  </button>
+                </div>
               </div>
               <div className="flip-card__back">
                 <button

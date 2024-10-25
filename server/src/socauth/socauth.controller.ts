@@ -35,6 +35,21 @@ export class SocauthController {
     return res.redirect('http://localhost:3000') 
   }
 
+  @Get('naver')
+  @UseGuards(AuthGuard('naver'))
+  async naverLogin() {
+    // Initiates Naver OAuth login
+  }
+
+  @Get('naver/callback')
+  @UseGuards(AuthGuard('naver'))
+  async naverLoginCallback(@Req() req, @Res() res) {
+    await this.socauthService.handleLogin(req.user);
+
+    return res.redirect('http://localhost:3000');
+  }
+}
+
   // @Get('kakao/callback')
   // @UseGuards(AuthGuard('kakao')) 
   // async kakaoLoginCallback(@Req() req, @Res() res) { 
@@ -49,17 +64,4 @@ export class SocauthController {
     
   //     return res.status(500).send('internal server error during kakao login');
   //   }
-  // }
-
-  @Get('naver')
-  @UseGuards(AuthGuard('naver'))
-  async naverLogin() {
-    // Initiates Naver OAuth login
-  }
-
-  @Get('naver/callback')
-  @UseGuards(AuthGuard('naver'))
-  async naverLoginCallback(@Req() req) {
-    return this.socauthService.handleLogin(req.user);
-  }
-}
+  // }s
