@@ -24,6 +24,8 @@ function ExerciseScene() {
   const sceneRef = useRef();
   const rendererRef = useRef(null); // 렌더러 참조 저장
   const [openLogin, setOpenLogin] = useState(false);
+  const [bestScore, setBestScore] = useState(0);
+  const [userScore, SetUserScore] = useState(0);
 
   // 운동 종목 및 시간 선택 상태
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -79,6 +81,7 @@ function ExerciseScene() {
   const handleSquatCountUpdate = (count) => {
     setSquatCount(count);
     squatCountRef.current = count; // ref에 최신 카운트 값 저장
+    SetUserScore(count);
   };
 
   useEffect(() => {
@@ -258,6 +261,7 @@ function ExerciseScene() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Server response:", data);
+          setBestScore(data.count);
           // 애니메이션 번호 4를 한 번 재생하고 대기
           playAnimation(4, THREE.LoopOnce);
         })
@@ -268,7 +272,6 @@ function ExerciseScene() {
       startCountdown();
     }
   };
-
   // 카운트다운 시작 함수
   const startCountdown = () => {
     setCurrentCountdownIndex(0); // 카운트다운 시작
@@ -308,6 +311,7 @@ function ExerciseScene() {
 
       // 운동 타이머 시작
       startExerciseTimer(durationInSeconds);
+      console.log("best Score : ", bestScore);
     }
 
     return () => {
@@ -359,6 +363,8 @@ function ExerciseScene() {
       count: squatCountRef.current, // 최신 카운트 값 사용
       date: formattedDate,
     };
+    SetUserScore(requestData.count);
+    console.log("userScore :", userScore);
     console.log("Request data:", requestData);
     // 서버로 데이터 전송
     fetch("http://localhost:3002/workout/end_exercise", {
@@ -373,7 +379,7 @@ function ExerciseScene() {
       .then((data) => {
         console.log("Exercise ended, server response:", data);
         // 운동 종료 후 처리 (예: 알림 표시 등)
-        alert("운동이 완료되었습니다!");
+        // alert("운동이 완료되었습니다!");
       })
       .catch((error) => {
         console.error("Error ending exercise:", error);
