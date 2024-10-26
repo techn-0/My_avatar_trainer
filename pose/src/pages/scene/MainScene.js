@@ -16,6 +16,7 @@ import "./MainScene.css";
 function ThreeScene() {
   const mountRef = useRef(null);
   const [openLogin, setOpenLogin] = useState(false);
+  const [userId, setUserId] = useState(null); // userId
   const cameraRef = useRef();
   const controlsRef = useRef();
   const mixerRef = useRef();
@@ -26,11 +27,17 @@ function ThreeScene() {
   const mouse = useRef(new THREE.Vector2());
 
   const navigate = useNavigate();
-  if (getToken()) {
-    console.log("token exists");
-  } else {
-    console.log("token does not exists");
-  }
+  useEffect(() => {
+    // 페이지가 로드될 때 세션 스토리지에서 userId를 가져옴
+    const storedUserId = sessionStorage.getItem("userId");
+    setUserId(storedUserId);
+
+    if (getToken()) {
+      console.log("token exists");
+    } else {
+      console.log("token does not exists");
+    }
+  }, []);
 
   useEffect(() => {
     // Three.js scene setup
@@ -122,6 +129,9 @@ function ThreeScene() {
 
   const closeLoginDialog = () => {
     setOpenLogin(false);
+    // 로그인 후 userId 갱신
+    const storedUserId = sessionStorage.getItem("userId");
+    setUserId(storedUserId);
   };
 
   // Add the click event listener
@@ -164,9 +174,23 @@ function ThreeScene() {
           <Buttons
             onMainPageClick={() => navigate("/")}
             onLoginPageClick={openLoginDialog}
+            onLogout={() => setUserId(null)} // 로그아웃 시 userId를 null로 설정
           />
         </div>
       </div>
+      {/* 우측 상단에 userId 표시 */}
+      {userId && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            zIndex: 1,
+          }}
+        >
+          안녕하세요 {userId} 님
+        </div>
+      )}
 
       {/* Use the new LoginModal component */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
