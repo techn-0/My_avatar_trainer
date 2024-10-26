@@ -12,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
   }),
   AuthModule, 
   WorkoutModule, 
-  SocauthModule],
+  SocauthModule,],
 })
 
 export class AppModule {}

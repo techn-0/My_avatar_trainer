@@ -15,8 +15,8 @@ export class WorkoutController {
   }
 
   @Post('/start_exercise')
-    getRecord(@Body() body: { exercise: string, duration: number}, @Req() req:any): Promise<{ count: number; date: string }> {
-        return this.workoutService.getRecord(req.user._id,body.exercise, body.duration);
+    getRecord(@Req() req:any, @Body() body: { exercise: string, duration: number} ): Promise<{ count?: number; date?: string; message?: string }> {
+        return this.workoutService.getRecord(req.user._id, body.exercise, body.duration);
     }
   
     // 운동 기록 생성 (end_exercise)

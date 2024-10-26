@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { act, useState } from "react";
 import "./Login.css";
 import { saveToken } from "./AuthContext"; // 쿠키에 저장하는 saveToken 사용
 
@@ -21,7 +21,9 @@ const LoginToggle = ({ onClose }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
+        credentials: "include",
       });
+
       const data = await response.json();
       console.log("Login response:", data);
 
@@ -29,8 +31,7 @@ const LoginToggle = ({ onClose }) => {
         alert(data.message);
       }
       if (data.accessToken) {
-        saveToken(data.accessToken); // JWT 토큰 쿠키에 저장
-        window.location.href = "/"; // 리다이렉트
+        window.location.href = "/";// 리다이렉트
       }
     } catch (error) {
       console.error("Login error:", error);
