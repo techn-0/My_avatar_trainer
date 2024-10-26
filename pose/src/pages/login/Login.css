@@ -247,14 +247,17 @@
 
 .social-login button.google {
   background-image: url("/public/loginButtons/google.png");
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
 .social-login button.kakao {
   background-image: url("/public/loginButtons/kakao.png");
   background-color: #ffe810;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
 .social-login button.naver {
   background-image: url("/public/loginButtons/naver.png");
   background-color: #03c75a;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
