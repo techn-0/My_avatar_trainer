@@ -22,7 +22,7 @@ export class WorkoutService {
     userId: string,
     exercise: string,
     duration: number,
-  ): Promise<{ count: number; date: string }> {
+  ): Promise<{ count?: number; date?: string; message?: string }> {
     try {
       const workout = await this.workoutModel
         .findOne({ userId, exercise, duration })
@@ -30,9 +30,9 @@ export class WorkoutService {
         .exec();
 
       if (!workout || workout.count == null || workout.date == null) {
-        throw new Error('해당 종목이나 운동시간에 해당하는 기록이 없습니다!');
+        return { message : '현재 선택한 운동종목, 운동시간에 해당하는 과거 기록이 없습니다!'};
       }
-
+      
       return {
         count: workout.count,
         date: workout.date,
