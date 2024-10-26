@@ -68,18 +68,30 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
       );
 
       if (results.poseLandmarks) {
-        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-          color: "white",
-          lineWidth: 4,
-        });
-        drawLandmarks(canvasCtx, results.poseLandmarks, {
-          color: "blue",
-          lineWidth: 2,
-        });
+        // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+        //   color: "white",
+        //   lineWidth: 4,
+        // });
+        // drawLandmarks(canvasCtx, results.poseLandmarks, {
+        //   color: "blue",
+        //   lineWidth: 2,
+        // });
 
         // 왼쪽과 오른쪽 다리의 각도 계산
-        const leftSquatAngle = angleCalc(results.poseLandmarks, "left", 1, 3, 4);
-        const rightSquatAngle = angleCalc(results.poseLandmarks, "right", 1, 3, 4);
+        const leftSquatAngle = angleCalc(
+          results.poseLandmarks,
+          "left",
+          1,
+          3,
+          4
+        );
+        const rightSquatAngle = angleCalc(
+          results.poseLandmarks,
+          "right",
+          1,
+          3,
+          4
+        );
 
         // 스쿼트 상태 전환 및 카운트 업데이트
         if (
