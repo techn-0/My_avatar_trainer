@@ -5,8 +5,8 @@
   font-weight: normal;
   font-style: normal;
 }
-.font{
-    font-family: "GangwonEduPowerExtraBoldA";
+.font {
+  font-family: "GangwonEduPowerExtraBoldA";
 }
 
 .btn_box {
@@ -16,11 +16,45 @@
   width: auto;
   height: auto;
   clip-path: polygon(
-    20px 0%,
+    60px 0%,
     100% 0%,
-    100% calc(100% - 20px),
-    calc(100% - 20px) 100%,
+    100% calc(100% - 60px),
+    calc(100% - 60px) 100%,
     0% 100%,
-    0% 20px
+    0% 60px
   );
+}
+
+.welcome {
+  position: absolute;
+  top: 20px;
+  right: 20px; /* 오른쪽에 딱 붙게 설정 */
+  z-index: 1;
+}
+.welcome_text {
+  font-size: 25px;
+  margin: 20px;
+  white-space: pre-wrap;
+  white-space: pre-line;
+}
+.name {
+  color: #33ff21;
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: #4a21ff;
+  }
+  25% {
+    border-color: #ff21e1;
+  }
+  50% {
+    border-color: #21ffa3;
+  }
+  75% {
+    border-color: #ffdd21;
+  }
+  100% {
+    border-color: #4a21ff;
+  }
 }
