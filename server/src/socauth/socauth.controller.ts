@@ -32,7 +32,7 @@ export class SocauthController {
   @UseGuards(AuthGuard('kakao'))
   async kakaoLoginCallback(@Req() req, @Res() res) {
     await this.socauthService.handleLogin(req.user);
-    return res.redirect('http://localhost:3000') 
+    return res.redirect('http://localhost:3000');
   }
 
   @Get('naver')
@@ -50,18 +50,18 @@ export class SocauthController {
   }
 }
 
-  // @Get('kakao/callback')
-  // @UseGuards(AuthGuard('kakao')) 
-  // async kakaoLoginCallback(@Req() req, @Res() res) { 
-  //   try{
-  //     console.log('kakao user:', req.user); 
-  //     // return this.socauthservice.handlelogin(req.user); 
+// @Get('kakao/callback')
+// @UseGuards(AuthGuard('kakao'))
+// async kakaoLoginCallback(@Req() req, @Res() res) {
+//   try{
+//     console.log('kakao user:', req.user);
+//     // return this.socauthservice.handlelogin(req.user);
 
-  //     await this.socauthService.handleLogin(req.user);
-  //     return res.redirect('http://localhost:3000') }
-  //   catch(error){ 
-  //     console.error('kakao login callback error:', error); 
-    
-  //     return res.status(500).send('internal server error during kakao login');
-  //   }
-  // }
+//     await this.socauthService.handleLogin(req.user);
+//     return res.redirect('http://localhost:3000') }
+//   catch(error){
+//     console.error('kakao login callback error:', error);
+
+//     return res.status(500).send('internal server error during kakao login');
+//   }
+// }
