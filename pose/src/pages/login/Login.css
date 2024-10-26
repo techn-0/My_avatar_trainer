@@ -45,7 +45,8 @@
   top: 0;
   width: 100px;
   text-decoration: underline;
-  color: var(--font-color);
+  /* color: var(--font-color); */
+  color: white;
   font-weight: 600;
 }
 
@@ -57,7 +58,8 @@
   top: 0;
   width: 100px;
   text-decoration: none;
-  color: var(--font-color);
+  /* color: var(--font-color); */
+  color: white;
   font-weight: 600;
 }
 
@@ -223,4 +225,36 @@
   font-weight: 600;
   color: var(--font-color);
   cursor: pointer;
+}
+
+/* Login.css */
+.social-login {
+  display: flex;
+  justify-content: center; /* 버튼들을 가운데 정렬 */
+  gap: 10px; /* 버튼 사이 간격 */
+}
+
+.social-login button {
+  width: 80px; /* 버튼 너비 */
+  height: 40px; /* 버튼 높이 */
+  background-size: contain; /* 배경 이미지 크기 조정 */
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+  background-position: center; /* 배경 이미지 가운데 정렬 */
+  border: none; /* 기본 버튼 테두리 제거 */
+  border-radius: 10px; /* 둥근 테두리 */
+  cursor: pointer;
+}
+
+.social-login button.google {
+  background-image: url("/public/loginButtons/google.png");
+}
+
+.social-login button.kakao {
+  background-image: url("/public/loginButtons/kakao.png");
+  background-color: #ffe810;
+}
+
+.social-login button.naver {
+  background-image: url("/public/loginButtons/naver.png");
+  background-color: #03c75a;
 }

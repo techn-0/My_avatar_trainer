@@ -130,18 +130,23 @@ const LoginToggle = ({ onClose }) => {
                   <button className="flip-card__btn" type="submit">
                     Log in
                   </button>
+                  <div className="socialLoginMessage">
+                    <p>혹은 다음으로 로그인</p>
+                  </div>
                 </form>
-                {/* 소셜 로그인 버튼 추가 */}
                 <div className="social-login">
-                  <button onClick={() => handleSocialLogin("google")}>
-                    Google 로그인
-                  </button>
-                  <button onClick={() => handleSocialLogin("kakao")}>
-                    Kakao 로그인
-                  </button>
-                  <button onClick={() => handleSocialLogin("naver")}>
-                    Naver 로그인
-                  </button>
+                  <button
+                    className="google"
+                    onClick={() => handleSocialLogin("google")}
+                  ></button>
+                  <button
+                    className="kakao"
+                    onClick={() => handleSocialLogin("kakao")}
+                  ></button>
+                  <button
+                    className="naver"
+                    onClick={() => handleSocialLogin("naver")}
+                  ></button>
                 </div>
               </div>
               <div className="flip-card__back">
