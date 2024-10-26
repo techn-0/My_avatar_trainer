@@ -1,7 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import  axios from 'axios';
-
 
 @Injectable()
 export class SocauthService {
@@ -10,21 +8,23 @@ export class SocauthService {
   async handleLogin(user: any) {
     // This function can handle the login logic (create user, generate token, etc.)
     // For now, just return the user
-    const { id, email, firstName, lastName, picture, accessToken} = user;
+    const { id, email, accessToken} = user;
     
     const payload = { 
-      id:id, 
+      id, 
       email,
-      firstName, 
-      lastName, 
-      picture,
       accessToken,
+      // firstName, 
+      // lastName, 
+      // picture,
+      // accessToken,
      }
 
     //Payload의 정보를 담은 JWT 토큰을 발행한다.
     const jwtToken = this.jwtService.sign(payload);
-    console.log(jwtToken)
-    return jwtToken;
+    // console.log(jwtToken)
+    console.log(payload.id);
+    return {token:jwtToken};
   }
   
 }
