@@ -179,18 +179,14 @@ function ThreeScene() {
         </div>
       </div>
       {/* 우측 상단에 userId 표시 */}
-      {userId && (
-        <div
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            zIndex: 1,
-          }}
-        >
-          안녕하세요 {userId} 님
-        </div>
-      )}
+      <div className="welcome btn_box">
+        {userId && (
+          <div className="welcome_text">
+            안녕하세요 <br />
+            <span className="name">{userId}</span>님
+          </div>
+        )}
+      </div>
 
       {/* Use the new LoginModal component */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
