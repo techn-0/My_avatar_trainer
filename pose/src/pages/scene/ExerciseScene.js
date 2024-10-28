@@ -449,27 +449,28 @@ function ExerciseScene() {
           />
 
           <div
-            style={{
-              position: "absolute",
-              top: "0",
-              right: "0",
-              width: "40%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              zIndex: 2,
-            }}
+          // style={{
+          //   position: "absolute",
+          //   top: "0",
+          //   right: "0",
+          //   // width: "40%",
+          //   // height: "30%",
+          //   display: "flex",
+          //   flexDirection: "column",
+          //   alignItems: "center",
+          //   zIndex: 2,
+          // }}
           >
-            <canvas
+            {/* <canvas
               ref={canvasRef}
-              width="640"
-              height="480"
+              width="840"
+              height="680"
               style={{
-                width: "100%",
+                width: "60%",
                 height: "auto",
                 border: "2px solid white",
               }}
-            />
+            /> */}
             <div style={{ marginTop: "10px", textAlign: "center" }}>
               {/* <h1>스쿼트 횟수: {squatCount}</h1> */}
             </div>
