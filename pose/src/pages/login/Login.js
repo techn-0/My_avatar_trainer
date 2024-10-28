@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { act, useState } from "react";
 import "./Login.css";
 import { saveToken } from "./AuthContext"; // 쿠키에 저장하는 saveToken 사용
 
@@ -21,7 +21,9 @@ const LoginToggle = ({ onClose }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
+        credentials: "include",
       });
+
       const data = await response.json();
       console.log("Login response:", data);
 
@@ -29,8 +31,7 @@ const LoginToggle = ({ onClose }) => {
         alert(data.message);
       }
       if (data.accessToken) {
-        saveToken(data.accessToken); // JWT 토큰 쿠키에 저장
-        window.location.href = "/"; // 리다이렉트
+        window.location.href = "/";// 리다이렉트
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -76,7 +77,7 @@ const LoginToggle = ({ onClose }) => {
   const handleSocialLogin = (provider) => {
     const baseURL = "http://localhost:3002/socauth"; // 소셜 로그인 엔드포인트의 베이스 URL
     window.location.href = `${baseURL}/${provider}`;
-  };
+  }; // 소셜로그인 jwt
 
   return (
     <React.Fragment>
@@ -130,18 +131,23 @@ const LoginToggle = ({ onClose }) => {
                   <button className="flip-card__btn" type="submit">
                     Log in
                   </button>
+                  <div className="socialLoginMessage">
+                    <p>혹은 다음으로 로그인</p>
+                  </div>
                 </form>
-                {/* 소셜 로그인 버튼 추가 */}
                 <div className="social-login">
-                  <button onClick={() => handleSocialLogin("google")}>
-                    Google 로그인
-                  </button>
-                  <button onClick={() => handleSocialLogin("kakao")}>
-                    Kakao 로그인
-                  </button>
-                  <button onClick={() => handleSocialLogin("naver")}>
-                    Naver 로그인
-                  </button>
+                  <button
+                    className="google"
+                    onClick={() => handleSocialLogin("google")}
+                  ></button>
+                  <button
+                    className="kakao"
+                    onClick={() => handleSocialLogin("kakao")}
+                  ></button>
+                  <button
+                    className="naver"
+                    onClick={() => handleSocialLogin("naver")}
+                  ></button>
                 </div>
               </div>
               <div className="flip-card__back">

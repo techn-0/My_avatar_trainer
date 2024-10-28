@@ -13,6 +13,8 @@ const removeToken = () => {
   try {
     // 쿠키에서 토큰 삭제 (만료 시간을 과거로 설정)
     document.cookie = `token=; max-age=0; path=/; SameSite=Strict; Secure`;
+    // sessionStorage에서 userId 삭제
+    sessionStorage.removeItem("userId");
   } catch (error) {
     console.error("Error removing token from cookie", error);
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef  } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
 import "./mainButtons.css";
@@ -8,6 +8,7 @@ function Buttons({
   onLoginPageClick,
   onExerciseClick,
   onResultClick,
+  onLogout, // 로그아웃 콜백 추가
 }) {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
@@ -22,7 +23,9 @@ function Buttons({
 
   const handleLogoutClick = () => {
     removeToken(); // Remove the token
+    sessionStorage.removeItem("userId"); // 세션 스토리지에서 userId 삭제
     setIsLoggedIn(false); // Update state to reflect that the user is logged out
+    onLogout(); // 로그아웃 콜백 호출하여 userId를 null로 설정
     alert("You have been logged out.");
   };
 
@@ -43,7 +46,11 @@ function Buttons({
   };
 
   const handleResultClick = () => {
-    navigate("/progress");
+    if (getToken()) {
+      navigate("/progress");
+    } else {
+      alert("로그인 먼저 해주세요.");
+    }
   };
 
   const handleMouseEnter = () => {
@@ -51,7 +58,9 @@ function Buttons({
       glitchSoundRef.current.currentTime = 0;
       glitchSoundRef.current.play().catch((error) => {
         // play() failed due to lack of user interaction. We can ignore this error.
-        console.log("Sound play prevented due to user interaction requirement.");
+        console.log(
+          "Sound play prevented due to user interaction requirement."
+        );
       });
     }
   };
@@ -59,8 +68,14 @@ function Buttons({
   return (
     <div className="button-container r_card-container">
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="mainPage" onMouseEnter={handleMouseEnter} />
-        <div className="btn" onClick={onMainPageClick} >
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="mainPage"
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={onMainPageClick}>
           <span aria-hidden="true"></span>메인 페이지
           <span className="btn__glitch" aria-hidden="true">
             _메인 페이지_
@@ -69,18 +84,32 @@ function Buttons({
       </div>
 
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="loginPage" onClick={handleLoginPageClick} onMouseEnter={handleMouseEnter} />
-        <div className="btn" onClick={handleLoginPageClick} >
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="loginPage"
+          onClick={handleLoginPageClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleLoginPageClick}>
           {isLoggedIn ? "로그 아웃" : "로그인"}
           <span className="btn__glitch" aria-hidden="true">
-            {isLoggedIn ? "_로그 아웃_" : "로그인"}
+            {isLoggedIn ? "_로그 아웃_" : "_로그인_"}
           </span>
         </div>
       </div>
 
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="exercise" onClick={handleExerciseClick} onMouseEnter={handleMouseEnter} />
-        <div className="btn" onClick={handleExerciseClick} >
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="exercise"
+          onClick={handleExerciseClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleExerciseClick}>
           운동하기
           <span className="btn__glitch" aria-hidden="true">
             _운동하기_
@@ -89,8 +118,15 @@ function Buttons({
       </div>
 
       <div className="radio-wrapper">
-        <input className="input" type="radio" name="btn" id="progress" onClick={handleResultClick} onMouseEnter={handleMouseEnter} />
-        <div className="btn" onClick={handleResultClick} >
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="progress"
+          onClick={handleResultClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleResultClick}>
           스테이터스
           <span className="btn__glitch" aria-hidden="true">
             _스테이터스_
@@ -102,6 +138,5 @@ function Buttons({
     </div>
   );
 }
-
 
 export default Buttons;

@@ -7,7 +7,8 @@ async function bootstrap() {
 
   const serveConfig = config.get('server');
   const port = serveConfig.port;
-  app.enableCors();
+  app.enableCors({ origin: 'http://localhost:3000',
+                  credentials: true });
   await app.listen(port);
   Logger.log(`server is running on port ${port}`);
 }

@@ -53,6 +53,7 @@ export class SocauthController {
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoLoginCallback(@Req() req, @Res() res) {
+
     const result = await this.socauthService.handleLogin(req.user);
 
     // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
@@ -64,6 +65,7 @@ export class SocauthController {
     });
 
     return res.redirect('http://localhost:3000') 
+
   }
 
   @Post('kakao/signup')
@@ -104,18 +106,4 @@ export class SocauthController {
 
 }
 
-  // @Get('kakao/callback')
-  // @UseGuards(AuthGuard('kakao')) 
-  // async kakaoLoginCallback(@Req() req, @Res() res) { 
-  //   try{
-  //     console.log('kakao user:', req.user); 
-  //     // return this.socauthservice.handlelogin(req.user); 
 
-  //     await this.socauthService.handleLogin(req.user);
-  //     return res.redirect('http://localhost:3000') }
-  //   catch(error){ 
-  //     console.error('kakao login callback error:', error); 
-    
-  //     return res.status(500).send('internal server error during kakao login');
-  //   }
-  // }
