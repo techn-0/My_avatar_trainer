@@ -335,6 +335,11 @@ function ExerciseScene() {
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
 
+    // -------------운동결과------------
+    setPrevBestScore(bestScore); // 이전 최고 기록 저장
+    setShowResultModal(true); // 결과 모달 표시
+    // ----------------------------------
+
     // 애니메이션 번호 3을 한 번 재생하고, 이후 번호 5를 기본으로 설정
     playAnimation(3, THREE.LoopOnce);
 
@@ -372,11 +377,6 @@ function ExerciseScene() {
     SetUserScore(requestData.count);
     console.log("userScore :", userScore);
     console.log("Request data:", requestData);
-
-    // -------------운동결과------------
-    setPrevBestScore(bestScore); // 이전 최고 기록 저장
-    setShowResultModal(true); // 결과 모달 표시
-    // ----------------------------------
 
     // 서버로 데이터 전송
     fetch("http://localhost:3002/workout/end_exercise", {
@@ -522,7 +522,7 @@ function ExerciseScene() {
         <ExerciseResultModal
           onClose={() => setShowResultModal(false)}
           bestScore={prevBestScore} // 운동 전 최고 기록
-          userScore={userScore} // 방금 운동한 기록
+          userScore={squatCountRef.current} // 방금 운동한 기록
         />
       )}
     </div>
