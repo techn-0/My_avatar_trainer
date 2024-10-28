@@ -22,9 +22,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     const { name, emails, photos } = profile;
-
+    const objectId = profile.id
     // Extract user information from the profile
     const user = {
+      id:objectId,
       email: emails[0].value,
       firstName: name.givenName,
       lastName: name.familyName,
