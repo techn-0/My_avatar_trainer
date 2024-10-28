@@ -86,7 +86,8 @@ function Buttons({
                     checked={selectedDuration === duration}
                     onChange={() => handleDurationSelect(duration)}
                   />
-                  {duration}
+                  {duration * 60}초
+
                 </label>
               ))}
             </div>
