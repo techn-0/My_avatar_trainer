@@ -11,6 +11,7 @@ import LoginModal from "../login/LoginModal";
 import { setBackgroundColor } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
+import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -325,6 +326,11 @@ function ExerciseScene() {
     timerStartTimeRef.current = Date.now(); // 현재 시간을 시작 시간으로 설정
   };
 
+  // --------------결과창------------------
+  const [showResultModal, setShowResultModal] = useState(false); // 결과 모달 상태 추가
+  const [prevBestScore, setPrevBestScore] = useState(bestScore); // 모달에 보여줄 이전 최고 기록
+  // -----------------------------------------
+
   // 운동 종료 처리 함수
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
@@ -366,6 +372,12 @@ function ExerciseScene() {
     SetUserScore(requestData.count);
     console.log("userScore :", userScore);
     console.log("Request data:", requestData);
+
+    // -------------운동결과------------
+    setPrevBestScore(bestScore); // 이전 최고 기록 저장
+    setShowResultModal(true); // 결과 모달 표시
+    // ----------------------------------
+
     // 서버로 데이터 전송
     fetch("http://localhost:3002/workout/end_exercise", {
       method: "POST",
@@ -449,27 +461,28 @@ function ExerciseScene() {
           />
 
           <div
-            style={{
-              position: "absolute",
-              top: "0",
-              right: "0",
-              width: "40%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              zIndex: 2,
-            }}
+          // style={{
+          //   position: "absolute",
+          //   top: "0",
+          //   right: "0",
+          //   // width: "40%",
+          //   // height: "30%",
+          //   display: "flex",
+          //   flexDirection: "column",
+          //   alignItems: "center",
+          //   zIndex: 2,
+          // }}
           >
-            <canvas
+            {/* <canvas
               ref={canvasRef}
-              width="640"
-              height="480"
+              width="840"
+              height="680"
               style={{
-                width: "100%",
+                width: "60%",
                 height: "auto",
                 border: "2px solid white",
               }}
-            />
+            /> */}
             <div style={{ marginTop: "10px", textAlign: "center" }}>
               {/* <h1>스쿼트 횟수: {squatCount}</h1> */}
             </div>
@@ -504,6 +517,14 @@ function ExerciseScene() {
 
       {/* 로그인 모달 */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
+      {/* 운동 결과 모달 표시 */}
+      {showResultModal && (
+        <ExerciseResultModal
+          onClose={() => setShowResultModal(false)}
+          bestScore={prevBestScore} // 운동 전 최고 기록
+          userScore={userScore} // 방금 운동한 기록
+        />
+      )}
     </div>
   );
 }

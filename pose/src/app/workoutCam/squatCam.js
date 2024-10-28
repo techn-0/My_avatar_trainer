@@ -5,11 +5,10 @@ import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { angleCalc } from "./angleCalc";
-import { useGreenFlashEffect } from "./greenFlashEffect"; // 초록색 반짝임 효과 모듈 임포트
+import { useGreenFlashEffect } from "./greenFlashEffect";
 
-let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
+let poseSingleton = null;
 
-// 포즈 연결선 정의
 const POSE_CONNECTIONS = [
   [11, 13],
   [13, 15],
@@ -31,30 +30,23 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const squatCountRef = useRef(0); // 카운트를 useRef로 관리하여 재렌더링 방지
+  const squatCountRef = useRef(0);
   const squatStateRef = useRef("up");
 
-  // 초록색 반짝임 효과 사용
-  const { triggerGreenFlash, drawGreenFlash } = useGreenFlashEffect();
+  const { triggerGreenFlash, triggerGoodBox, drawEffects } =
+    useGreenFlashEffect();
 
-  // 사전 동작 조건 만족 시 호출되는 함수
   function onPreMovement() {
-    // 초록색 반짝임 애니메이션 시작
     triggerGreenFlash();
-    // 필요한 다른 동작 추가 가능
   }
 
-  // 카운트 증가 시 호출되는 함수
   function onCountIncrease() {
-    // 초록색 반짝임 애니메이션 시작
     triggerGreenFlash();
-    // 스쿼트 카운트 증가
+    triggerGoodBox(); // Trigger the "Good!" box
     squatCountRef.current += 1;
-    // 부모 컴포넌트에 카운트 업데이트 알림
     if (onCountUpdate) {
       onCountUpdate(squatCountRef.current);
     }
-    // 필요한 다른 동작 추가 가능
   }
 
   useEffect(() => {
@@ -74,7 +66,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
       poseSingleton.onResults(onResults);
     }
 
-    function onResults(results) {
+    async function onResults(results) {
       if (!canvasRef.current) return;
 
       const canvasCtx = canvasRef.current.getContext("2d");
@@ -93,7 +85,6 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
       );
 
       if (results.poseLandmarks) {
-        // 랜드마크와 연결선을 그리는 부분 추가
         drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
           color: "white",
           lineWidth: 4,
@@ -103,73 +94,111 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           lineWidth: 2,
         });
 
-        // 왼쪽과 오른쪽 다리의 각도 계산
-        const leftSquatAngle = angleCalc(
-          results.poseLandmarks,
-          "left",
-          1,
-          3,
-          4
-        );
-        const rightSquatAngle = angleCalc(
-          results.poseLandmarks,
-          "right",
-          1,
-          3,
-          4
+        const landmarks = results.poseLandmarks;
+
+        // Required landmark indices
+        const requiredLandmarkIndices = [
+          11, 12, 23, 24, 25, 26, 27, 28, 29, 30,
+        ];
+        const allLandmarksPresent = requiredLandmarkIndices.every(
+          (index) => landmarks[index]
         );
 
-        // 사전 동작 조건 만족 (상태가 'up'에서 'down'으로 변경)
+        if (!allLandmarksPresent) {
+          console.warn("Some landmarks are missing");
+          return;
+        }
+
+        // Left knee angle (left_hip, left_knee, left_ankle)
+        const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
+
+        // Right knee angle (right_hip, right_knee, right_ankle)
+        const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
+
+        // Left hip angle (left_shoulder, left_hip, left_knee)
+        const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
+
+        // Right hip angle (right_shoulder, right_hip, right_knee)
+        const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
+
+        // Torso angle (nose, left_shoulder, left_hip)
+        const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
+        const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
+
+        // Handle null angle values
         if (
-          (leftSquatAngle < 90 && squatStateRef.current === "up") ||
-          (rightSquatAngle < 90 && squatStateRef.current === "up")
+          leftKneeAngle === null ||
+          rightKneeAngle === null ||
+          leftHipAngle === null ||
+          rightHipAngle === null ||
+          leftTorsoAngle === null ||
+          rightTorsoAngle === null
         ) {
+          console.warn("Angle calculation returned null");
+          return;
+        }
+
+        // Debug logs
+        console.log("Left Knee Angle:", leftKneeAngle);
+        console.log("Right Knee Angle:", rightKneeAngle);
+        console.log("Left Hip Angle:", leftHipAngle);
+        console.log("Right Hip Angle:", rightHipAngle);
+        console.log("Left Torso Angle:", leftTorsoAngle);
+        console.log("Right Torso Angle:", rightTorsoAngle);
+
+        // Squat down condition
+        const isSquatDown =
+          leftKneeAngle < 100 &&
+          rightKneeAngle < 100 &&
+          leftHipAngle < 100 &&
+          rightHipAngle < 100 &&
+          leftTorsoAngle > 30 &&
+          rightTorsoAngle > 30;
+
+        // Squat up condition
+        const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
+        // (leftHipAngle > 140 || rightHipAngle > 140);
+        // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
+
+        console.log("isSquatDown:", isSquatDown);
+        console.log("isSquatUp:", isSquatUp);
+
+        // Update squat state and count
+        if (isSquatDown && squatStateRef.current === "up") {
           squatStateRef.current = "down";
           onPreMovement();
         }
 
-        // 카운트 증가 조건 만족 (상태가 'down'에서 'up'으로 변경)
-        if (
-          (leftSquatAngle > 140 && squatStateRef.current === "down") ||
-          (rightSquatAngle > 140 && squatStateRef.current === "down")
-        ) {
+        if (isSquatUp && squatStateRef.current === "down") {
           squatStateRef.current = "up";
           onCountIncrease();
         }
 
-        // 초록색 반짝임 효과 그리기
-        drawGreenFlash(
+        // Draw effects (green flash and "Good!" box)
+        drawEffects(
           canvasCtx,
           canvasRef.current.width,
           canvasRef.current.height
         );
 
-        // 부모 컴포넌트로 업데이트된 캔버스 전달
         if (onCanvasUpdate) {
           onCanvasUpdate(canvasRef.current);
         }
       }
     }
 
-    // Mediapipe 처리 주기 조절
     if (active) {
       let camera = cameraRef.current;
       const videoElement = videoRef.current;
       if (videoElement && !camera) {
-        let lastPoseTime = 0;
-        const poseInterval = 100; // 100ms마다 Pose 처리 (초당 10회)
         camera = new Camera(videoElement, {
           onFrame: async () => {
-            const now = Date.now();
-            if (now - lastPoseTime > poseInterval) {
-              lastPoseTime = now;
-              if (poseSingleton) {
-                await poseSingleton.send({ image: videoElement });
-              }
+            if (poseSingleton) {
+              await poseSingleton.send({ image: videoElement });
             }
           },
-          width: 640,
-          height: 480,
+          width: 0,
+          height: 0,
         });
         camera.start();
         cameraRef.current = camera;
@@ -187,27 +216,32 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         cameraRef.current = null;
       }
     };
-  }, [active]); // 의존성 배열에서 불필요한 상태 제거
+  }, [active]);
 
   return (
     <div>
-      <video ref={videoRef} style={{ display: "none" }}></video>
+      <video
+        ref={videoRef}
+        width="800"
+        height="auto"
+        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
+      ></video>
       <canvas
         ref={canvasRef}
-        width="640"
-        height="480"
-        style={{ display: "none" }}
+        width="800"
+        height="640"
+        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
       ></canvas>
-
-      {/* 스쿼트 카운트 출력 */}
+      {/* Squat count display */}
       <div
         style={{
           position: "absolute",
           width: "250px",
           textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 3,
           border: "2px solid black",
           borderRadius: "30px",
           background: "white",
