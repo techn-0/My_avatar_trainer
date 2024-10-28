@@ -101,7 +101,7 @@ function Buttons({
                 disabled={!selectedExercise || !selectedDuration}
               />
               <div className="btn">
-                <span aria-hidden="true"></span>선텍 완료
+                <span aria-hidden="true"></span>선택 완료
                 <span className="btn__glitch" aria-hidden="true">
                   _선택 완료_
                 </span>
