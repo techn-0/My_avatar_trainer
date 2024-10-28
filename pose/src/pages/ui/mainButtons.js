@@ -95,7 +95,7 @@ function Buttons({
         <div className="btn" onClick={handleLoginPageClick}>
           {isLoggedIn ? "로그 아웃" : "로그인"}
           <span className="btn__glitch" aria-hidden="true">
-            {isLoggedIn ? "_로그 아웃_" : "로그인"}
+            {isLoggedIn ? "_로그 아웃_" : "_로그인_"}
           </span>
         </div>
       </div>
