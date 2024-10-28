@@ -2,9 +2,10 @@ import { Body, Controller, Get, Post, Query, UseGuards, Req } from '@nestjs/comm
 import { WorkoutService } from './workout.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { WorkOut } from './schemas/workout.schema';
 
 @Controller('workout')
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 
@@ -26,4 +27,14 @@ export class WorkoutController {
             ): Promise<{ message: string }> {
             return this.workoutService.createRecord(body.exercise, Number(body.duration), body.count, body.date, req.user._id);
           }
+  
+  @Get('/get_ranking')
+  getRanking(@Query('exercise') exercise: string , @Query('duration') duration: number): Promise<WorkOut[]>{
+    try {
+      return this.workoutService.getRanking(exercise, duration)
+    } catch (error){
+      console.error(error.message);
+      throw new Error('랭킹이 존재하지 않습니다!');
+    }
+  }
 }

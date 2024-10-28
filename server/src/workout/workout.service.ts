@@ -63,4 +63,69 @@ export class WorkoutService {
         throw new Error('기록 저장 실패!');
     }
   }
+
+  /*
+  일: 가중치
+  1: 0.1
+  2: 0.25
+  3: 0.4
+  4: 0.55
+  5: 0.7
+  6: 0.85
+  7: 1
+  
+  지난 일주일 간의 카운트 횟수를 합치고 기록이 있는 만큼을 나눠서, 가중치를 곱해서
+  평균을 구하려는데 우선 기록이 평균을 어떻게 구하지? 기록이 없는것과 기록이 있음을 어떻게 구하지?
+  */
+  async getRanking(exercise: string, duration: number) : Promise<WorkOut[]>{
+    try{
+      //7일전 날짜 구하기
+      const lastWeek = new Date();
+      lastWeek.setDate(lastWeek.getDate() -7);
+      const workouts = await this.workoutModel.aggregate([
+        {
+          $match: {
+            exercise,
+            duration,
+            date: { $gte: lastWeek},
+          },
+        },
+        { 
+          $sort: {date: 1, count: -1},
+        },
+        {
+          $group: {
+            _id: { userId: '$userId', date: '$date'},
+            count: { $first: '$count'},
+          }
+        },
+        {
+          $group: {
+            _id: '$_id.userId',
+            records: { $push: '$count'},
+          }
+        }
+      ]);
+      
+      if (workouts.length === 0){
+        throw new Error("랭킹이 존재하지 않습니다");
+      }
+      
+      const weigthedScores = workouts.map((workout) => {
+        const { _id: userId, records } = workout;
+        let totalScore = 0;
+        let totlaWeight = 0;
+
+        records.forEach((count, index) => {
+          const weight = 0.1 + 0.15 * index;
+          totalScore += count * weight;
+          totlaWeight += weight;
+        });
+    
+        return { userId, score: totlaWeight ? totalScore / totlaWeight : 0 };
+      });
+    } catch (error){
+      throw new error('랭킹을 가져오는데 오류가 발생!');
+    }
+  }
 }
