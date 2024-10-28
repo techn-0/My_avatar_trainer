@@ -33,7 +33,8 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const squatCountRef = useRef(0);
   const squatStateRef = useRef("up");
 
-  const { triggerGreenFlash, drawGreenFlash } = useGreenFlashEffect();
+  const { triggerGreenFlash, triggerGoodBox, drawEffects } =
+    useGreenFlashEffect();
 
   function onPreMovement() {
     triggerGreenFlash();
@@ -41,6 +42,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
 
   function onCountIncrease() {
     triggerGreenFlash();
+    triggerGoodBox(); // Trigger the "Good!" box
     squatCountRef.current += 1;
     if (onCountUpdate) {
       onCountUpdate(squatCountRef.current);
@@ -64,7 +66,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
       poseSingleton.onResults(onResults);
     }
 
-    function onResults(results) {
+    async function onResults(results) {
       if (!canvasRef.current) return;
 
       const canvasCtx = canvasRef.current.getContext("2d");
@@ -94,12 +96,12 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
 
         const landmarks = results.poseLandmarks;
 
-        // 필요한 랜드마크 인덱스
+        // Required landmark indices
         const requiredLandmarkIndices = [
           11, 12, 23, 24, 25, 26, 27, 28, 29, 30,
         ];
         const allLandmarksPresent = requiredLandmarkIndices.every(
-          (index) => landmarks[index] /* && landmarks[index].visibility > 0.5 */
+          (index) => landmarks[index]
         );
 
         if (!allLandmarksPresent) {
@@ -107,23 +109,23 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           return;
         }
 
-        // 왼쪽 무릎 각도 계산 (left_hip, left_knee, left_ankle)
+        // Left knee angle (left_hip, left_knee, left_ankle)
         const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
 
-        // 오른쪽 무릎 각도 계산 (right_hip, right_knee, right_ankle)
+        // Right knee angle (right_hip, right_knee, right_ankle)
         const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
 
-        // 왼쪽 엉덩이 각도 계산 (left_shoulder, left_hip, left_knee)
+        // Left hip angle (left_shoulder, left_hip, left_knee)
         const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
 
-        // 오른쪽 엉덩이 각도 계산 (right_shoulder, right_hip, right_knee)
+        // Right hip angle (right_shoulder, right_hip, right_knee)
         const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
 
-        // 상체 각도 계산 (nose, left_shoulder, left_hip)
+        // Torso angle (nose, left_shoulder, left_hip)
         const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
         const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
 
-        // 각도 값이 null인 경우 처리
+        // Handle null angle values
         if (
           leftKneeAngle === null ||
           rightKneeAngle === null ||
@@ -136,7 +138,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           return;
         }
 
-        // 디버깅 로그 출력
+        // Debug logs
         console.log("Left Knee Angle:", leftKneeAngle);
         console.log("Right Knee Angle:", rightKneeAngle);
         console.log("Left Hip Angle:", leftHipAngle);
@@ -144,7 +146,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         console.log("Left Torso Angle:", leftTorsoAngle);
         console.log("Right Torso Angle:", rightTorsoAngle);
 
-        // 스쿼트 다운 조건 확인
+        // Squat down condition
         const isSquatDown =
           leftKneeAngle < 100 &&
           rightKneeAngle < 100 &&
@@ -153,7 +155,7 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           leftTorsoAngle > 30 &&
           rightTorsoAngle > 30;
 
-        // 스쿼트 업 조건 확인
+        // Squat up condition
         const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
         // (leftHipAngle > 140 || rightHipAngle > 140);
         // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
@@ -161,11 +163,10 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         console.log("isSquatDown:", isSquatDown);
         console.log("isSquatUp:", isSquatUp);
 
-        // 스쿼트 상태 전환 및 카운트 업데이트
+        // Update squat state and count
         if (isSquatDown && squatStateRef.current === "up") {
           squatStateRef.current = "down";
           onPreMovement();
-          // onCountIncrease();
         }
 
         if (isSquatUp && squatStateRef.current === "down") {
@@ -173,7 +174,8 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           onCountIncrease();
         }
 
-        drawGreenFlash(
+        // Draw effects (green flash and "Good!" box)
+        drawEffects(
           canvasCtx,
           canvasRef.current.width,
           canvasRef.current.height
@@ -195,8 +197,8 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
               await poseSingleton.send({ image: videoElement });
             }
           },
-          width: 640,
-          height: 480,
+          width: 0,
+          height: 0,
         });
         camera.start();
         cameraRef.current = camera;
@@ -220,24 +222,25 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
     <div>
       <video
         ref={videoRef}
-        width="640"
-        height="480"
-        style={{ display: "block", opacity: 0 }}
+        width="800"
+        height="auto"
+        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
       ></video>
       <canvas
         ref={canvasRef}
-        width="640"
-        height="480"
+        width="800"
+        height="640"
         style={{ display: "block", position: "absolute", top: 10, right: 10 }}
       ></canvas>
-      {/* 스쿼트 카운트 출력 */}
+      {/* Squat count display */}
       <div
         style={{
           position: "absolute",
           width: "250px",
           textAlign: "center",
-          top: "65%",
-          right: "10px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           zIndex: 3,
           border: "2px solid black",
           borderRadius: "30px",
