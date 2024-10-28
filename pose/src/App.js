@@ -10,6 +10,7 @@ import MainHeader from "./app/MainHeader";
 import ThreeScene from "./pages/scene/MainScene";
 import ExerciseScene from "./pages/scene/ExerciseScene";
 import ExerciseGraph from "./pages/ExerciseGraph/ExerciseGraph";
+import Ranking from "./pages/ranking/ranking";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/exercise" element={<ExerciseScene />} />
         <Route path="/progress" element={<ExerciseGraph />} />
+        <Route path="/ranking" element={<Ranking />} />
       </Routes>
     </React.Fragment>
   );
