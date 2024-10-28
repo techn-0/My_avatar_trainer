@@ -1,9 +1,29 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, 
+  UnauthorizedException,
+  ConflictException,
+  InternalServerErrorException,
+ } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { socUserCredentialDto } from './dto/socauth-credential.dto';
+import { User } from './schemas/user.schema';
+
 
 @Injectable()
 export class SocauthService {
-  constructor(private readonly jwtService:JwtService){}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService,
+  ) {}
+
+  //소셜 미디어를 통해서 로그인 했는지 여부를 확인한다. 
+  async userExists(userId: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ username: userId });
+    return !!user;
+  }
+
   // 소셜 미디어를 활용한 로그인이 승인된 이후, JWT 토큰을 형성해 로그인한 것을 확인한다.
   async handleLogin(user: any) {
     // This function can handle the login logic (create user, generate token, etc.)
@@ -23,10 +43,29 @@ export class SocauthService {
     //Payload의 정보를 담은 JWT 토큰을 발행한다.
     const jwtToken = this.jwtService.sign(payload);
     // console.log(jwtToken)
-    console.log(payload.id);
+    // console.log(payload.id);
     return {token:jwtToken};
   }
-  
+
+  async signUp(socUserCredentialDto: socUserCredentialDto): Promise<{message: string}>{
+    const { id, email } = socUserCredentialDto;
+    try{
+        await this.userModel.create({
+            username : id,
+            email,
+        });
+        return { message: '회원가입 성공!'};
+    } catch (error){
+        console.log(error);
+        if(error.code === 11000){
+            throw new ConflictException('존재하는 ID입니다!');
+        } else{
+            throw new InternalServerErrorException();
+        }
+    }
+}
+
+
 }
 
 

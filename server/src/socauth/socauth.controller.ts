@@ -1,4 +1,5 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, Body, UseGuards } from '@nestjs/common';
+import { socUserCredentialDto } from './dto/socauth-credential.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SocauthService } from './socauth.service';
 
@@ -15,6 +16,12 @@ export class SocauthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {
+    // Check if user exists; if not, route to signup
+    // const userExists = await this.socauthService.userExists(req.user.id);
+    // if (!userExists) {
+    //   return res.redirect('http://localhost:3000/socauth/google/signup');
+    // }
+
     // Handle user data using socauthService
     const result = await this.socauthService.handleLogin(req.user);
 
@@ -28,6 +35,13 @@ export class SocauthController {
     
     // Redirect to localhost:3000 after successful login
     return res.redirect('http://localhost:3000');
+  }
+
+  @Post('google/signup')
+  googleSignUp(
+    @Body() socUserCredentialDto: socUserCredentialDto,
+  ): Promise<{ message: string }> {
+    return this.socauthService.signUp(socUserCredentialDto);
   }
 
   @Get('kakao')
@@ -52,6 +66,13 @@ export class SocauthController {
     return res.redirect('http://localhost:3000') 
   }
 
+  @Post('kakao/signup')
+  kakaoSignUp(
+    @Body() socUserCredentialDto: socUserCredentialDto,
+  ): Promise<{ message: string }> {
+    return this.socauthService.signUp(socUserCredentialDto);
+  }
+
   @Get('naver')
   @UseGuards(AuthGuard('naver'))
   async naverLogin() {
@@ -73,6 +94,14 @@ export class SocauthController {
 
     return res.redirect('http://localhost:3000');
   }
+
+  @Post('naver/signup')
+  naverSignUp(
+    @Body() socUserCredentialDto: socUserCredentialDto,
+  ): Promise<{ message: string }> {
+    return this.socauthService.signUp(socUserCredentialDto);
+  }
+
 }
 
   // @Get('kakao/callback')
