@@ -53,6 +53,10 @@ function Buttons({
     }
   };
 
+  const handleRankingClick = () => {
+    navigate("/ranking");
+  };
+
   const handleMouseEnter = () => {
     if (glitchSoundRef.current) {
       glitchSoundRef.current.currentTime = 0;
@@ -133,6 +137,24 @@ function Buttons({
           </span>
         </div>
       </div>
+
+      <div className="radio-wrapper">
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="ranking"
+          onClick={handleRankingClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleRankingClick}>
+          랭킹
+          <span className="btn__glitch" aria-hidden="true">
+            _랭킹_
+          </span>
+        </div>
+      </div>
+
       {/* Hidden audio element for glitch sound */}
       <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>

@@ -1,0 +1,24 @@
+.ranking-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: beige;
+    min-height: 100vh; /* 화면 전체 높이 설정 */
+    width: 100%;       /* 전체 너비 설정 */
+
+    
+  }
+  
+  .ranking-card-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    overflow-x: auto; /* 가로 스크롤 허용 */
+    margin-top: 50px;
+    margin-bottom: ;
+  }
+  
+  .ranking_card {
+    flex: 0 0 auto; /* 카드가 가로로 길게 나열 */
+  }
+  
