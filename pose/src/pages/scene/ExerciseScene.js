@@ -13,9 +13,18 @@ import { setBackgroundColor } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
+import "./ExerciseScene.css"
 
-function interaction(characterCount, userCount) {
+function interaction(characterCount, userCount, setInteractionMessage) {
   console.log(`캐릭터 카운트: ${characterCount}, 유저 카운트: ${userCount}`);
+
+  if (userCount > characterCount) {
+    setInteractionMessage("유저가 이기고 있습니다!");
+  } else if (userCount < characterCount) {
+    setInteractionMessage("유저가 지고 있습니다!");
+  } else {
+    setInteractionMessage("동점입니다!");
+  }
 }
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -382,6 +391,18 @@ function ExerciseScene() {
     };
   }, [currentCountdownIndex]);
 
+  const [interactionMessage, setInteractionMessage] = useState(null); // 메시지 상태 추가
+
+  // interaction 함수 호출 시 메시지를 설정하고 일정 시간 후 자동으로 사라지게 하는 useEffect 추가
+  useEffect(() => {
+    if (interactionMessage) {
+      const timer = setTimeout(() => {
+        setInteractionMessage(null); // 메시지를 3초 후에 사라지게 함
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [interactionMessage]);
+
   // 운동 타이머 시작 함수
   const startExerciseTimer = (durationInSeconds) => {
     setShowTimer(true); // 타이머 표시
@@ -395,7 +416,11 @@ function ExerciseScene() {
     // 남은 시간이 30초일 때 interaction 함수 호출
     if (durationInSeconds > 30) {
       setTimeout(() => {
-        interaction(animationRepeatCountRef.current, squatCountRef.current);
+        interaction(
+          animationRepeatCountRef.current,
+          squatCountRef.current,
+          setInteractionMessage
+        );
       }, (durationInSeconds - 30) * 1000);
     }
   };
@@ -591,6 +616,8 @@ function ExerciseScene() {
         }}
       >
         <h2>애니메이션 반복 횟수: {animationRepeatCount}</h2>
+        {/* 유저와 아바타의 중간 결과 메시지 표시 */}
+        {interactionMessage && <div className="inter_message">{interactionMessage}</div>}
       </div>
     </div>
   );
