@@ -34,10 +34,10 @@ function RankingPage() {
       </button>
       <div className="ranking-page">
         <div className="opt">
-          <h2>랭킹 페이지</h2>
+          <h2>랭킹</h2>
 
           <label>
-            운동 종목:
+            운동 종목:&nbsp;
             <select
               value={exercise}
               onChange={(e) => setExercise(e.target.value)}
@@ -51,7 +51,7 @@ function RankingPage() {
           </label>
 
           <label>
-            운동 시간:
+            운동 시간:&nbsp;
             <select
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
