@@ -230,13 +230,13 @@ function MediapipeSquatTracking({
         ref={videoRef}
         width="800"
         height="auto"
-        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></video>
       <canvas
         ref={canvasRef}
         width="800"
         height="640"
-        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></canvas>
       {/* Squat count display */}
       <div className="vs_container">

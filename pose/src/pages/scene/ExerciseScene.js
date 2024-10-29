@@ -475,7 +475,7 @@ function ExerciseScene() {
     setPrevBestScore(bestScore); // 이전 최고 기록 저장
     console.log(bestScore, userScore);
     if (bestScore > userScore) {
-      playAnimation(4, THREE.LoopOnce);
+      playAnimation(3, THREE.LoopRepeat);
     } else {
       playAnimation(0, THREE.LoopOnce);
     }
