@@ -61,6 +61,9 @@ function ExerciseScene() {
   // **3초 카운트 효과음 재생을 위한 참조**
   const countdownMusicRef = useRef(null); // 카운트다운 중에 재생될 노래 참조
 
+  // **애니메이션 반복 횟수 추적을 위한 상태 추가**
+  const [animationRepeatCount, setAnimationRepeatCount] = useState(0);
+
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
     if (!mediapipeActive || !canvasRef.current || !updatedCanvas) return;
@@ -226,7 +229,11 @@ function ExerciseScene() {
   };
 
   // 애니메이션 변경 함수
-  const playAnimation = (animationIndex, loop = THREE.LoopRepeat) => {
+  const playAnimation = (
+    animationIndex,
+    loop = THREE.LoopRepeat,
+    repetitions = Infinity
+  ) => {
     if (animationsRef.current && mixerRef.current) {
       // 모든 애니메이션 정지
       mixerRef.current.stopAllAction();
@@ -235,8 +242,17 @@ function ExerciseScene() {
 
       if (action) {
         action.reset();
-        action.setLoop(loop);
+        action.setLoop(loop, repetitions); // 반복 횟수 설정
+        action.clampWhenFinished = true; // 애니메이션 완료 시 마지막 프레임에서 정지
         action.play();
+
+        // **애니메이션 완료 시 이벤트 처리**
+        if (repetitions !== Infinity) {
+          action.onFinished = () => {
+            // 애니메이션이 완료되면 idle 상태로 전환
+            playAnimation(5, THREE.LoopRepeat);
+          };
+        }
       } else {
         console.warn(`Animation ${animationIndex} is not available.`);
       }
@@ -273,6 +289,7 @@ function ExerciseScene() {
       startCountdown();
     }
   };
+
   // 카운트다운 시작 함수
   const startCountdown = () => {
     setCurrentCountdownIndex(0); // 카운트다운 시작
@@ -304,13 +321,11 @@ function ExerciseScene() {
       //   countdownMusicRef.current.pause();
       // }
 
-      // 운동 시간(초 단위) 설정 (예: "1min" -> 60)
-      const durationInSeconds = parseFloat(selectedDuration) * 60;
-
-      // 애니메이션 번호 11을 운동 시간 동안 재생
-      playAnimation(11, THREE.LoopRepeat);
+      // **bestScore 횟수만큼 애니메이션 반복 재생**
+      playAnimation(11, THREE.LoopRepeat, bestScore);
 
       // 운동 타이머 시작
+      const durationInSeconds = parseFloat(selectedDuration) * 60;
       startExerciseTimer(durationInSeconds);
       console.log("best Score : ", bestScore);
     }
@@ -324,6 +339,11 @@ function ExerciseScene() {
   const startExerciseTimer = (durationInSeconds) => {
     setShowTimer(true); // 타이머 표시
     timerStartTimeRef.current = Date.now(); // 현재 시간을 시작 시간으로 설정
+
+    // **운동 시간이 끝나면 운동 종료**
+    setTimeout(() => {
+      endExercise();
+    }, durationInSeconds * 1000);
   };
 
   // --------------결과창------------------
@@ -334,11 +354,6 @@ function ExerciseScene() {
   // 운동 종료 처리 함수
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
-
-    // -------------운동결과------------
-    setPrevBestScore(bestScore); // 이전 최고 기록 저장
-    setShowResultModal(true); // 결과 모달 표시
-    // ----------------------------------
 
     // 애니메이션 번호 3을 한 번 재생하고, 이후 번호 5를 기본으로 설정
     playAnimation(3, THREE.LoopOnce);
@@ -377,6 +392,17 @@ function ExerciseScene() {
     SetUserScore(requestData.count);
     console.log("userScore :", userScore);
     console.log("Request data:", requestData);
+
+    // -------------운동결과------------
+    setPrevBestScore(bestScore); // 이전 최고 기록 저장
+    console.log(bestScore, userScore);
+    if (bestScore > userScore) {
+      playAnimation(4, THREE.LoopOnce);
+    } else {
+      playAnimation(0, THREE.LoopOnce);
+    }
+    setShowResultModal(true); // 결과 모달 표시
+    // ----------------------------------
 
     // 서버로 데이터 전송
     fetch("http://localhost:3002/workout/end_exercise", {
@@ -522,7 +548,7 @@ function ExerciseScene() {
         <ExerciseResultModal
           onClose={() => setShowResultModal(false)}
           bestScore={prevBestScore} // 운동 전 최고 기록
-          userScore={squatCountRef.current} // 방금 운동한 기록
+          userScore={userScore} // 방금 운동한 기록
         />
       )}
     </div>
