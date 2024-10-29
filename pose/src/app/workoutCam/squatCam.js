@@ -145,12 +145,12 @@ function MediapipeSquatTracking({
         }
 
         // Debug logs
-        console.log("Left Knee Angle:", leftKneeAngle);
-        console.log("Right Knee Angle:", rightKneeAngle);
-        console.log("Left Hip Angle:", leftHipAngle);
-        console.log("Right Hip Angle:", rightHipAngle);
-        console.log("Left Torso Angle:", leftTorsoAngle);
-        console.log("Right Torso Angle:", rightTorsoAngle);
+        // console.log("Left Knee Angle:", leftKneeAngle);
+        // console.log("Right Knee Angle:", rightKneeAngle);
+        // console.log("Left Hip Angle:", leftHipAngle);
+        // console.log("Right Hip Angle:", rightHipAngle);
+        // console.log("Left Torso Angle:", leftTorsoAngle);
+        // console.log("Right Torso Angle:", rightTorsoAngle);
 
         // Squat down condition
         const isSquatDown =
@@ -166,8 +166,8 @@ function MediapipeSquatTracking({
         // (leftHipAngle > 140 || rightHipAngle > 140);
         // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
 
-        console.log("isSquatDown:", isSquatDown);
-        console.log("isSquatUp:", isSquatUp);
+        // console.log("isSquatDown:", isSquatDown);
+        // console.log("isSquatUp:", isSquatUp);
 
         // Update squat state and count
         if (isSquatDown && squatStateRef.current === "up") {
