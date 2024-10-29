@@ -13,17 +13,25 @@ import { setBackgroundColor } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
-import "./ExerciseScene.css"
+import "./ExerciseScene.css";
+
+// 오디오 파일 불러오기 (public/sounds 경로의 파일 참조)
+const winSound = new Audio(`${process.env.PUBLIC_URL}/sound/wow.mp3`);
+const loseSound = new Audio(`${process.env.PUBLIC_URL}/sound/youre_too_slow.mp3`);
+const drawSound = new Audio(`${process.env.PUBLIC_URL}/sound/hurry_up.mp3`);
 
 function interaction(characterCount, userCount, setInteractionMessage) {
   console.log(`캐릭터 카운트: ${characterCount}, 유저 카운트: ${userCount}`);
 
   if (userCount > characterCount) {
     setInteractionMessage("유저가 이기고 있습니다!");
+    winSound.play();
   } else if (userCount < characterCount) {
     setInteractionMessage("유저가 지고 있습니다!");
+    loseSound.play();
   } else {
     setInteractionMessage("동점입니다!");
+    drawSound.play();
   }
 }
 function ExerciseScene() {
@@ -49,7 +57,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
 
   // 운동 시간 리스트
-  const durations = [1, 2, 0.1, 0.4];
+  const durations = [1, 2, 0.1, 0.4]; // 듀레이션 디버깅
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -617,7 +625,9 @@ function ExerciseScene() {
       >
         <h2>애니메이션 반복 횟수: {animationRepeatCount}</h2>
         {/* 유저와 아바타의 중간 결과 메시지 표시 */}
-        {interactionMessage && <div className="inter_message">{interactionMessage}</div>}
+        {interactionMessage && (
+          <div className="inter_message">{interactionMessage}</div>
+        )}
       </div>
     </div>
   );
