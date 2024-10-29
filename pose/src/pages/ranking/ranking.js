@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import RankingCard from './RankingCard';
+import React, { useEffect, useState } from "react";
+import RankingCard from "./RankingCard";
+import "./ranking.css";
 
 function RankingPage() {
   const [rankings, setRankings] = useState([]);
-  const [exercise, setExercise] = useState('squat');
+  const [exercise, setExercise] = useState("squat");
   const [duration, setDuration] = useState(1);
 
   const fetchRanking = async () => {
@@ -40,7 +41,10 @@ function RankingPage() {
 
       <label>
         운동 시간:
-        <select value={duration} onChange={(e) => setDuration(Number(e.target.value))}>
+        <select
+          value={duration}
+          onChange={(e) => setDuration(Number(e.target.value))}
+        >
           <option value={1}>1분</option>
           <option value={2}>2분</option>
           <option value={0.4}>24초</option>
@@ -48,18 +52,21 @@ function RankingPage() {
         </select>
       </label>
 
-      {rankings.length === 0 ? (
-        <div>기록이 없습니다.</div>
-      ) : (
-        rankings.slice(0, 5).map((ranking, index) => (
-          <RankingCard
-            key={index}
-            rank={index + 1}
-            userName={ranking.username}
-            score={ranking.score}
-          />
-        ))
-      )}
+      <div className="ranking-card-container">
+        {rankings.length === 0 ? (
+          <div>기록이 없습니다.</div>
+        ) : (
+          rankings.slice(0, 5).map((ranking, index) => (
+            <div className="ranking_card" key={index}>
+              <RankingCard
+                rank={index + 1}
+                userName={ranking.username}
+                score={ranking.score}
+              />
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
