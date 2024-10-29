@@ -4,12 +4,10 @@ import { Injectable,
   InternalServerErrorException,
  } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { socUserCredentialDto } from './dto/socauth-credential.dto';
-import { User } from './schemas/user.schema';
-
+import { User } from 'src/auth/schemas/user.schema';
 
 @Injectable()
 export class SocauthService {

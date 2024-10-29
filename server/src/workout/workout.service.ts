@@ -138,7 +138,7 @@ export class WorkoutService {
 
         return {username: userDetails.username , score: finalScore};
       });
-      weigthedScores.sort((a, b) => b.score - a.score);
+      console.log(weigthedScores.sort((a, b) => b.score - a.score));
       return weigthedScores.slice(0,5);
     } catch (error){
       console.error(error);
