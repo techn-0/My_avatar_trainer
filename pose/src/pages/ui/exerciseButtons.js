@@ -15,10 +15,19 @@ function Buttons({
   durations,
   onSelectionComplete,
 }) {
+  const [isComplete, setIsComplete] = useState(false); // 선택 완료 여부 상태 추가
+
+  const handleSelectionClick = () => {
+    setIsComplete(true); // 선택 완료 클릭 시 버튼 숨기기
+    onSelectionComplete(); // 외부에서 정의된 onSelectionComplete 함수 호출
+  };
+
+  if (isComplete) return null; // 선택 완료 시 전체 컨테이너 숨김
+
   return (
     <div className="r_card-container">
       <div className="btn_box">
-        <div >
+        <div>
           <div>
             {/* 글리치 버튼 - 메인 페이지 */}
             <div className="radio-wrapper">
@@ -47,9 +56,9 @@ function Buttons({
                 onClick={onResultClick}
               />
               <div className="btn">
-                스테이터스
+                성장 추이
                 <span className="btn__glitch" aria-hidden="true">
-                  _스테이터스_
+                  _성장 추이_
                 </span>
               </div>
             </div>
@@ -87,18 +96,18 @@ function Buttons({
                     onChange={() => handleDurationSelect(duration)}
                   />
                   {duration * 60}초
-
                 </label>
               ))}
             </div>
 
+            {/* 선택 완료 버튼 */}
             <div className="radio-wrapper">
               <input
                 className="input"
                 type="radio"
                 name="btn"
                 id="mainPage"
-                onClick={onSelectionComplete}
+                onClick={handleSelectionClick}
                 disabled={!selectedExercise || !selectedDuration}
               />
               <div className="btn">
