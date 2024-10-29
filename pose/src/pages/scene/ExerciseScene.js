@@ -10,6 +10,10 @@ import MediapipeSquatTracking from "../../app/workoutCam/squatCam";
 import MediapipePushupTracking from "../../app/workoutCam/pushupCam";
 import MediapipeLegraiseTracking from "../../app/workoutCam/legraiseCam";
 import MediapipeLungeTracking from "../../app/workoutCam/lungeCam";
+import MediapipeSquatTracking from "../../app/workoutCam/squatCam";
+import MediapipePushupTracking from "../../app/workoutCam/pushupCam";
+import MediapipeLegraiseTracking from "../../app/workoutCam/legraiseCam";
+import MediapipeLungeTracking from "../../app/workoutCam/lungeCam";
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
 import { setBackgroundColor } from "../../shared/background";
@@ -17,13 +21,6 @@ import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌�
 import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
-
-// 오디오 파일 불러오기 (public/sounds 경로의 파일 참조)
-const winSound = new Audio(`${process.env.PUBLIC_URL}/sound/wow.mp3`);
-const loseSound = new Audio(
-  `${process.env.PUBLIC_URL}/sound/youre_too_slow.mp3`
-);
-const drawSound = new Audio(`${process.env.PUBLIC_URL}/sound/hurry_up.mp3`);
 
 function interaction(characterCount, userCount, setInteractionMessage) {
   console.log(`캐릭터 카운트: ${characterCount}, 유저 카운트: ${userCount}`);
@@ -42,6 +39,7 @@ function interaction(characterCount, userCount, setInteractionMessage) {
     drawSound.play();
   }
 }
+
 
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
@@ -84,6 +82,9 @@ function ExerciseScene() {
   // 운동 카운트 상태 및 참조 생성
   const [exerciseCount, setExerciseCount] = useState(0);
   const exerciseCountRef = useRef(0);
+  // 운동 카운트 상태 및 참조 생성
+  const [exerciseCount, setExerciseCount] = useState(0);
+  const exerciseCountRef = useRef(0);
 
   // 운동 타이머 표시 상태
   const [showTimer, setShowTimer] = useState(false);
@@ -120,6 +121,10 @@ function ExerciseScene() {
     );
   };
 
+  // 운동 카운트 업데이트 핸들러
+  const handleExerciseCountUpdate = (count) => {
+    setExerciseCount(count);
+    exerciseCountRef.current = count; // ref에 최신 카운트 값 저장
   // 운동 카운트 업데이트 핸들러
   const handleExerciseCountUpdate = (count) => {
     setExerciseCount(count);
@@ -437,6 +442,7 @@ function ExerciseScene() {
         interaction(
           animationRepeatCountRef.current,
           exerciseCountRef.current,
+          exerciseCountRef.current,
           setInteractionMessage
         );
       }, (durationInSeconds - 30) * 1000);
@@ -483,6 +489,7 @@ function ExerciseScene() {
       exercise: selectedExercise,
       duration: selectedDuration,
       count: exerciseCountRef.current, // 최신 카운트 값 사용
+      count: exerciseCountRef.current, // 최신 카운트 값 사용
       date: formattedDate,
     };
     SetUserScore(requestData.count);
@@ -521,6 +528,33 @@ function ExerciseScene() {
   const moveToResultPage = () => {
     // 성장 추이 페이지로 이동
     navigate("/progress");
+  };
+
+  // 선택한 운동에 따라 적절한 Mediapipe 컴포넌트를 반환하는 함수
+  const renderMediapipeComponent = () => {
+    if (!mediapipeActive) return null;
+
+    const commonProps = {
+      onCanvasUpdate: handleCanvasUpdate,
+      active: mediapipeActive,
+      onCountUpdate: handleExerciseCountUpdate,
+      canvasRef: canvasRef,
+      animationRepeatCount: animationRepeatCount,
+    };
+
+    switch (selectedExercise) {
+      case "squat":
+        return <MediapipeSquatTracking {...commonProps} />;
+      case "pushup":
+        return <MediapipePushupTracking {...commonProps} />;
+      case "legraise":
+        return <MediapipeLegraiseTracking {...commonProps} />;
+      case "lunge":
+        return <MediapipeLungeTracking {...commonProps} />;
+      // 필요한 경우 다른 운동 컴포넌트 추가
+      default:
+        return null;
+    }
   };
 
   // 선택한 운동에 따라 적절한 Mediapipe 컴포넌트를 반환하는 함수
@@ -598,6 +632,7 @@ function ExerciseScene() {
 
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
       {renderMediapipeComponent()}
+      {renderMediapipeComponent()}
 
       {/* 카운트다운 이미지 표시 */}
       {currentCountdownIndex !== null &&
@@ -636,6 +671,7 @@ function ExerciseScene() {
       )}
 
       {/* 애니메이션 반복 횟수 및 인터랙션 메시지 표시 */}
+      {/* 애니메이션 반복 횟수 및 인터랙션 메시지 표시 */}
       <div
         style={{
           position: "absolute",
@@ -648,6 +684,9 @@ function ExerciseScene() {
       >
         <h2>애니메이션 반복 횟수: {animationRepeatCount}</h2>
         {/* 유저와 아바타의 중간 결과 메시지 표시 */}
+        {interactionMessage && (
+          <div className="inter_message">{interactionMessage}</div>
+        )}
         {interactionMessage && (
           <div className="inter_message">{interactionMessage}</div>
         )}
