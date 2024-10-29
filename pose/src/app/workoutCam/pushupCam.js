@@ -5,7 +5,8 @@ import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { angleCalc } from "./angleCalc";
-import { useGreenFlashEffect } from "./greenFlashEffect"; // greenFlashEffect 임포트
+import { useGreenFlashEffect } from "./greenFlashEffect";
+import "./exBL.css"; // 필요한 경우 CSS 파일 임포트
 
 const POSE_CONNECTIONS = [
   [11, 13],
@@ -26,7 +27,12 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
-function MediapipePushupTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipePushupTracking({
+  onCanvasUpdate,
+  active,
+  onCountUpdate,
+  animationRepeatCount,
+}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -98,7 +104,7 @@ function MediapipePushupTracking({ onCanvasUpdate, active, onCountUpdate }) {
         const landmarks = results.poseLandmarks;
 
         // 필수 랜드마크 확인
-        const requiredLandmarkIndices = [11, 12, 13, 14, 23, 24, 25, 26];
+        const requiredLandmarkIndices = [11, 12, 13, 14, 15, 16, 23, 24];
         const allLandmarksPresent = requiredLandmarkIndices.every(
           (index) => landmarks[index]
         );
@@ -114,18 +120,18 @@ function MediapipePushupTracking({ onCanvasUpdate, active, onCountUpdate }) {
         // 오른쪽 팔꿈치 각도 (right_shoulder, right_elbow, right_wrist)
         const rightElbowAngle = angleCalc(landmarks, 12, 14, 16);
 
-        // 왼쪽 엉덩이 각도 (left_shoulder, left_hip, left_knee)
-        const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
+        // 왼쪽 어깨 각도 (left_elbow, left_shoulder, left_hip)
+        const leftShoulderAngle = angleCalc(landmarks, 13, 11, 23);
 
-        // 오른쪽 엉덩이 각도 (right_shoulder, right_hip, right_knee)
-        const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
+        // 오른쪽 어깨 각도 (right_elbow, right_shoulder, right_hip)
+        const rightShoulderAngle = angleCalc(landmarks, 14, 12, 24);
 
         // 각도 값이 유효한지 확인
         if (
           leftElbowAngle === null ||
           rightElbowAngle === null ||
-          leftHipAngle === null ||
-          rightHipAngle === null
+          leftShoulderAngle === null ||
+          rightShoulderAngle === null
         ) {
           console.warn("Angle calculation returned null");
           return;
@@ -133,17 +139,16 @@ function MediapipePushupTracking({ onCanvasUpdate, active, onCountUpdate }) {
 
         // 푸시업 다운 조건
         const isPushupDown =
-          (leftElbowAngle < 90 || rightElbowAngle < 90) &&
-          leftHipAngle > 160 &&
-          rightHipAngle > 160 &&
+          (leftElbowAngle < 120 || rightElbowAngle < 120) &&
+          // leftShoulderAngle > 20 &&
+          // rightShoulderAngle > 20 &&
           pushupStateRef.current === "up";
 
         // 푸시업 업 조건
         const isPushupUp =
-          leftElbowAngle > 150 &&
-          rightElbowAngle > 150 &&
-          leftHipAngle > 160 &&
-          rightHipAngle > 160 &&
+          (leftElbowAngle > 160 || rightElbowAngle > 160) &&
+          // leftShoulderAngle < 10 &&
+          // rightShoulderAngle < 10 &&
           pushupStateRef.current === "down";
 
         // 상태 전환 및 카운트 업데이트
@@ -181,8 +186,8 @@ function MediapipePushupTracking({ onCanvasUpdate, active, onCountUpdate }) {
               await poseSingleton.send({ image: videoElement });
             }
           },
-          width: 640,
-          height: 480,
+          width: 0,
+          height: 0,
         });
         camera.start();
         cameraRef.current = camera;
@@ -200,33 +205,31 @@ function MediapipePushupTracking({ onCanvasUpdate, active, onCountUpdate }) {
         cameraRef.current = null;
       }
     };
-  }, [active, onCanvasUpdate, onCountUpdate]);
+  }, [active]);
 
   return (
     <div>
-      <video ref={videoRef} style={{ display: "none" }}></video>
+      <video
+        ref={videoRef}
+        width="800"
+        height="auto"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+      ></video>
       <canvas
         ref={canvasRef}
-        width="640"
-        height="480"
-        style={{ display: "none" }}
+        width="800"
+        height="640"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></canvas>
-
       {/* 푸시업 카운트 출력 */}
-      <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
-      >
-        <h1>푸시업 횟수: {pushupCountRef.current}</h1>
+      <div className="vs_container">
+        <div className="vs_element">
+          {/* 아바타 운동 횟수 */}
+          <h1>{animationRepeatCount}</h1>
+          <h1>&nbsp; VS &nbsp;</h1>
+          {/* 플레이어 운동 횟수 */}
+          <h1>{pushupCountRef.current}</h1>
+        </div>
       </div>
     </div>
   );
