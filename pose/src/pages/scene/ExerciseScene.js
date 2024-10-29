@@ -22,6 +22,13 @@ import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
 
+// 오디오 파일 불러오기 (public/sounds 경로의 파일 참조)
+const winSound = new Audio(`${process.env.PUBLIC_URL}/sound/wow.mp3`);
+const loseSound = new Audio(
+  `${process.env.PUBLIC_URL}/sound/youre_too_slow.mp3`
+);
+const drawSound = new Audio(`${process.env.PUBLIC_URL}/sound/hurry_up.mp3`);
+
 function interaction(characterCount, userCount, setInteractionMessage) {
   console.log(`캐릭터 카운트: ${characterCount}, 유저 카운트: ${userCount}`);
 
