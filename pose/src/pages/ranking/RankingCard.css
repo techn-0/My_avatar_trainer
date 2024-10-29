@@ -5,6 +5,7 @@
   transition-duration: 0.5s;
   background: none;
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .cards:hover {
