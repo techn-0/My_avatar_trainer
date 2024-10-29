@@ -10,27 +10,33 @@ function ExerciseResultModal({ onClose, bestScore, userScore }) {
     // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
     if (userScore > 0) {
       resultMessage = "첫 운동 기록입니다!";
-      soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/win.mp3`);
+      soundEffect = "/sound/win.mp3";
     } else {
       resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
-      soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail.mp3`);
+      soundEffect = "/sound/fail.mp3";
     }
   } else if (userScore > bestScore) {
     resultMessage = "승리!";
-    soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/victory.mp3`);
+    soundEffect = "/sound/victory.mp3";
   } else if (userScore < bestScore) {
     resultMessage = "패배...";
-    soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail.mp3`);
+    soundEffect = "/sound/fail.mp3";
   } else {
     resultMessage = "무승부";
-    soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail2.mp3`);
+    soundEffect = "/sound/fail2.mp3";
   }
 
   useEffect(() => {
-    if (soundEffect) {
-      soundEffect.play();
-    }
-  }, [soundEffect]);
+    // 오디오가 초기화되지 않고 딱 한 번만 재생되도록 설정
+    const audio = new Audio(soundEffect);
+    audio.play();
+
+    return () => {
+      // 컴포넌트가 언마운트될 때 오디오 정지
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [resultMessage]); // resultMessage가 설정될 때만 실행
 
   return (
     <div className="modal-overlay">
