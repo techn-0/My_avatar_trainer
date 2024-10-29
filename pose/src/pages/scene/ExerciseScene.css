@@ -11,4 +11,15 @@
   width: 400px;
   font-size: 30px;
   text-align: center;
+  animation: blink 2s infinite; /* 깜박이게 하는 애니메이션 적용 */
+}
+
+
+@keyframes blink {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
 }
