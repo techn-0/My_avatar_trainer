@@ -5,7 +5,6 @@ import * as THREE from "three";
 import { loadCharacter } from "../../shared/loadCharacter"; // 캐릭터 로드
 import { addLights } from "../../shared/lights"; // 조명 추가
 import { createPlane } from "../../app/createPlane"; // 바닥 추가
-import { initOrbitControls } from "../../shared/initOrbitControls"; // 카메라 컨트롤
 import { useNavigate } from "react-router-dom";
 import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // Mediapipe 컴포넌트
 import Buttons from "../ui/exerciseButtons";
@@ -15,6 +14,9 @@ import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌�
 import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 
+function interaction(characterCount, userCount) {
+  console.log(`캐릭터 카운트: ${characterCount}, 유저 카운트: ${userCount}`);
+}
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
   const canvasRef = useRef(null); // Mediapipe 캔버스
@@ -60,16 +62,17 @@ function ExerciseScene() {
   const [showTimer, setShowTimer] = useState(false);
   const timerStartTimeRef = useRef(null); // 타이머 시작 시간 저장
 
-  // **3초 카운트 효과음 재생을 위한 참조**
+  // 3초 카운트 효과음 재생을 위한 참조
   const countdownMusicRef = useRef(null); // 카운트다운 중에 재생될 노래 참조
 
-  // **애니메이션 반복 횟수 추적을 위한 상태 추가**
+  // 애니메이션 반복 횟수 추적을 위한 상태 및 ref 추가
   const [animationRepeatCount, setAnimationRepeatCount] = useState(0);
+  const animationRepeatCountRef = useRef(0); // 최신 값을 유지하기 위한 ref
 
-  // **애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)**
+  // 애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)
   const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
 
-  // **애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가**
+  // 애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가
   const animationActionRef = useRef(null);
   const handleLoopRef = useRef(null);
 
@@ -143,11 +146,6 @@ function ExerciseScene() {
       model.position.z = -3;
       model.rotation.y = THREE.MathUtils.degToRad(20);
     });
-
-    // // 카메라 컨트롤 추가
-    // const controls = initOrbitControls(camera, renderer);
-    // controls.enableRotate = false;
-    // controlsRef.current = controls;
 
     // Three.js 애니메이션 루프
     const clock = new THREE.Clock();
@@ -241,7 +239,6 @@ function ExerciseScene() {
   const playAnimation = (
     animationIndex,
     loop = THREE.LoopRepeat,
-    repetitions = Infinity,
     timeScale = 1
   ) => {
     if (animationsRef.current && mixerRef.current) {
@@ -252,7 +249,7 @@ function ExerciseScene() {
 
       if (action) {
         action.reset();
-        action.setLoop(loop, repetitions); // 반복 횟수 설정
+        action.setLoop(loop, Infinity); // 무한 반복으로 설정
         action.clampWhenFinished = true; // 애니메이션 완료 시 마지막 프레임에서 정지
         action.timeScale = timeScale; // 애니메이션 속도 설정
 
@@ -266,8 +263,31 @@ function ExerciseScene() {
 
         // 루프 이벤트 핸들러 정의
         const handleLoop = (e) => {
-          if (e.action === animationActionRef.current) {
-            setAnimationRepeatCount((prevCount) => prevCount + 1);
+          if (e.action === action) {
+            setAnimationRepeatCount((prevCount) => {
+              const newCount = prevCount + 1;
+              animationRepeatCountRef.current = newCount; // ref 업데이트
+
+              // bestScore에 도달하면 애니메이션 중지
+              if (newCount >= bestScore) {
+                // 애니메이션 정지
+                action.stop();
+
+                // 이벤트 리스너 제거
+                if (handleLoopRef.current) {
+                  mixerRef.current.removeEventListener(
+                    "loop",
+                    handleLoopRef.current
+                  );
+                  handleLoopRef.current = null;
+                }
+
+                // Idle 애니메이션 재생
+                playAnimation(5, THREE.LoopRepeat);
+              }
+
+              return newCount;
+            });
           }
         };
 
@@ -278,23 +298,6 @@ function ExerciseScene() {
         mixerRef.current.addEventListener("loop", handleLoopRef.current);
 
         action.play();
-
-        // **애니메이션 완료 시 이벤트 처리**
-        if (repetitions !== Infinity) {
-          action.onFinished = () => {
-            // 애니메이션이 완료되면 idle 상태로 전환
-            playAnimation(5, THREE.LoopRepeat);
-
-            // 이벤트 리스너 제거
-            if (handleLoopRef.current) {
-              mixerRef.current.removeEventListener(
-                "loop",
-                handleLoopRef.current
-              );
-              handleLoopRef.current = null;
-            }
-          };
-        }
       } else {
         console.warn(`Animation ${animationIndex} is not available.`);
       }
@@ -345,7 +348,7 @@ function ExerciseScene() {
       currentCountdownIndex !== null &&
       currentCountdownIndex < countdownImages.length
     ) {
-      // **3초 카운트 효과음 재생**
+      // 3초 카운트 효과음 재생
       if (countdownMusicRef.current && currentCountdownIndex === 0) {
         countdownMusicRef.current.currentTime = 0; // 처음부터 재생
         countdownMusicRef.current.play();
@@ -358,20 +361,16 @@ function ExerciseScene() {
       setCurrentCountdownIndex(null); // 카운트다운 초기화
       setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
 
-      // **카운트다운 종료 시 노래 정지**
-      // if (countdownMusicRef.current) {
-      //   countdownMusicRef.current.pause();
-      // }
-
-      // **bestScore 횟수만큼 애니메이션 반복 재생**
+      // bestScore 횟수만큼 애니메이션 반복 재생 (무한 반복 설정)
       const durationInSeconds = parseFloat(selectedDuration) * 60; // 운동 시간 (초)
       const desiredRepetitionDuration = durationInSeconds / bestScore; // 각 반복에 필요한 시간
       const timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 애니메이션 속도 조절
 
       // 애니메이션 반복 횟수 초기화
       setAnimationRepeatCount(0);
+      animationRepeatCountRef.current = 0; // ref 초기화
 
-      playAnimation(11, THREE.LoopRepeat, bestScore, timeScale);
+      playAnimation(11, THREE.LoopRepeat, timeScale); // repetitions 제거
 
       // 운동 타이머 시작
       startExerciseTimer(durationInSeconds);
@@ -388,16 +387,22 @@ function ExerciseScene() {
     setShowTimer(true); // 타이머 표시
     timerStartTimeRef.current = Date.now(); // 현재 시간을 시작 시간으로 설정
 
-    // **운동 시간이 끝나면 운동 종료**
+    // 운동 시간이 끝나면 운동 종료
     setTimeout(() => {
       endExercise();
     }, durationInSeconds * 1000);
+
+    // 남은 시간이 30초일 때 interaction 함수 호출
+    if (durationInSeconds > 30) {
+      setTimeout(() => {
+        interaction(animationRepeatCountRef.current, squatCountRef.current);
+      }, (durationInSeconds - 30) * 1000);
+    }
   };
 
-  // --------------결과창------------------
-  const [showResultModal, setShowResultModal] = useState(false); // 결과 모달 상태 추가
+  // 결과 모달 상태 추가
+  const [showResultModal, setShowResultModal] = useState(false);
   const [prevBestScore, setPrevBestScore] = useState(bestScore); // 모달에 보여줄 이전 최고 기록
-  // -----------------------------------------
 
   // 운동 종료 처리 함수
   const endExercise = () => {
@@ -441,7 +446,7 @@ function ExerciseScene() {
     console.log("userScore :", userScore);
     console.log("Request data:", requestData);
 
-    // -------------운동결과------------
+    // 운동결과
     setPrevBestScore(bestScore); // 이전 최고 기록 저장
     console.log(bestScore, userScore);
     if (bestScore > userScore) {
@@ -450,7 +455,6 @@ function ExerciseScene() {
       playAnimation(0, THREE.LoopOnce);
     }
     setShowResultModal(true); // 결과 모달 표시
-    // ----------------------------------
 
     // 서버로 데이터 전송
     fetch("http://localhost:3002/workout/end_exercise", {
@@ -464,8 +468,6 @@ function ExerciseScene() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Exercise ended, server response:", data);
-        // 운동 종료 후 처리 (예: 알림 표시 등)
-        // alert("운동이 완료되었습니다!");
       })
       .catch((error) => {
         console.error("Error ending exercise:", error);
@@ -535,19 +537,7 @@ function ExerciseScene() {
           />
 
           <div>
-            {/* <canvas
-              ref={canvasRef}
-              width="840"
-              height="680"
-              style={{
-                width: "60%",
-                height: "auto",
-                border: "2px solid white",
-              }}
-            /> */}
-            <div style={{ marginTop: "10px", textAlign: "center" }}>
-              {/* <h1>스쿼트 횟수: {squatCount}</h1> */}
-            </div>
+            {/* 필요에 따라 캔버스나 추가 UI 요소를 여기에 추가하세요 */}
           </div>
         </>
       )}
@@ -574,7 +564,7 @@ function ExerciseScene() {
           />
         )}
 
-      {/* **카운트다운 중 효과음 재생** */}
+      {/* 카운트다운 중 효과음 재생 */}
       <audio ref={countdownMusicRef} src="/sound/3secCount.mp3" />
 
       {/* 로그인 모달 */}
