@@ -1,0 +1,19 @@
+.vs_container {
+  position: absolute;
+  width: 250px;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  border: 2px solid black;
+  border-radius: 30px;
+  background: white;
+  display: flex;
+  flex-direction: row; /* 가로 배치 */
+  place-content: center; /* 가로와 세로 모두 중앙 정렬 */
+}
+.vs_element {
+  display: inline-flex; /* 요소를 가로 정렬에 적합하게 조정 */
+  align-items: center; /* 요소 내부 중앙 정렬 */
+}

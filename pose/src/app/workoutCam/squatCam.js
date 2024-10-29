@@ -6,6 +6,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { angleCalc } from "./angleCalc";
 import { useGreenFlashEffect } from "./greenFlashEffect";
+import "./exBL.css";
 
 let poseSingleton = null;
 
@@ -26,7 +27,12 @@ const POSE_CONNECTIONS = [
   [30, 32],
 ];
 
-function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipeSquatTracking({
+  onCanvasUpdate,
+  active,
+  onCountUpdate,
+  animationRepeatCount,
+}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -233,21 +239,14 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         style={{ display: "block", position: "absolute", top: 10, right: 10 }}
       ></canvas>
       {/* Squat count display */}
-      <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 3,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
-      >
-        <h1>스쿼트 횟수: {squatCountRef.current}</h1>
+      <div className="vs_container">
+        <div className="vs_element">
+          {/* 플레이어 운동 횟수 */}
+          <h1>{animationRepeatCount}</h1>
+          <h1>&nbsp; VS &nbsp;</h1>
+          {/* 아바타 운동 횟수 */}
+          <h1>{squatCountRef.current}</h1>
+        </div>
       </div>
     </div>
   );

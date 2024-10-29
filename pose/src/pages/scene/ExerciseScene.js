@@ -534,6 +534,7 @@ function ExerciseScene() {
             active={mediapipeActive}
             onCountUpdate={handleSquatCountUpdate} // 스쿼트 카운트 업데이트 함수 전달
             canvasRef={canvasRef} // canvasRef 전달
+            animationRepeatCount={animationRepeatCount} // 애니메이션 반복 횟수 전달
           />
 
           <div>
