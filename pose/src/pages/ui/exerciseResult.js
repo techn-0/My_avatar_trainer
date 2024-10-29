@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import React, { useEffect } from "react";
 import "./exerciseResult.css";
 
 function ExerciseResultModal({ onClose, bestScore, userScore }) {
@@ -7,25 +6,35 @@ function ExerciseResultModal({ onClose, bestScore, userScore }) {
   let resultMessage;
   let soundEffect;
 
-  let soundEffect;
-
   if (bestScore === null || bestScore === undefined || bestScore === 0) {
     // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
     if (userScore > 0) {
       resultMessage = "첫 운동 기록입니다!";
       soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/win.mp3`);
+      soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/win.mp3`);
     } else {
       resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
+      soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail.mp3`);
       soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail.mp3`);
     }
   } else if (userScore > bestScore) {
     resultMessage = "승리!";
     soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/victory.mp3`);
+    soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/victory.mp3`);
   } else if (userScore < bestScore) {
     resultMessage = "패배...";
     soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail.mp3`);
+    soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail.mp3`);
   } else {
     resultMessage = "무승부";
+    soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail2.mp3`);
+  }
+
+  useEffect(() => {
+    if (soundEffect) {
+      soundEffect.play();
+    }
+  }, [soundEffect]);
     soundEffect = new Audio(`${process.env.PUBLIC_URL}/sound/fail2.mp3`);
   }
 
