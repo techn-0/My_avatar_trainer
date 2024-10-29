@@ -5,12 +5,16 @@ import { Document, Types } from "mongoose";
 @Schema()
 export class User extends Document { 
   @Prop({ required : true, unique: true})
-  username : string;
+  username: string;
 
-  @Prop({ required: true })
+  @Prop()
   password: string;
 
   @Prop()
   email: string;
+
+  @Prop()
+  social:string;
+
 }
 export const UserSchema = SchemaFactory.createForClass(User);
