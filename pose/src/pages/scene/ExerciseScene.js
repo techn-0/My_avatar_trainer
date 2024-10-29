@@ -398,13 +398,13 @@ function ExerciseScene() {
       date: formattedDate,
     };
     SetUserScore(requestData.count);
-    console.log("userScore :", userScore);
+    console.log("userScore :", requestData[2]);
     console.log("Request data:", requestData);
 
     // -------------운동결과------------
     setPrevBestScore(bestScore); // 이전 최고 기록 저장
-    console.log(bestScore, userScore);
-    if (bestScore > userScore) {
+    console.log(bestScore, requestData[2]);
+    if (bestScore > requestData[2]) {
       playAnimation(4, THREE.LoopOnce);
     } else {
       playAnimation(0, THREE.LoopOnce);
