@@ -4,7 +4,14 @@ import "./exerciseResult.css";
 function ExerciseResultModal({ onClose, bestScore, userScore }) {
   // 비교 결과 메시지 생성
   let resultMessage;
-  if (userScore > bestScore) {
+  if (bestScore === null || bestScore === undefined || bestScore === 0) {
+    // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
+    if (userScore > 0) {
+      resultMessage = "첫 운동 기록입니다!";
+    } else {
+      resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
+    }
+  } else if (userScore > bestScore) {
     resultMessage = "승리!";
   } else if (userScore < bestScore) {
     resultMessage = "패배...";
