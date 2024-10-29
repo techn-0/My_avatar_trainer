@@ -1,3 +1,5 @@
+// ExerciseScene.js
+
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { loadCharacter } from "../../shared/loadCharacter"; // 캐릭터 로드
@@ -63,6 +65,13 @@ function ExerciseScene() {
 
   // **애니메이션 반복 횟수 추적을 위한 상태 추가**
   const [animationRepeatCount, setAnimationRepeatCount] = useState(0);
+
+  // **애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)**
+  const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
+
+  // **애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가**
+  const animationActionRef = useRef(null);
+  const handleLoopRef = useRef(null);
 
   // Mediapipe의 캔버스를 업데이트하는 핸들러
   const handleCanvasUpdate = (updatedCanvas) => {
@@ -232,7 +241,8 @@ function ExerciseScene() {
   const playAnimation = (
     animationIndex,
     loop = THREE.LoopRepeat,
-    repetitions = Infinity
+    repetitions = Infinity,
+    timeScale = 1
   ) => {
     if (animationsRef.current && mixerRef.current) {
       // 모든 애니메이션 정지
@@ -244,6 +254,29 @@ function ExerciseScene() {
         action.reset();
         action.setLoop(loop, repetitions); // 반복 횟수 설정
         action.clampWhenFinished = true; // 애니메이션 완료 시 마지막 프레임에서 정지
+        action.timeScale = timeScale; // 애니메이션 속도 설정
+
+        // 이전에 등록된 이벤트 리스너 제거
+        if (handleLoopRef.current) {
+          mixerRef.current.removeEventListener("loop", handleLoopRef.current);
+        }
+
+        // 액션 저장
+        animationActionRef.current = action;
+
+        // 루프 이벤트 핸들러 정의
+        const handleLoop = (e) => {
+          if (e.action === animationActionRef.current) {
+            setAnimationRepeatCount((prevCount) => prevCount + 1);
+          }
+        };
+
+        // 핸들러 저장
+        handleLoopRef.current = handleLoop;
+
+        // 루프 이벤트 리스너 등록
+        mixerRef.current.addEventListener("loop", handleLoopRef.current);
+
         action.play();
 
         // **애니메이션 완료 시 이벤트 처리**
@@ -251,6 +284,15 @@ function ExerciseScene() {
           action.onFinished = () => {
             // 애니메이션이 완료되면 idle 상태로 전환
             playAnimation(5, THREE.LoopRepeat);
+
+            // 이벤트 리스너 제거
+            if (handleLoopRef.current) {
+              mixerRef.current.removeEventListener(
+                "loop",
+                handleLoopRef.current
+              );
+              handleLoopRef.current = null;
+            }
           };
         }
       } else {
@@ -322,10 +364,16 @@ function ExerciseScene() {
       // }
 
       // **bestScore 횟수만큼 애니메이션 반복 재생**
-      playAnimation(11, THREE.LoopRepeat, bestScore);
+      const durationInSeconds = parseFloat(selectedDuration) * 60; // 운동 시간 (초)
+      const desiredRepetitionDuration = durationInSeconds / bestScore; // 각 반복에 필요한 시간
+      const timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 애니메이션 속도 조절
+
+      // 애니메이션 반복 횟수 초기화
+      setAnimationRepeatCount(0);
+
+      playAnimation(11, THREE.LoopRepeat, bestScore, timeScale);
 
       // 운동 타이머 시작
-      const durationInSeconds = parseFloat(selectedDuration) * 60;
       startExerciseTimer(durationInSeconds);
       console.log("best Score : ", bestScore);
     }
@@ -486,19 +534,7 @@ function ExerciseScene() {
             canvasRef={canvasRef} // canvasRef 전달
           />
 
-          <div
-          // style={{
-          //   position: "absolute",
-          //   top: "0",
-          //   right: "0",
-          //   // width: "40%",
-          //   // height: "30%",
-          //   display: "flex",
-          //   flexDirection: "column",
-          //   alignItems: "center",
-          //   zIndex: 2,
-          // }}
-          >
+          <div>
             {/* <canvas
               ref={canvasRef}
               width="840"
@@ -551,6 +587,20 @@ function ExerciseScene() {
           userScore={userScore} // 방금 운동한 기록
         />
       )}
+
+      {/* 애니메이션 반복 횟수 표시 */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 2,
+          color: "black",
+        }}
+      >
+        <h2>애니메이션 반복 횟수: {animationRepeatCount}</h2>
+      </div>
     </div>
   );
 }
