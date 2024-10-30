@@ -18,7 +18,7 @@ export class SocauthService {
     private jwtService: JwtService,
   ) {}
 
-  //소셜 미디어를 통해서 로그인 했는지 여부를 확인한다. 
+  //소셜 미디어를 통해서 회원 가입 정보를 생성했는지 여부를 확인한다.
   async userExists(userId: string): Promise<boolean> {
     const user = await this.userModel.findOne({username: userId});
     return !!user;
@@ -48,12 +48,12 @@ export class SocauthService {
   }
 
   async signUp(socUserCredentialDto: socUserCredentialDto): Promise<{message: string}>{
-    const { id, email, social } = socUserCredentialDto;
+    const { id, email, provider } = socUserCredentialDto;
     try{
         await this.userModel.create({
             username : id,
             email,
-            social
+            provider
         });
         return { message: '회원가입 성공!'};
     } catch (error){

@@ -12,9 +12,12 @@ export class User extends Document {
 
   @Prop()
   email: string;
+  
+  @Prop()
+  providerId: string;
 
   @Prop()
-  social:string;
+  provider:string;
 
 }
 export const UserSchema = SchemaFactory.createForClass(User);
