@@ -37,7 +37,8 @@ function MediapipePushupTracking({
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
   const pushupCountRef = useRef(0);
-  const pushupStateRef = useRef("up");
+  const pushupStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
+  const isBodyHorizontalRef = useRef(false);
 
   // greenFlashEffect 훅 사용
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
@@ -66,8 +67,8 @@ function MediapipePushupTracking({
       poseSingleton.setOptions({
         modelComplexity: 1,
         smoothLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
+        minDetectionConfidence: 0.7, // 정확도 향상을 위해 값 증가
+        minTrackingConfidence: 0.7, // 정확도 향상을 위해 값 증가
       });
 
       poseSingleton.onResults(onResults);
@@ -114,42 +115,70 @@ function MediapipePushupTracking({
           return;
         }
 
+        // 어깨와 엉덩이의 Y 좌표 계산
+        const leftShoulderY = landmarks[11].y;
+        const rightShoulderY = landmarks[12].y;
+        const leftHipY = landmarks[23].y;
+        const rightHipY = landmarks[24].y;
+
+        // 평균 Y 좌표 계산
+        const avgShoulderY = (leftShoulderY + rightShoulderY) / 2;
+        const avgHipY = (leftHipY + rightHipY) / 2;
+
+        // 어깨와 엉덩이의 Y 좌표 차이 계산
+        const bodyInclination = Math.abs(avgShoulderY - avgHipY);
+
+        // 임계값 설정 (필요에 따라 조정 가능)
+        const horizontalThreshold = 0.2;
+
+        // 몸이 수평인지 판단
+        isBodyHorizontalRef.current = bodyInclination < horizontalThreshold;
+
+        if (!isBodyHorizontalRef.current) {
+          // 서 있는 상태이면 푸시업 인식하지 않음
+          pushupStateRef.current = "down"; // 상태 초기화
+          if (onCanvasUpdate) {
+            onCanvasUpdate(canvasRef.current);
+          }
+          return;
+        }
+
         // 왼쪽 팔꿈치 각도 (left_shoulder, left_elbow, left_wrist)
-        const leftElbowAngle = angleCalc(landmarks, 11, 13, 15);
+        let leftElbowAngle = null;
+        if (landmarks[11] && landmarks[13] && landmarks[15]) {
+          leftElbowAngle = angleCalc(landmarks, 11, 13, 15);
+        }
 
         // 오른쪽 팔꿈치 각도 (right_shoulder, right_elbow, right_wrist)
-        const rightElbowAngle = angleCalc(landmarks, 12, 14, 16);
+        let rightElbowAngle = null;
+        if (landmarks[12] && landmarks[14] && landmarks[16]) {
+          rightElbowAngle = angleCalc(landmarks, 12, 14, 16);
+        }
 
-        // 왼쪽 어깨 각도 (left_elbow, left_shoulder, left_hip)
-        const leftShoulderAngle = angleCalc(landmarks, 13, 11, 23);
-
-        // 오른쪽 어깨 각도 (right_elbow, right_shoulder, right_hip)
-        const rightShoulderAngle = angleCalc(landmarks, 14, 12, 24);
+        // 사용할 팔 선택 (인식된 팔)
+        let elbowAngle = null;
+        if (leftElbowAngle !== null) {
+          elbowAngle = leftElbowAngle;
+        } else if (rightElbowAngle !== null) {
+          elbowAngle = rightElbowAngle;
+        } else {
+          console.warn("No elbow landmarks detected");
+          return;
+        }
 
         // 각도 값이 유효한지 확인
-        if (
-          leftElbowAngle === null ||
-          rightElbowAngle === null ||
-          leftShoulderAngle === null ||
-          rightShoulderAngle === null
-        ) {
+        if (elbowAngle === null) {
           console.warn("Angle calculation returned null");
           return;
         }
 
         // 푸시업 다운 조건
         const isPushupDown =
-          (leftElbowAngle < 120 || rightElbowAngle < 120) &&
-          // leftShoulderAngle > 20 &&
-          // rightShoulderAngle > 20 &&
-          pushupStateRef.current === "up";
+          elbowAngle < 110 && pushupStateRef.current === "up";
 
         // 푸시업 업 조건
         const isPushupUp =
-          (leftElbowAngle > 160 || rightElbowAngle > 160) &&
-          // leftShoulderAngle < 10 &&
-          // rightShoulderAngle < 10 &&
-          pushupStateRef.current === "down";
+          elbowAngle > 140 && pushupStateRef.current === "down";
 
         // 상태 전환 및 카운트 업데이트
         if (isPushupDown) {
