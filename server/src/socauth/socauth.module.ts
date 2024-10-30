@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './schemas/user.schema';
+import { User, UserSchema } from '../auth/schemas/user.schema';
 import { SocauthController } from './socauth.controller';
 import { SocauthService } from './socauth.service';
 import { PassportModule } from '@nestjs/passport';
