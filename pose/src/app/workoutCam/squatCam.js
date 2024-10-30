@@ -95,10 +95,14 @@ function MediapipeSquatTracking({
           color: "white",
           lineWidth: 4,
         });
-        drawLandmarks(canvasCtx, results.poseLandmarks, {
-          color: "blue",
-          lineWidth: 2,
-        });
+        drawLandmarks(
+          canvasCtx,
+          results.poseLandmarks.filter((_, index) => index > 10),
+          {
+            color: "blue",
+            lineWidth: 2,
+          }
+        );
 
         const landmarks = results.poseLandmarks;
 

@@ -477,10 +477,16 @@ function ExerciseScene() {
     // 애니메이션을 한 번 재생하고, 이후 번호 5를 기본으로 설정
     playAnimation(endAnimationIndex, THREE.LoopOnce);
 
-    // 애니메이션이 끝난 후 번호 5를 기본으로 재생
+    // 애니메이션이 끝난 후 추가 처리
     if (animationsRef.current[endAnimationIndex]) {
       mixerRef.current.addEventListener("finished", () => {
-        playAnimation(5, THREE.LoopRepeat);
+        if (bestScore > userScore) {
+          // 유저의 운동 횟수가 캐릭터의 횟수보다 적을 때
+          playAnimation(3, THREE.LoopOnce);
+        } else {
+          // 그 외에는 Idle 애니메이션 재생
+          playAnimation(5, THREE.LoopRepeat);
+        }
       });
     } else {
       // 종료 애니메이션이 없을 경우 즉시 번호 5를 재생
@@ -515,11 +521,6 @@ function ExerciseScene() {
     // 운동결과
     setPrevBestScore(bestScore); // 이전 최고 기록 저장
     console.log(bestScore, userScore);
-    if (bestScore > userScore) {
-      playAnimation(endAnimationIndex, THREE.LoopRepeat);
-    } else {
-      playAnimation(0, THREE.LoopOnce);
-    }
     setShowResultModal(true); // 결과 모달 표시
 
     // 서버로 데이터 전송
