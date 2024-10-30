@@ -93,6 +93,7 @@ function ExerciseScene() {
 
   // 애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)
   const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
+  const normalPushupRepetitionDuration = 1.55; // 푸시업 1회에 1.55초 소요
 
   // 애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가
   const animationActionRef = useRef(null);
@@ -346,8 +347,15 @@ function ExerciseScene() {
         .then((data) => {
           console.log("Server response:", data);
           setBestScore(data.count);
-          // 애니메이션 번호 4를 한 번 재생하고 대기
-          playAnimation(4, THREE.LoopOnce);
+
+          // 선택한 운동에 따라 초기 애니메이션 설정
+          if (selectedExercise === "pushup") {
+            // 푸시업: 애니메이션 번호 6번을 한 번 재생하고 대기
+            playAnimation(6, THREE.LoopOnce);
+          } else {
+            // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
+            playAnimation(4, THREE.LoopOnce);
+          }
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
@@ -383,16 +391,27 @@ function ExerciseScene() {
       setCurrentCountdownIndex(null); // 카운트다운 초기화
       setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
 
-      // bestScore 횟수만큼 애니메이션 반복 재생 (무한 반복 설정)
+      // 운동 시간 및 반복 횟수 설정
       const durationInSeconds = parseFloat(selectedDuration) * 60; // 운동 시간 (초)
       const desiredRepetitionDuration = durationInSeconds / bestScore; // 각 반복에 필요한 시간
-      const timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 애니메이션 속도 조절
+
+      // 애니메이션 속도 조절
+      let timeScale;
+      let animationIndex;
+
+      if (selectedExercise === "pushup") {
+        timeScale = normalPushupRepetitionDuration / desiredRepetitionDuration; // 푸시업 속도 조절
+        animationIndex = 8; // 푸시업 애니메이션 번호
+      } else {
+        timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 스쿼트 등 기타 운동 속도 조절
+        animationIndex = 11; // 스쿼트 애니메이션 번호
+      }
 
       // 애니메이션 반복 횟수 초기화
       setAnimationRepeatCount(0);
       animationRepeatCountRef.current = 0; // ref 초기화
 
-      playAnimation(11, THREE.LoopRepeat, timeScale); // repetitions 제거
+      playAnimation(animationIndex, THREE.LoopRepeat, timeScale);
 
       // 운동 타이머 시작
       startExerciseTimer(durationInSeconds);
@@ -446,16 +465,25 @@ function ExerciseScene() {
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
 
-    // 애니메이션 번호 3을 한 번 재생하고, 이후 번호 5를 기본으로 설정
-    playAnimation(3, THREE.LoopOnce);
+    // 선택한 운동에 따라 종료 애니메이션 설정
+    let endAnimationIndex;
 
-    // 애니메이션 번호 3이 끝난 후 번호 5를 기본으로 재생
-    if (animationsRef.current[3]) {
+    if (selectedExercise === "pushup") {
+      endAnimationIndex = 9; // 푸시업 종료 애니메이션 번호
+    } else {
+      endAnimationIndex = 3; // 스쿼트 종료 애니메이션 번호
+    }
+
+    // 애니메이션을 한 번 재생하고, 이후 번호 5를 기본으로 설정
+    playAnimation(endAnimationIndex, THREE.LoopOnce);
+
+    // 애니메이션이 끝난 후 번호 5를 기본으로 재생
+    if (animationsRef.current[endAnimationIndex]) {
       mixerRef.current.addEventListener("finished", () => {
         playAnimation(5, THREE.LoopRepeat);
       });
     } else {
-      // 번호 3 애니메이션이 없을 경우 즉시 번호 5를 재생
+      // 종료 애니메이션이 없을 경우 즉시 번호 5를 재생
       playAnimation(5, THREE.LoopRepeat);
     }
 
@@ -488,7 +516,7 @@ function ExerciseScene() {
     setPrevBestScore(bestScore); // 이전 최고 기록 저장
     console.log(bestScore, userScore);
     if (bestScore > userScore) {
-      playAnimation(3, THREE.LoopRepeat);
+      playAnimation(endAnimationIndex, THREE.LoopRepeat);
     } else {
       playAnimation(0, THREE.LoopOnce);
     }
