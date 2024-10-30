@@ -1,24 +1,91 @@
-.ranking-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: beige;
-    min-height: 100vh; /* 화면 전체 높이 설정 */
-    width: 100%;       /* 전체 너비 설정 */
+@font-face {
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 
-    
-  }
-  
-  .ranking-card-container {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 20px;
-    overflow-x: auto; /* 가로 스크롤 허용 */
-    margin-top: 50px;
-    margin-bottom: ;
-  }
-  
-  .ranking_card {
-    flex: 0 0 auto; /* 카드가 가로로 길게 나열 */
-  }
-  
+html,
+body {
+  overflow-y: scroll; /* 세로 스크롤 가능 */
+  -ms-overflow-style: none; /* IE와 Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.background {
+  background-color: beige;
+  min-height: 100vh; /* 화면 전체 높이 설정 */
+}
+.ranking-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pyramid-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  position: relative;
+}
+
+/* 1등, 2등, 3등, 4등, 5등을 피라미드 형식으로 배치 */
+.pyramid-rank-1 {
+  order: 2;
+}
+.pyramid-rank-2 {
+  order: 1;
+}
+.pyramid-rank-3 {
+  order: 3;
+}
+.pyramid-rank-4 {
+  order: 0;
+}
+.pyramid-rank-5 {
+  order: 4;
+}
+
+/* 각 단상의 높이 차이를 구현 */
+.podium {
+  width: 100%;
+  height: 10px;
+  background-color: #ccc;
+  border-radius: 5px 5px 0 0;
+}
+
+.podium-1 {
+  height: 500px; /* 1등 단상 높이 */
+  background-color: #ffd700;
+}
+.podium-2 {
+  height: 350px; /* 2등 단상 높이 */
+  background-color: #c0c0c0;
+}
+.podium-3 {
+  height: 250px; /* 3등 단상 높이 */
+  background-color: #cd7f32;
+}
+.podium-4 {
+  height: 150px; /* 4등 단상 높이 */
+  background-color: #87cefa;
+}
+.podium-5 {
+  height: 100px; /* 5등 단상 높이 */
+  background-color: #98fb98;
+}
+
+/* 랭킹 카드 아래 단상을 기준으로 배치 */
+.pyramid-rank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.opt {
+  margin-bottom: 100px;
+  text-align: center;
+  font-family: "GangwonEduPowerExtraBoldA";
+  font-size: 20px;
+}
