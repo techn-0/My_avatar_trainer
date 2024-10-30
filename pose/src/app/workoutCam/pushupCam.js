@@ -1,14 +1,21 @@
 // MediapipePushupTracking.js
 
 import React, { useEffect, useRef } from "react";
+// MediapipePushupTracking.js
+
+import React, { useEffect, useRef } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { angleCalc } from "./angleCalc";
 import { useGreenFlashEffect } from "./greenFlashEffect";
 import "./exBL.css"; // 필요한 경우 CSS 파일 임포트
+import { angleCalc } from "./angleCalc";
+import { useGreenFlashEffect } from "./greenFlashEffect";
+import "./exBL.css"; // 필요한 경우 CSS 파일 임포트
 
 const POSE_CONNECTIONS = [
+  // ... 기존 연결 정보 유지
   // ... 기존 연결 정보 유지
 ];
 
@@ -20,9 +27,35 @@ function MediapipePushupTracking({
   onCountUpdate,
   animationRepeatCount,
 }) {
+function MediapipePushupTracking({
+  onCanvasUpdate,
+  active,
+  onCountUpdate,
+  animationRepeatCount,
+}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
+  const pushupCountRef = useRef(0);
+  const pushupStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
+  const isBodyHorizontalRef = useRef(false);
+
+  // greenFlashEffect 훅 사용
+  const { triggerGreenFlash, triggerGoodBox, drawEffects } =
+    useGreenFlashEffect();
+
+  function onPreMovement() {
+    triggerGreenFlash();
+  }
+
+  function onCountIncrease() {
+    triggerGreenFlash();
+    triggerGoodBox(); // "Good!" 박스 표시
+    pushupCountRef.current += 1;
+    if (onCountUpdate) {
+      onCountUpdate(pushupCountRef.current);
+    }
+  }
   const pushupCountRef = useRef(0);
   const pushupStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
   const isBodyHorizontalRef = useRef(false);
@@ -56,11 +89,14 @@ function MediapipePushupTracking({
         smoothLandmarks: true,
         minDetectionConfidence: 0.7, // 정확도 향상을 위해 값 증가
         minTrackingConfidence: 0.7, // 정확도 향상을 위해 값 증가
+        minDetectionConfidence: 0.7, // 정확도 향상을 위해 값 증가
+        minTrackingConfidence: 0.7, // 정확도 향상을 위해 값 증가
       });
 
       poseSingleton.onResults(onResults);
     }
 
+    async function onResults(results) {
     async function onResults(results) {
       if (!canvasRef.current) return;
 
@@ -107,6 +143,24 @@ function MediapipePushupTracking({
         const rightShoulderY = landmarks[12].y;
         const leftHipY = landmarks[23].y;
         const rightHipY = landmarks[24].y;
+        const landmarks = results.poseLandmarks;
+
+        // 필수 랜드마크 확인
+        const requiredLandmarkIndices = [11, 12, 13, 14, 15, 16, 23, 24];
+        const allLandmarksPresent = requiredLandmarkIndices.every(
+          (index) => landmarks[index]
+        );
+
+        if (!allLandmarksPresent) {
+          console.warn("Some landmarks are missing");
+          return;
+        }
+
+        // 어깨와 엉덩이의 Y 좌표 계산
+        const leftShoulderY = landmarks[11].y;
+        const rightShoulderY = landmarks[12].y;
+        const leftHipY = landmarks[23].y;
+        const rightHipY = landmarks[24].y;
 
         // 평균 Y 좌표 계산
         const avgShoulderY = (leftShoulderY + rightShoulderY) / 2;
@@ -116,7 +170,7 @@ function MediapipePushupTracking({
         const bodyInclination = Math.abs(avgShoulderY - avgHipY);
 
         // 임계값 설정 (필요에 따라 조정 가능)
-        const horizontalThreshold = 0.1;
+        const horizontalThreshold = 0.2;
 
         // 몸이 수평인지 판단
         isBodyHorizontalRef.current = bodyInclination < horizontalThreshold;
@@ -160,11 +214,12 @@ function MediapipePushupTracking({
         }
 
         // 푸시업 다운 조건
-        const isPushupDown = elbowAngle < 90 && pushupStateRef.current === "up";
+        const isPushupDown =
+          elbowAngle < 110 && pushupStateRef.current === "up";
 
         // 푸시업 업 조건
         const isPushupUp =
-          elbowAngle > 150 && pushupStateRef.current === "down";
+          elbowAngle > 140 && pushupStateRef.current === "down";
 
         // 상태 전환 및 카운트 업데이트
         if (isPushupDown) {
@@ -199,8 +254,12 @@ function MediapipePushupTracking({
           onFrame: async () => {
             if (poseSingleton) {
               await poseSingleton.send({ image: videoElement });
+            if (poseSingleton) {
+              await poseSingleton.send({ image: videoElement });
             }
           },
+          width: 0,
+          height: 0,
           width: 0,
           height: 0,
         });
@@ -221,9 +280,16 @@ function MediapipePushupTracking({
       }
     };
   }, [active]);
+  }, [active]);
 
   return (
     <div>
+      <video
+        ref={videoRef}
+        width="800"
+        height="auto"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+      ></video>
       <video
         ref={videoRef}
         width="800"
@@ -235,7 +301,19 @@ function MediapipePushupTracking({
         width="800"
         height="640"
         style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+        width="800"
+        height="640"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></canvas>
+      {/* 푸시업 카운트 출력 */}
+      <div className="vs_container">
+        <div className="vs_element">
+          {/* 아바타 운동 횟수 */}
+          <h1>{animationRepeatCount}</h1>
+          <h1>&nbsp; VS &nbsp;</h1>
+          {/* 플레이어 운동 횟수 */}
+          <h1>{pushupCountRef.current}</h1>
+        </div>
       {/* 푸시업 카운트 출력 */}
       <div className="vs_container">
         <div className="vs_element">
@@ -250,4 +328,5 @@ function MediapipePushupTracking({
   );
 }
 
+export default MediapipePushupTracking;
 export default MediapipePushupTracking;
