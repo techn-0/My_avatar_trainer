@@ -6,6 +6,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { angleCalc } from "./angleCalc";
 import { useGreenFlashEffect } from "./greenFlashEffect";
+import "./exBL.css";
 
 let poseSingleton = null;
 
@@ -26,7 +27,12 @@ const POSE_CONNECTIONS = [
   [30, 32],
 ];
 
-function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipeSquatTracking({
+  onCanvasUpdate,
+  active,
+  onCountUpdate,
+  animationRepeatCount,
+}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -94,26 +100,86 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
           color: "white",
           lineWidth: 4,
         });
-        drawLandmarks(canvasCtx, results.poseLandmarks, {
-          color: "blue",
-          lineWidth: 2,
-        });
+        drawLandmarks(
+          canvasCtx,
+          results.poseLandmarks.filter((_, index) => index > 10),
+          {
+            color: "blue",
+            lineWidth: 2,
+          }
+        );
 
-        // Check if poseLandmarks exists before accessing it
-        if (results.poseLandmarks && results.poseLandmarks[0]) {
-            currHeadY.current = results.poseLandmarks[0].y;
-            console.log(currHeadY);
+        const landmarks = results.poseLandmarks;
+
+        // Required landmark indices
+        const requiredLandmarkIndices = [
+          11, 12, 23, 24, 25, 26, 27, 28, 29, 30,
+        ];
+        const allLandmarksPresent = requiredLandmarkIndices.every(
+          (index) => landmarks[index]
+        );
+
+        if (!allLandmarksPresent) {
+          console.warn("Some landmarks are missing");
+          return;
         }
 
-        // 왼쪽과 오른쪽 다리의 각도 계산
-        const leftSquatAngle = angleCalc(results.poseLandmarks, "left", 1, 3, 4);
-        const rightSquatAngle = angleCalc(results.poseLandmarks, "right", 1, 3, 4);
+        // Left knee angle (left_hip, left_knee, left_ankle)
+        const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
 
-        // 스쿼트 상태 전환 및 카운트 업데이트
+        // Right knee angle (right_hip, right_knee, right_ankle)
+        const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
+
+        // Left hip angle (left_shoulder, left_hip, left_knee)
+        const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
+
+        // Right hip angle (right_shoulder, right_hip, right_knee)
+        const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
+
+        // Torso angle (nose, left_shoulder, left_hip)
+        const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
+        const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
+
+        // Handle null angle values
         if (
-          (leftSquatAngle < 90 && squatStateRef.current === "up") ||
-          (rightSquatAngle < 90 && squatStateRef.current === "up")
+          leftKneeAngle === null ||
+          rightKneeAngle === null ||
+          leftHipAngle === null ||
+          rightHipAngle === null ||
+          leftTorsoAngle === null ||
+          rightTorsoAngle === null
         ) {
+          console.warn("Angle calculation returned null");
+          return;
+        }
+
+        // Debug logs
+        // console.log("Left Knee Angle:", leftKneeAngle);
+        // console.log("Right Knee Angle:", rightKneeAngle);
+        // console.log("Left Hip Angle:", leftHipAngle);
+        // console.log("Right Hip Angle:", rightHipAngle);
+        // console.log("Left Torso Angle:", leftTorsoAngle);
+        // console.log("Right Torso Angle:", rightTorsoAngle);
+
+        // Squat down condition
+        const isSquatDown =
+          leftKneeAngle < 100 &&
+          rightKneeAngle < 100 &&
+          leftHipAngle < 100 &&
+          rightHipAngle < 100 &&
+          leftTorsoAngle > 30 &&
+          rightTorsoAngle > 30;
+
+        // Squat up condition
+        const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
+        // (leftHipAngle > 140 || rightHipAngle > 140);
+        // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
+
+        // console.log("isSquatDown:", isSquatDown);
+        // console.log("isSquatUp:", isSquatUp);
+
+        // Update squat state and count
+        if (isSquatDown && squatStateRef.current === "up") {
           squatStateRef.current = "down";
           downHeadY.current = results.poseLandmarks[0].y;
           console.log('downheadY',downHeadY);
@@ -179,30 +245,23 @@ function MediapipeSquatTracking({ onCanvasUpdate, active, onCountUpdate }) {
         ref={videoRef}
         width="800"
         height="auto"
-        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></video>
       <canvas
         ref={canvasRef}
         width="800"
         height="640"
-        style={{ display: "block", position: "absolute", top: 10, right: 10 }}
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></canvas>
       {/* Squat count display */}
-      <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 3,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
-      >
-        <h1>스쿼트 횟수: {squatCountRef.current}</h1>
+      <div className="vs_container">
+        <div className="vs_element">
+          {/* 플레이어 운동 횟수 */}
+          <h1>{animationRepeatCount}</h1>
+          <h1>&nbsp; VS &nbsp;</h1>
+          {/* 아바타 운동 횟수 */}
+          <h1>{squatCountRef.current}</h1>
+        </div>
       </div>
     </div>
   );

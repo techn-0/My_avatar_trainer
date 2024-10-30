@@ -90,22 +90,22 @@ const ExerciseGraph = () => {
     }),
     datasets: [
       {
-        label: "Push-ups",
-        data: workoutData
-          .filter((entry) => entry.exercise === "pushup")
-          .map((entry) => entry.count),
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        fill: true,
-        tension: 0.4,
-      },
-      {
         label: "Squats",
         data: workoutData
           .filter((entry) => entry.exercise === "squat")
           .map((entry) => entry.count),
         borderColor: "rgba(153, 102, 255, 1)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: "Push-up",
+        data: workoutData
+          .filter((entry) => entry.exercise === "pushup")
+          .map((entry) => entry.count),
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
         tension: 0.4,
       },
@@ -119,21 +119,26 @@ const ExerciseGraph = () => {
         fill: true,
         tension: 0.4,
       },
+      {
+        label: "Legraise",
+        data: workoutData
+          .filter((entry) => entry.exercise === "legraise")
+          .map((entry) => entry.count),
+        borderColor: "rgba(30, 109, 34, 1)",
+        backgroundColor: "rgba(30, 109, 34, 0.2)",
+        fill: true,
+        tension: 0.4,
+      },
     ],
   };
 
   // 최고 기록 (레이더 차트용)
   const radarData = {
-    labels: ["Push-ups", "Squats", "Plank(minutes)"],
+    labels: ["Squats", "pushup", "Plank(minutes)", "Legraise"],
     datasets: [
       {
         label: "최고 기록",
         data: [
-          Math.max(
-            ...workoutData
-              .filter((entry) => entry.exercise === "pushup")
-              .map((entry) => entry.count)
-          ),
           Math.max(
             ...workoutData
               .filter((entry) => entry.exercise === "squat")
@@ -141,7 +146,17 @@ const ExerciseGraph = () => {
           ),
           Math.max(
             ...workoutData
+              .filter((entry) => entry.exercise === "pushup")
+              .map((entry) => entry.count)
+          ),
+          Math.max(
+            ...workoutData
               .filter((entry) => entry.exercise === "plank")
+              .map((entry) => entry.count)
+          ),
+          Math.max(
+            ...workoutData
+              .filter((entry) => entry.exercise === "legraise")
               .map((entry) => entry.count)
           ),
         ], // 각 운동의 최고 기록
