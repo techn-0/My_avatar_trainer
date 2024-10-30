@@ -1,3 +1,5 @@
+// MediapipeLungeTracking.js
+
 import React, { useEffect, useRef } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
@@ -24,12 +26,13 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
-function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
+// MediapipeLungeTracking 컴포넌트
+function MediapipeLungeTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const legRaiseCountRef = useRef(0);
-  const legRaiseStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
+  const lungeCountRef = useRef(0);
+  const lungeStateRef = useRef("up");
 
   // greenFlashEffect 훅 사용
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
@@ -42,9 +45,9 @@ function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
   function onCountIncrease() {
     triggerGreenFlash();
     triggerGoodBox(); // "Good!" 박스 표시
-    legRaiseCountRef.current += 1;
+    lungeCountRef.current += 1;
     if (onCountUpdate) {
-      onCountUpdate(legRaiseCountRef.current);
+      onCountUpdate(lungeCountRef.current);
     }
   }
 
@@ -96,7 +99,7 @@ function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
         const landmarks = results.poseLandmarks;
 
         // 필수 랜드마크 확인
-        const requiredLandmarkIndices = [11, 12, 23, 24, 25, 26];
+        const requiredLandmarkIndices = [23, 24, 25, 26, 27, 28];
         const allLandmarksPresent = requiredLandmarkIndices.every(
           (index) => landmarks[index]
         );
@@ -106,33 +109,38 @@ function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
           return;
         }
 
-        // 왼쪽 힙 각도 (left_shoulder, left_hip, left_knee)
-        const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
+        // 왼쪽 무릎 각도 (left_hip, left_knee, left_ankle)
+        const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
 
-        // 오른쪽 힙 각도 (right_shoulder, right_hip, right_knee)
-        const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
+        // 오른쪽 무릎 각도 (right_hip, right_knee, right_ankle)
+        const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
 
         // 각도 값이 유효한지 확인
-        if (leftHipAngle === null || rightHipAngle === null) {
+        if (leftKneeAngle === null || rightKneeAngle === null) {
           console.warn("Angle calculation returned null");
           return;
         }
 
-        // 레그레이즈 업 조건
-        const isLegRaiseUp = leftHipAngle < 70 || rightHipAngle < 70;
+        // 런지 다운 조건
+        const isLungeDown =
+          (leftKneeAngle < 90 && rightKneeAngle > 120) ||
+          (rightKneeAngle < 90 && leftKneeAngle > 120);
 
-        // 레그레이즈 다운 조건
-        const isLegRaiseDown = leftHipAngle > 100 && rightHipAngle > 100;
+        // 런지 업 조건
+        const isLungeUp =
+          leftKneeAngle > 140 &&
+          rightKneeAngle > 140 &&
+          lungeStateRef.current === "down";
 
         // 상태 전환 및 카운트 업데이트
-        if (isLegRaiseUp && legRaiseStateRef.current === "down") {
-          legRaiseStateRef.current = "up";
-          onPreMovement(); // 다리를 들어올렸을 때
+        if (isLungeDown && lungeStateRef.current === "up") {
+          lungeStateRef.current = "down";
+          onPreMovement(); // 내려갈 때
         }
 
-        if (isLegRaiseDown && legRaiseStateRef.current === "up") {
-          legRaiseStateRef.current = "down";
-          onCountIncrease(); // 다리를 내렸을 때 카운트 증가
+        if (isLungeUp) {
+          lungeStateRef.current = "up";
+          onCountIncrease(); // 올라올 때 카운트 증가
         }
 
         // 효과 그리기
@@ -190,7 +198,7 @@ function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
         style={{ display: "none" }}
       ></canvas>
 
-      {/* 레그레이즈 카운트 출력 */}
+      {/* 런지 카운트 출력 */}
       <div
         style={{
           position: "absolute",
@@ -204,10 +212,10 @@ function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
           background: "white",
         }}
       >
-        <h1>레그레이즈 횟수: {legRaiseCountRef.current}</h1>
+        <h1>런지 횟수: {lungeCountRef.current}</h1>
       </div>
     </div>
   );
 }
 
-export default MediapipeLegraiseTracking;
+export default MediapipeLungeTracking;
