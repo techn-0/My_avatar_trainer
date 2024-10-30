@@ -131,9 +131,9 @@ function Buttons({
           onMouseEnter={handleMouseEnter}
         />
         <div className="btn" onClick={handleResultClick}>
-          성장 추이
+          성장 기록
           <span className="btn__glitch" aria-hidden="true">
-            _성장 추이_
+            _성장 기록_
           </span>
         </div>
       </div>
