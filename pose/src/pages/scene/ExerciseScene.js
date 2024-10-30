@@ -11,7 +11,7 @@ import MediapipePushupTracking from "../../app/workoutCam/pushupCam"; // 푸시�
 import MediapipeLegraiseTracking from "../../app/workoutCam/legraiseCam"; // 레그레이즈 Mediapipe 컴포넌트
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
-import { setBackgroundColor } from "../../shared/background";
+import { setSkyboxBackground } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
@@ -157,7 +157,7 @@ function ExerciseScene() {
     scene.add(plane);
 
     // 배경색 설정
-    setBackgroundColor(scene);
+    setSkyboxBackground(scene);
 
     // 캐릭터 로드
     loadCharacter(scene, (mixer, model, animations) => {
