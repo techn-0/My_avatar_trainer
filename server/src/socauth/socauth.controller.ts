@@ -31,15 +31,6 @@ export class SocauthController {
     // 소셜 미디어로 로그인 후 최초로 회원 가입 시, 이용자의 정보를 가져오기 위해 req에 담긴 accessToken을 쿠키에 저장한다.
     const accessToken = req.user?.accessToken;
 
-    if (accessToken) {
-      res.cookie('accessToken', accessToken, {
-        maxAge: 3600 * 1000, // 1 hour
-        secure: true,        // Set to true for HTTPS in production
-        sameSite: 'Strict',
-        path: '/',
-      });
-    }
-
     // Check if user exists; if not, route to signup
     const userExists = await this.socauthService.userExists(req.user.id);
     if (!userExists) {
@@ -96,15 +87,6 @@ export class SocauthController {
     });
 
     const accessToken = req.user?.accessToken;
-
-    if(accessToken){
-      res.cookie('accessToken', accessToken, {
-        maxAge: 3600 * 1000, // 1 hour
-        secure: true,        // Set to true for HTTPS in production
-        sameSite: 'Strict',
-        path: '/',
-      });
-    }
 
     const userexists = await this.socauthService.userExists(req.user.id);
 
