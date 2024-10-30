@@ -90,7 +90,7 @@ const ExerciseGraph = () => {
     }),
     datasets: [
       {
-        label: "Squats",
+        label: "Squat",
         data: workoutData
           .filter((entry) => entry.exercise === "squat")
           .map((entry) => entry.count),
@@ -134,7 +134,7 @@ const ExerciseGraph = () => {
 
   // 최고 기록 (레이더 차트용)
   const radarData = {
-    labels: ["Squats", "pushup", "Plank(minutes)", "Legraise"],
+    labels: ["Squat", "Pushup", "Plank(minutes)", "Legraise"],
     datasets: [
       {
         label: "최고 기록",
@@ -189,6 +189,7 @@ const ExerciseGraph = () => {
     responsive: true,
     scale: {
       ticks: { beginAtZero: true, max: 60 },
+
     },
   };
 
