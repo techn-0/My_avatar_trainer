@@ -10,7 +10,7 @@ function ExerciseResultModal({ onClose, bestScore, userScore }) {
     // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
     if (userScore > 0) {
       resultMessage = "첫 운동 기록입니다!";
-      soundEffect = "/sound/win.mp3";
+      soundEffect = "/sound/victory.mp3";
     } else {
       resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
       soundEffect = "/sound/fail.mp3";
