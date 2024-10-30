@@ -1,69 +1,124 @@
-import React, { useEffect } from "react";
-import "./exerciseResult.css";
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { useNavigate } from "react-router-dom";
 
-function ExerciseResultModal({ onClose, bestScore, userScore }) {
-  // 비교 결과 메시지 생성
-  let resultMessage;
-  let soundEffect;
+import { loadCharacter } from "../../shared/loadCharacter"; // 캐릭터 로드
+import { addLights } from "../../shared/lights"; // 조명 추가
+import { createPlane } from "../../app/createPlane"; // 바닥 추가
+import MediapipeSquatTracking from "../../app/workoutCam/squatCam";
+import MediapipePushupTracking from "../../app/workoutCam/pushupCam";
+import MediapipeLegraiseTracking from "../../app/workoutCam/legraiseCam";
+import MediapipeLungeTracking from "../../app/workoutCam/lungeCam";
+import Buttons from "../ui/exerciseButtons";
+import LoginModal from "../login/LoginModal";
+import { setBackgroundColor } from "../../shared/background";
+import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
+import { getToken } from "../../pages/login/AuthContext";
+import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 
-  if (bestScore === null || bestScore === undefined || bestScore === 0) {
-    // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
-    if (userScore > 0) {
-      resultMessage = "첫 운동 기록입니다!";
-      soundEffect = "/sound/victory.mp3";
-    } else {
-      resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
-      soundEffect = "/sound/fail.mp3";
-    }
-  } else if (userScore > bestScore) {
-    resultMessage = "승리!";
-    soundEffect = "/sound/victory.mp3";
-  } else if (userScore < bestScore) {
-    resultMessage = "패배...";
-    soundEffect = "/sound/fail.mp3";
+import "./ExerciseScene.css";
+
+// 오디오 파일 불러오기
+const winSound = new Audio(`${process.env.PUBLIC_URL}/sound/wow.mp3`);
+const loseSound = new Audio(
+  `${process.env.PUBLIC_URL}/sound/youre_too_slow.mp3`
+);
+const drawSound = new Audio(`${process.env.PUBLIC_URL}/sound/hurry_up.mp3`);
+
+function interaction(characterCount, userCount, setInteractionMessage) {
+  console.log(`캐릭터 카운트: ${characterCount}, 유저 카운트: ${userCount}`);
+  if (userCount > characterCount) {
+    setInteractionMessage("유저가 이기고 있습니다!");
+    winSound.play();
+  } else if (userCount < characterCount) {
+    setInteractionMessage("유저가 지고 있습니다!");
+    loseSound.play();
   } else {
-    resultMessage = "무승부";
-    soundEffect = "/sound/fail2.mp3";
+    setInteractionMessage("동점입니다!");
+    drawSound.play();
   }
+}
 
-  useEffect(() => {
-    // 오디오가 초기화되지 않고 딱 한 번만 재생되도록 설정
-    const audio = new Audio(soundEffect);
-    audio.play();
+function ExerciseScene() {
+  const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
+  const canvasRef = useRef(null); // Mediapipe 캔버스
+  const mixerRef = useRef(null);
+  const modelRef = useRef(null);
+  const animationsRef = useRef({}); // 애니메이션 액션 객체들 저장
+  const navigate = useNavigate();
+  const cameraRef = useRef(); // Three.js 카메라 참조
+  const controlsRef = useRef();
+  const sceneRef = useRef();
+  const rendererRef = useRef(null); // 렌더러 참조 저장
 
-    return () => {
-      // 컴포넌트가 언마운트될 때 오디오 정지
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }, [resultMessage]); // resultMessage가 설정될 때만 실행
+  const [openLogin, setOpenLogin] = useState(false);
+  const [bestScore, setBestScore] = useState(0);
+  const [userScore, SetUserScore] = useState(0);
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [selectedDuration, setSelectedDuration] = useState(null);
+  const [mediapipeActive, setMediapipeActive] = useState(false);
+  const [countdownImages, setCountdownImages] = useState([
+    "count3.png",
+    "count2.png",
+    "count1.png",
+    "countStart.png",
+  ]);
+  const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
+  const [exerciseCount, setExerciseCount] = useState(0);
+  const exerciseCountRef = useRef(0);
+  const [showTimer, setShowTimer] = useState(false);
+  const timerStartTimeRef = useRef(null); // 타이머 시작 시간 저장
+  const countdownMusicRef = useRef(null); // 카운트다운 중 재생될 노래 참조
+  const [animationRepeatCount, setAnimationRepeatCount] = useState(0);
+  const animationRepeatCountRef = useRef(0); // 최신 값을 유지하기 위한 ref
+  const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
+  const animationActionRef = useRef(null);
+  const handleLoopRef = useRef(null);
+
+  // 운동 타이머 시작 함수
+  const startExerciseTimer = (durationInSeconds) => {
+    setShowTimer(true); // 타이머 표시
+    timerStartTimeRef.current = Date.now(); // 현재 시간을 시작 시간으로 설정
+    setTimeout(() => {
+      endExercise();
+    }, durationInSeconds * 1000);
+
+    // 남은 시간이 30초일 때 interaction 함수 호출
+    if (durationInSeconds > 30) {
+      setTimeout(() => {
+        interaction(
+          animationRepeatCountRef.current,
+          exerciseCountRef.current,
+          setInteractionMessage
+        );
+      }, (durationInSeconds - 30) * 1000);
+    }
+  };
+
+  // 기타 필요한 설정 및 useEffect 관리 ...
 
   return (
-    <div className="modal-overlay">
-      <div className="card">
-        <div className="modal-content">
-          <button
-            className="Btn"
-            onClick={() => {
-              onClose();
-              window.location.reload(); // 새로고침 추가
-            }}
-          >
-            <div className="sign">
-              <svg viewBox="0 0 512 512">
-                <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
-              </svg>
-            </div>
-            <div className="text">닫기</div>
-          </button>
-          <h1>운동 결과</h1>
-          <h2>아바타: {bestScore}</h2>
-          <h2>나: {userScore}</h2>
-          <h2>결과: {resultMessage}</h2>
-        </div>
-      </div>
+    <div
+      className="font"
+      style={{ width: "100vw", height: "100vh", position: "relative" }}
+    >
+      {/* UI and Timer Components */}
+      <Buttons
+        onMainPageClick={moveToMainScene}
+        onLoginPageClick={openLoginDialog}
+        onResultClick={moveToResultPage}
+        selectedExercise={selectedExercise}
+        handleExerciseSelect={handleExerciseSelect}
+        selectedDuration={selectedDuration}
+        handleDurationSelect={handleDurationSelect}
+        exercises={exercises}
+        durations={durations}
+        onSelectionComplete={handleSelectionComplete}
+      />
+      {/* Timer, Mediapipe Render Components */}
     </div>
   );
 }
 
-export default ExerciseResultModal;
+export default ExerciseScene;
+ㅋ;
