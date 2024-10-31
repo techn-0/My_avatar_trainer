@@ -149,21 +149,23 @@ export class SocauthController {
   @UseGuards(AuthGuard('kakao'))
   async kakaoLoginCallback(@Req() req, @Res() res) {
 
-    const result = await this.socauthService.handleLogin(req.user);
+    // Check if user exists; if not, route to signup
+    const userExists = await this.socauthService.userExists(req.user.id);
+    if (!userExists) {
+      // 소셜 미디어를 통해서 회원가입에 필요한 providerId, email, accessToken을 담은 JWT 토큰을 발행한다.
+      const result = await this.socauthService.handleLogin(req.user);
 
-    // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
-    res.cookie('token', result.token, {
-      maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
-      secure: true, // HTTPS에서만 작동
-      sameSite: 'Strict', // SameSite 설정
-      path: '/',
-    });
+      // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
+      res.cookie('token', result.token, {
+        maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
+        secure: false, // HTTPS에서만 작동
+        sameSite: 'Lax', // SameSite 설정
+        path: '/',
+      });
 
-    const accessToken = req.user?.accessToken;
-
-    const userexists = await this.socauthService.userExists(req.user.id);
-
-    if (!userexists){
+      // 소셜 미디어로 로그인 후 최초로 회원 가입 시, 이용자의 정보를 가져오기 위해 req에 담긴 accessToken을 쿠키에 저장한다.
+      const accessToken = req.user?.accessToken;
+  
       try{
         const response = await axios.get('https://kapi.kakao.com/v2/user/me', {
           headers: {
@@ -172,26 +174,38 @@ export class SocauthController {
         });
 
         const user = response.data;
-        // console.log(user);
-
+  
+        // 소셜 미디어 종류를 google로 지정한다.
         const socUserCredentialDto = {
           providerId: user.id, 
-          email: user.kakao_account.email, 
+          email: user.email, 
           provider: 'kakao',
         }
-        // console.log(socUserCredentialDto);
-        
 
+        // 소셜 로그인 데이터를 이용해서 회원 가입한다.
         await this.socauthService.signUp(socUserCredentialDto);
 
+        
         return res.redirect('http://localhost:3000/socauth/additional-data');
 
       }catch(error){
         console.error('Token verification failed:', error);
-          return res.status(401).send('Unauthorized');
+        return res.status(401).send('Unauthorized');
       }
 
     }
+
+    // User, provider 정보만을 담은 JWT Token을 이용해서 로그인한다.
+    const userRecord = await this.userModel.findOne({providerId:req.user.id});
+    const username = userRecord.username;
+    const result = await this.socauthService.newHandleLogin(username, req.user);
+
+    res.cookie('token', result.token, {
+      maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
+      secure: false, // HTTPS에서만 작동
+      sameSite: 'Lax', // SameSite 설정
+      path: '/',
+    });
 
     // Redirect to localhost:3000 after successful login
     return res.redirect('http://localhost:3000') 
@@ -207,20 +221,22 @@ export class SocauthController {
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
   async naverLoginCallback(@Req() req, @Res() res) {
-    const result = await this.socauthService.handleLogin(req.user);
-
-    // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
-    res.cookie('token', result.token, {
-      maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
-      secure: true, // HTTPS에서만 작동
-      sameSite: 'Strict', // SameSite 설정
-      path: '/',
-    });
-
-    const accessToken = req.user?.accessToken;
+    // Check if user exists; if not, route to signup
     const userExists = await this.socauthService.userExists(req.user.id);
+    if (!userExists) {
+      // 소셜 미디어를 통해서 회원가입에 필요한 providerId, email, accessToken을 담은 JWT 토큰을 발행한다.
+      const result = await this.socauthService.handleLogin(req.user);
 
-    if(!userExists){
+      // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
+      res.cookie('token', result.token, {
+        maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
+        secure: false, // HTTPS에서만 작동
+        sameSite: 'Lax', // SameSite 설정
+        path: '/',
+      });
+
+      // 소셜 미디어로 로그인 후 최초로 회원 가입 시, 이용자의 정보를 가져오기 위해 req에 담긴 accessToken을 쿠키에 저장한다.
+      const accessToken = req.user?.accessToken;
       try{
       const response = await axios.get('https://openapi.naver.com/v1/nid/me', {
         headers: {
@@ -228,26 +244,44 @@ export class SocauthController {
         },
       });
 
-      const user = response.data;
-      console.log(user);
+      const user = response.data.response;
+      console.log('******', user);
 
+      // 소셜 미디어 종류를 google로 지정한다.
       const socUserCredentialDto = {
-        providerId: user.response.id, 
-        email: user.response.email, 
+        providerId: user.id, 
+        email: user.email, 
         provider: 'naver',
-      };
-      console.log(socUserCredentialDto);
+      }
+      
+      console.log('//////', socUserCredentialDto);
 
-      await this.socauthService.signUp(socUserCredentialDto);
+      // 소셜 로그인 데이터를 이용해서 회원 가입한다.
+      const returnmessage = await this.socauthService.signUp(socUserCredentialDto);
+      console.log(returnmessage);
 
       return res.redirect('http://localhost:3000/socauth/additional-data');
 
     }catch(error){
-        console.error('Token verification failed:', error);
-        return res.status(401).send('Unauthorized');
-      }
-
+      console.error('Token verification failed:', error);
+      return res.status(401).send('Unauthorized');
     }
+
+  }
+
+    // User, provider 정보만을 담은 JWT Token을 이용해서 로그인한다.
+    const userRecord = await this.userModel.findOne({providerId:req.user.id});
+    const username = userRecord.username;
+    const result = await this.socauthService.newHandleLogin(username, req.user);
+    console.log(req.user);
+
+    res.cookie('token', result.token, {
+      maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
+      secure: false, // HTTPS에서만 작동
+      sameSite: 'Lax', // SameSite 설정
+      path: '/',
+    });
+
     
     
     return res.redirect('http://localhost:3000');
