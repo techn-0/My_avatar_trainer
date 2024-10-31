@@ -56,9 +56,9 @@ function Buttons({
                 onClick={onResultClick}
               />
               <div className="btn">
-                성장 기록
+                마이페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  _성장 기록_
+                  _마이페이지_
                 </span>
               </div>
             </div>

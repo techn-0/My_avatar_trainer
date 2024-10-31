@@ -26,8 +26,8 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
-// MediapipeLungeTracking 컴포넌트
-function MediapipeLungeTracking({ onCanvasUpdate, active, onCountUpdate }) {
+// MediapipeSitupTracking 컴포넌트
+function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -212,10 +212,10 @@ function MediapipeLungeTracking({ onCanvasUpdate, active, onCountUpdate }) {
           background: "white",
         }}
       >
-        <h1>런지 횟수: {lungeCountRef.current}</h1>
+        <h1>윗몸일으키기 횟수: {lungeCountRef.current}</h1>
       </div>
     </div>
   );
 }
 
-export default MediapipeLungeTracking;
+export default MediapipeSitupTracking;

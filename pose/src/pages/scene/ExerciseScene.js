@@ -94,6 +94,7 @@ function ExerciseScene() {
   // 애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)
   const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
   const normalPushupRepetitionDuration = 1.55; // 푸시업 1회에 1.55초 소요
+  const normalBurpeeRepetitionDuration = 3.13; // 버피 테스트 1회에 3.13초 소요
 
   // 애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가
   const animationActionRef = useRef(null);
@@ -350,8 +351,11 @@ function ExerciseScene() {
 
           // 선택한 운동에 따라 초기 애니메이션 설정
           if (selectedExercise === "pushup") {
-            // 푸시업: 애니메이션 번호 6번을 한 번 재생하고 대기
+            // 푸시업: 애니메이션 번호 9번을 한 번 재생하고 대기
             playAnimation(10, THREE.LoopOnce);
+          } else if (selectedExercise === "burpee") {
+            // 버피: 애니메이션 번호 9번을 한 번 재생하고 대기
+            playAnimation(9, THREE.LoopOnce);
           } else {
             // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
             playAnimation(7, THREE.LoopOnce);
@@ -402,6 +406,9 @@ function ExerciseScene() {
       if (selectedExercise === "pushup") {
         timeScale = normalPushupRepetitionDuration / desiredRepetitionDuration; // 푸시업 속도 조절
         animationIndex = 12; // 푸시업 애니메이션 번호
+      } else if (selectedExercise === "burpee") {
+        timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 버피 속도 조절
+        animationIndex = 0; // 버피 애니메이션 번호
       } else {
         timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 스쿼트 등 기타 운동 속도 조절
         animationIndex = 15; // 스쿼트 애니메이션 번호
