@@ -12,7 +12,7 @@ import {
   RadialLinearScale,
 } from "chart.js";
 import { Line, Radar } from "react-chartjs-2";
-import "./ExerciseGraph.css";
+import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
 // Chart.js에 필요한 구성 요소 등록.
 ChartJS.register(
@@ -26,7 +26,7 @@ ChartJS.register(
   RadialLinearScale
 );
 
-const ExerciseGraph = () => {
+const MyPage = () => {
   const navigate = useNavigate();
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,12 +120,22 @@ const ExerciseGraph = () => {
         tension: 0.4,
       },
       {
-        label: "Legraise",
+        label: "burpee",
         data: workoutData
-          .filter((entry) => entry.exercise === "legraise")
+          .filter((entry) => entry.exercise === "burpee")
           .map((entry) => entry.count),
         borderColor: "rgba(30, 109, 34, 1)",
         backgroundColor: "rgba(30, 109, 34, 0.2)",
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: "situp",
+        data: workoutData
+          .filter((entry) => entry.exercise === "burpee")
+          .map((entry) => entry.count),
+        borderColor: "rgba(10, 190, 54, 1)",
+        backgroundColor: "rgba(10, 190, 54, 0.2)",
         fill: true,
         tension: 0.4,
       },
@@ -134,7 +144,7 @@ const ExerciseGraph = () => {
 
   // 최고 기록 (레이더 차트용)
   const radarData = {
-    labels: ["Squat", "Pushup", "Plank(minutes)", "Legraise"],
+    labels: ["Squat", "Pushup", "Plank(minutes)", "burpee"],
     datasets: [
       {
         label: "최고 기록",
@@ -156,7 +166,7 @@ const ExerciseGraph = () => {
           ),
           Math.max(
             ...workoutData
-              .filter((entry) => entry.exercise === "legraise")
+              .filter((entry) => entry.exercise === "burpee")
               .map((entry) => entry.count)
           ),
         ], // 각 운동의 최고 기록
@@ -189,7 +199,6 @@ const ExerciseGraph = () => {
     responsive: true,
     scale: {
       ticks: { beginAtZero: true, max: 60 },
-
     },
   };
 
@@ -292,4 +301,4 @@ const ExerciseGraph = () => {
   );
 };
 
-export default ExerciseGraph;
+export default MyPage;
