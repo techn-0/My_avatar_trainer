@@ -3,13 +3,19 @@ import { AuthGuard } from '@nestjs/passport';
 import { SocauthService } from './socauth.service';
 import axios from 'axios';
 import { JwtService } from '@nestjs/jwt';
+
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from '../auth/schemas/user.schema'; // Update this path to where your User schema is defined
+
 import { access } from 'fs';
 
 @Controller('socauth')
 export class SocauthController {
   constructor(
+    @InjectModel(User.name) private userModel:Model<User>,
     private readonly socauthService: SocauthService,
-    private readonly jwtService: JwtService // Inject JwtService to decode token
+    private readonly jwtService: JwtService // Inject JwtService to decode token,
   ) {}
 
   @Get('google')
@@ -21,23 +27,24 @@ export class SocauthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {    
-    // 소셜 미디어를 통해서 로그인을 실행한다.
-    const result = await this.socauthService.handleLogin(req.user);
-    
-    // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
-    res.cookie('token', result.token, {
-      maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
-      secure: false, // HTTPS에서만 작동
-      sameSite: 'Lax', // SameSite 설정
-      path: '/',
-    });
-
-    // 소셜 미디어로 로그인 후 최초로 회원 가입 시, 이용자의 정보를 가져오기 위해 req에 담긴 accessToken을 쿠키에 저장한다.
-    const accessToken = req.user?.accessToken;
 
     // Check if user exists; if not, route to signup
     const userExists = await this.socauthService.userExists(req.user.id);
     if (!userExists) {
+      // 소셜 미디어를 통해서 회원가입에 필요한 providerId, email, accessToken을 담은 JWT 토큰을 발행한다.
+      const result = await this.socauthService.handleLogin(req.user);
+
+      // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
+      res.cookie('token', result.token, {
+        maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
+        secure: false, // HTTPS에서만 작동
+        sameSite: 'Lax', // SameSite 설정
+        path: '/',
+      });
+
+      // 소셜 미디어로 로그인 후 최초로 회원 가입 시, 이용자의 정보를 가져오기 위해 req에 담긴 accessToken을 쿠키에 저장한다.
+      const accessToken = req.user?.accessToken;
+
       // 소셜 로그인 정보로 로그인한 적이 없다면, 해당 정보로 회원 가입한다.
         try{
           const response = await axios.get(
@@ -56,8 +63,6 @@ export class SocauthController {
           // 소셜 로그인 데이터를 이용해서 회원 가입한다.
           await this.socauthService.signUp(socUserCredentialDto);
   
-          // 소셜 로그인 데이터로 회원 가입한 이용자가 로그인한다.
-          // await this.socauthService.handleLogin(req.user);
           
           return res.redirect('http://localhost:3000/socauth/additional-data');
 
@@ -67,6 +72,19 @@ export class SocauthController {
         }
 
     }
+
+    // User, provider 정보만을 담은 JWT Token을 이용해서 로그인한다.
+    const userRecord = await this.userModel.findOne({providerId:req.user.id});
+    const username = userRecord.username;
+    const result = await this.socauthService.newHandleLogin(username, req.user);
+
+    res.cookie('token', result.token, {
+      maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
+      secure: false, // HTTPS에서만 작동
+      sameSite: 'Lax', // SameSite 설정
+      path: '/',
+    });
+
     // Redirect to localhost:3000 after successful login
     return res.redirect('http://localhost:3000');
   }
@@ -102,8 +120,16 @@ export class SocauthController {
       console.log('Username successfully done');
 
       // Cookie에 담긴 Token 정보를 없애고, username을 id로 담는 Token을 형성한다. 
+      const newToken = await this.socauthService.newHandleLogin(username, provider);
 
-
+      res.clearCookie('token');
+      res.cookie('token', newToken.token,{
+        maxAge: 3600 * 1000, // 1 hour in milliseconds
+        secure: false, // HTTPS only if true
+        sameSite: 'Lax',
+        path: '/',
+      });
+      
       return res.redirect('http://localhost:3000/')
     }catch(error){
       console.error(error);
@@ -157,8 +183,6 @@ export class SocauthController {
         
 
         await this.socauthService.signUp(socUserCredentialDto);
-
-        await this.socauthService.handleLogin(req.user);
 
         return res.redirect('http://localhost:3000/socauth/additional-data');
 
@@ -215,8 +239,6 @@ export class SocauthController {
       console.log(socUserCredentialDto);
 
       await this.socauthService.signUp(socUserCredentialDto);
-
-      await this.socauthService.handleLogin(req.user);
 
       return res.redirect('http://localhost:3000/socauth/additional-data');
 

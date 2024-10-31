@@ -27,6 +27,23 @@ export class SocauthService {
     return !!user;
   }
 
+  // provider, provider id에 해당하는 username, provider 정보로 JWT 토큰을 발행한다.  
+  async newHandleLogin(username:any, user:any){
+    const {provider} = user
+    
+    const payload = {
+      id: username,
+      provider
+    }
+
+    //JWT 토큰을 발행한다.
+    const jwtToken = this.jwtService.sign(payload);
+  
+    return {token:jwtToken};
+
+  }
+
+
   // 소셜 미디어를 활용한 로그인이 승인된 이후, JWT 토큰을 형성해 로그인한 것을 확인한다.
   async handleLogin(user: any) {
     // This function can handle the login logic (create user, generate token, etc.)
