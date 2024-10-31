@@ -19,7 +19,8 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
       id,
       nickname,
       email: emails[0].value,
-      accessToken 
+      accessToken,
+      provider:'naver',
     };
     done(null, user);
   }

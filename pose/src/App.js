@@ -11,6 +11,7 @@ import ThreeScene from "./pages/scene/MainScene";
 import ExerciseScene from "./pages/scene/ExerciseScene";
 import ExerciseGraph from "./pages/ExerciseGraph/ExerciseGraph";
 import Ranking from "./pages/ranking/ranking";
+import Social from "./app/socauth";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/exercise" element={<ExerciseScene />} />
         <Route path="/progress" element={<ExerciseGraph />} />
         <Route path="/ranking" element={<Ranking />} />
+        <Route path="/socauth/additional-data" element={<Social />} />
       </Routes>
     </React.Fragment>
   );

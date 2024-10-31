@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Req, Res, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, Body, UseGuards, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SocauthService } from './socauth.service';
 import axios from 'axios';
+import { JwtService } from '@nestjs/jwt';
 import { access } from 'fs';
 
 @Controller('socauth')
 export class SocauthController {
-  constructor(private readonly socauthService: SocauthService) {}
+  constructor(
+    private readonly socauthService: SocauthService,
+    private readonly jwtService: JwtService // Inject JwtService to decode token
+  ) {}
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
@@ -44,7 +48,7 @@ export class SocauthController {
   
           // 소셜 미디어 종류를 google로 지정한다.
           const socUserCredentialDto = {
-            id: user.id, 
+            providerId: user.id, 
             email: user.email, 
             provider: 'google',
           }
@@ -53,8 +57,10 @@ export class SocauthController {
           await this.socauthService.signUp(socUserCredentialDto);
   
           // 소셜 로그인 데이터로 회원 가입한 이용자가 로그인한다.
-          await this.socauthService.handleLogin(req.user);
-            
+          // await this.socauthService.handleLogin(req.user);
+          
+          return res.redirect('http://localhost:3000/socauth/additional-data');
+
         }catch(error){
           console.error('Token verification failed:', error);
           return res.status(401).send('Unauthorized');
@@ -65,7 +71,48 @@ export class SocauthController {
     return res.redirect('http://localhost:3000');
   }
 
-  
+  @Post('additional-data')
+  // Username을 additional-data 페이지에서 변수로 받고, providerId와 provider를 동시에 일치하는 조건의 사용자 username을 업데이트 한다.
+  async Addadditionaldata(@Body() body: {username:string}, @Req() req, @Res() res){
+    //providerId, provider에 해당하는 정보를 받아야 한다.
+    // providerId, provider 변수를 어떻게 받을 것인가?
+    try{
+      const {username} = body;
+
+      // console.log('REQ', req);
+
+      const token = req.cookies.token;
+      if(!token){
+        throw new UnauthorizedException('AccessToken is missing');
+      }
+
+      const decodedUserInfo = this.jwtService.decode(token);
+      // console.log('token',token);
+      console.log(decodedUserInfo);
+
+      // const userInfo = req.cookies.token;
+
+      const{id : providerId, email, provider:provider} = decodedUserInfo;
+      console.log('#1',providerId, email);
+      // const domainPart = email.split('@')[1];
+      // const provider = domainPart.split('.')[0];
+      console.log('#2', provider)
+      const result = await this.socauthService.updateUsername(providerId, provider, username);
+
+      console.log('Username successfully done');
+
+      // Cookie에 담긴 Token 정보를 없애고, username을 id로 담는 Token을 형성한다. 
+
+
+      return res.redirect('http://localhost:3000/')
+    }catch(error){
+      console.error(error);
+      throw new InternalServerErrorException('Failed to update username information');
+    }
+  }
+
+
+
   @Get('kakao')
   @UseGuards(AuthGuard('kakao'))
   async kakaoLogin() {
@@ -102,7 +149,7 @@ export class SocauthController {
         // console.log(user);
 
         const socUserCredentialDto = {
-          id: user.id, 
+          providerId: user.id, 
           email: user.kakao_account.email, 
           provider: 'kakao',
         }
@@ -112,6 +159,9 @@ export class SocauthController {
         await this.socauthService.signUp(socUserCredentialDto);
 
         await this.socauthService.handleLogin(req.user);
+
+        return res.redirect('http://localhost:3000/socauth/additional-data');
+
       }catch(error){
         console.error('Token verification failed:', error);
           return res.status(401).send('Unauthorized');
@@ -158,7 +208,7 @@ export class SocauthController {
       console.log(user);
 
       const socUserCredentialDto = {
-        id: user.response.id, 
+        providerId: user.response.id, 
         email: user.response.email, 
         provider: 'naver',
       };
@@ -167,6 +217,8 @@ export class SocauthController {
       await this.socauthService.signUp(socUserCredentialDto);
 
       await this.socauthService.handleLogin(req.user);
+
+      return res.redirect('http://localhost:3000/socauth/additional-data');
 
     }catch(error){
         console.error('Token verification failed:', error);

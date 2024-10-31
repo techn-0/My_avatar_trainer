@@ -2,13 +2,16 @@ import { Injectable,
   UnauthorizedException,
   ConflictException,
   InternalServerErrorException,
+  BadRequestException,
+  NotFoundException,
  } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { socUserCredentialDto } from './dto/socauth-credential.dto';
+import { ExtendedSocUserCredentialDto, socUserCredentialDto } from './dto/socauth-credential.dto';
 import { User } from '../auth/schemas/user.schema';
+import { NotFound } from '@aws-sdk/client-s3';
 
 
 @Injectable()
@@ -19,8 +22,8 @@ export class SocauthService {
   ) {}
 
   //소셜 미디어를 통해서 회원 가입 정보를 생성했는지 여부를 확인한다.
-  async userExists(userId: string): Promise<boolean> {
-    const user = await this.userModel.findOne({username: userId});
+  async userExists(providerId: string): Promise<boolean> {
+    const user = await this.userModel.findOne({providerId: providerId});
     return !!user;
   }
 
@@ -28,12 +31,13 @@ export class SocauthService {
   async handleLogin(user: any) {
     // This function can handle the login logic (create user, generate token, etc.)
     // For now, just return the user
-    const { id, email, accessToken} = user;
+    const { id:id, email, accessToken, provider} = user;//const username = this.userModel.findone(user.providerId, user.provider)
     
     const payload = { 
-      id, 
+      id, // id: username 
       email,
       accessToken,
+      provider,
       // firstName, 
       // lastName, 
       // picture,
@@ -47,14 +51,17 @@ export class SocauthService {
     return {token:jwtToken};
   }
 
-  async signUp(socUserCredentialDto: socUserCredentialDto): Promise<{message: string}>{
-    const { id, email, provider } = socUserCredentialDto;
+  async signUp(socUserCredentialDto: ExtendedSocUserCredentialDto): Promise<{message: string}>{
+    const { providerId, email, provider, username } = socUserCredentialDto;
     try{
-        await this.userModel.create({
-            username : id,
-            email,
-            provider
-        });
+        await this.userModel.updateOne(
+            {providerId:providerId, provider:provider},
+            {
+              $setOnInsert:{email,provider},
+              $set:{username}
+          },
+          {upsert:true}
+        );
         return { message: '회원가입 성공!'};
     } catch (error){
         console.log(error);
@@ -65,6 +72,43 @@ export class SocauthService {
         }
     }
 }
+
+  async updateUsername(providerId:string, provider:string, username:string): Promise<{message:string}>{
+    try{
+      // 사용자의 username이 존재하는지 확인한다.
+      if(!username){
+        throw new BadRequestException(
+          'Username is required'
+        );
+      }
+
+      // 사용자의 username이 존재하는지 확인한다.
+      const existingUsername = await this.userModel.findOne({username})
+      
+      if(existingUsername){
+        throw new ConflictException('Username'+existingUsername+'already exists');
+      }
+
+      // 사용자의 username을 업데이트한다.
+      const updateResult = await this.userModel.updateOne(
+        {providerId, provider},
+        {$set : {username}}
+      );
+
+      console.log(updateResult);
+      
+      if(updateResult.matchedCount === 0){
+        throw new NotFoundException('User not found');
+      }
+
+      return {message: 'Username updated successfully!'};
+
+    }catch(error){
+      console.error(error);
+      throw new InternalServerErrorException('Failed to sign or update due to server error');
+    }
+
+  }
 
 
 }
