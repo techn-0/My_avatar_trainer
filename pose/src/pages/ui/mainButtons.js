@@ -69,6 +69,14 @@ function Buttons({
     }
   };
 
+  const handleMultiplayerClick = () => {
+    if (getToken()) {
+      navigate("/lobby"); // 멀티플레이 로비로 이동
+    } else {
+      alert("로그인 먼저 해주세요.");
+    }
+  };
+
   return (
     <div className="button-container r_card-container">
       <div className="radio-wrapper">
@@ -86,7 +94,6 @@ function Buttons({
           </span>
         </div>
       </div>
-
       <div className="radio-wrapper">
         <input
           className="input"
@@ -103,7 +110,6 @@ function Buttons({
           </span>
         </div>
       </div>
-
       <div className="radio-wrapper">
         <input
           className="input"
@@ -120,7 +126,6 @@ function Buttons({
           </span>
         </div>
       </div>
-
       <div className="radio-wrapper">
         <input
           className="input"
@@ -137,7 +142,6 @@ function Buttons({
           </span>
         </div>
       </div>
-
       <div className="radio-wrapper">
         <input
           className="input"
@@ -154,7 +158,23 @@ function Buttons({
           </span>
         </div>
       </div>
-
+      
+      <div className="radio-wrapper">
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="multiplayer"
+          onClick={handleMultiplayerClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleMultiplayerClick}>
+          멀티플레이
+          <span className="btn__glitch" aria-hidden="true">
+            _멀티플레이_
+          </span>
+        </div>
+      </div>
       {/* Hidden audio element for glitch sound */}
       <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
