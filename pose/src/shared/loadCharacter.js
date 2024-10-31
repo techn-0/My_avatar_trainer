@@ -10,7 +10,7 @@ export function loadCharacter(scene, onLoadComplete) {
   const gltfLoader = new GLTFLoader();
 
   gltfLoader.load(
-    "blackGirl/girl.glb",
+    "blackGirl/blackGirl.glb",
     function (gltf) {
       const model = gltf.scene;
       model.position.set(0, 0, 0);
@@ -38,8 +38,8 @@ export function loadCharacter(scene, onLoadComplete) {
         });
 
         // 기본 애니메이션 (예: 번호 5) 재생
-        if (animations[5]) {
-          animations[5].play();
+        if (animations[8]) {
+          animations[8].play();
         } else {
           console.warn("Animation 5 is not available.");
         }

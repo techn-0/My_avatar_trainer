@@ -306,7 +306,7 @@ function ExerciseScene() {
                 }
 
                 // Idle 애니메이션 재생
-                playAnimation(5, THREE.LoopRepeat);
+                playAnimation(8, THREE.LoopRepeat);
               }
 
               return newCount;
@@ -351,10 +351,10 @@ function ExerciseScene() {
           // 선택한 운동에 따라 초기 애니메이션 설정
           if (selectedExercise === "pushup") {
             // 푸시업: 애니메이션 번호 6번을 한 번 재생하고 대기
-            playAnimation(6, THREE.LoopOnce);
+            playAnimation(10, THREE.LoopOnce);
           } else {
             // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
-            playAnimation(4, THREE.LoopOnce);
+            playAnimation(7, THREE.LoopOnce);
           }
         })
         .catch((error) => {
@@ -401,10 +401,10 @@ function ExerciseScene() {
 
       if (selectedExercise === "pushup") {
         timeScale = normalPushupRepetitionDuration / desiredRepetitionDuration; // 푸시업 속도 조절
-        animationIndex = 8; // 푸시업 애니메이션 번호
+        animationIndex = 12; // 푸시업 애니메이션 번호
       } else {
         timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 스쿼트 등 기타 운동 속도 조절
-        animationIndex = 11; // 스쿼트 애니메이션 번호
+        animationIndex = 15; // 스쿼트 애니메이션 번호
       }
 
       // 애니메이션 반복 횟수 초기화
@@ -469,9 +469,9 @@ function ExerciseScene() {
     let endAnimationIndex;
 
     if (selectedExercise === "pushup") {
-      endAnimationIndex = 9; // 푸시업 종료 애니메이션 번호
+      endAnimationIndex = 13; // 푸시업 종료 애니메이션 번호
     } else {
-      endAnimationIndex = 3; // 스쿼트 종료 애니메이션 번호
+      endAnimationIndex = 6; // 스쿼트 종료 애니메이션 번호
     }
 
     // 애니메이션을 한 번 재생하고, 이후 번호 5를 기본으로 설정
@@ -482,10 +482,10 @@ function ExerciseScene() {
       mixerRef.current.addEventListener("finished", () => {
         if (bestScore > userScore) {
           // 유저의 운동 횟수가 캐릭터의 횟수보다 적을 때
-          playAnimation(3, THREE.LoopOnce);
+          playAnimation(6, THREE.LoopOnce);
         } else {
           // 그 외에는 Idle 애니메이션 재생
-          playAnimation(5, THREE.LoopRepeat);
+          playAnimation(2, THREE.LoopRepeat);
         }
       });
     } else {
