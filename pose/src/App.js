@@ -23,7 +23,7 @@ function App() {
         {/* ThreeScene을 루트 경로에 렌더링 */}
         <Route path="/login" element={<Login />} />
         <Route path="/exercise" element={<ExerciseScene />} />
-        <Route path="/progress" element={<MyPage />} />
+        <Route path="/user" element={<MyPage />} />
         <Route path="/ranking" element={<Ranking />} />
       </Routes>
     </React.Fragment>

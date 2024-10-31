@@ -1,3 +1,6 @@
+/* MyPage.css */
+
+/* 기존 스타일 유지 */
 @font-face {
   font-family: "GangwonEduPowerExtraBoldA";
   src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
@@ -5,8 +8,28 @@
   font-weight: normal;
   font-style: normal;
 }
+
 .font {
   font-family: "GangwonEduPowerExtraBoldA";
+}
+
+.div1 {
+  border: 2px, black, solid;
+  border-radius: 30px;
+  align-content: center;
+  padding: 20px;
+}
+.div2 {
+  border: 2px, black, solid;
+  border-radius: 30px;
+  align-content: center;
+  padding: 20px;
+}
+.div3 {
+  border: 2px, black, solid;
+  border-radius: 30px;
+  align-content: center;
+  padding: 20px;
 }
 
 .button-64 {
@@ -221,4 +244,48 @@
 .time-selection {
   display: flex; /* 시간 선택 셀렉트 요소를 가로로 배치하기 위해 flex 사용 */
   gap: 10px; /* 시간 선택 셀렉트 사이의 간격 */
+}
+
+/* container와 main div 스타일 */
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 배경 스타일 */
+  --s: 194px;
+  --c1: #ffef84;
+  --c2: #71d9ff;
+
+  --_l: #0000 calc(25% / 3), var(--c1) 0 25%, #0000 0;
+  --_g: conic-gradient(from 120deg at 50% 87.5%, var(--c1) 120deg, #0000 0);
+
+  background: var(--_g), var(--_g) 0 calc(var(--s) / 2),
+    conic-gradient(from 180deg at 75%, var(--c2) 60deg, #0000 0),
+    conic-gradient(from 60deg at 75% 75%, var(--c1) 0 60deg, #0000 0),
+    linear-gradient(150deg, var(--_l)) 0 calc(var(--s) / 2),
+    conic-gradient(
+      at 25% 25%,
+      #0000 50%,
+      var(--c2) 0 240deg,
+      var(--c1) 0 300deg,
+      var(--c2) 0
+    ),
+    linear-gradient(-150deg, var(--_l)) #e0fff7;
+  background-size: calc(0.866 * var(--s)) var(--s);
+  font-family: "GangwonEduPowerExtraBoldA";
+}
+
+.main {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 8% auto;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  background-color: White;
+  border-radius: 8px;
+  display: flex; /* 또는 display: grid; */
+  flex-direction: column; /* 필요에 따라 설정 */
+  gap: 10px;
 }
