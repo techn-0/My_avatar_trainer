@@ -1,11 +1,12 @@
-// MediapipeLungeTracking.js
+// plankCam.js
 
 import React, { useEffect, useRef } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { angleCalc } from "./angleCalc";
-import { useGreenFlashEffect } from "./greenFlashEffect"; // greenFlashEffect 임포트
+import { angleCalc } from "./angleCalc"; // 관절 각도 계산 함수
+import { useGreenFlashEffect } from "./greenFlashEffect";
+import "./exBL.css"; // 필요한 경우 CSS 파일 임포트
 
 const POSE_CONNECTIONS = [
   [11, 13],
@@ -26,28 +27,37 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
-// MediapipePlankTracking 컴포넌트
-function MediapipePlankTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipePlankTracking({
+  onCanvasUpdate,
+  active,
+  onCountUpdate,
+  animationRepeatCount,
+}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const lungeCountRef = useRef(0);
-  const lungeStateRef = useRef("up");
+  const plankTimeRef = useRef(0); // 플랭크 유지 시간 (초)
+  const isPlankPoseRef = useRef(false);
+  const plankStartTimeRef = useRef(null);
 
   // greenFlashEffect 훅 사용
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
     useGreenFlashEffect();
 
-  function onPreMovement() {
-    triggerGreenFlash();
-  }
-
-  function onCountIncrease() {
+  function onPlankStart() {
     triggerGreenFlash();
     triggerGoodBox(); // "Good!" 박스 표시
-    lungeCountRef.current += 1;
+    plankStartTimeRef.current = Date.now();
+  }
+
+  function onPlankEnd() {
+    triggerGreenFlash();
+    const plankDuration = (Date.now() - plankStartTimeRef.current) / 1000; // 초 단위로 변환
+    plankTimeRef.current += plankDuration;
+    plankStartTimeRef.current = null;
+
     if (onCountUpdate) {
-      onCountUpdate(lungeCountRef.current);
+      onCountUpdate(Math.floor(plankTimeRef.current));
     }
   }
 
@@ -61,8 +71,8 @@ function MediapipePlankTracking({ onCanvasUpdate, active, onCountUpdate }) {
       poseSingleton.setOptions({
         modelComplexity: 1,
         smoothLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
+        minDetectionConfidence: 0.7, // 정확도 향상을 위해 값 증가
+        minTrackingConfidence: 0.7, // 정확도 향상을 위해 값 증가
       });
 
       poseSingleton.onResults(onResults);
@@ -99,7 +109,9 @@ function MediapipePlankTracking({ onCanvasUpdate, active, onCountUpdate }) {
         const landmarks = results.poseLandmarks;
 
         // 필수 랜드마크 확인
-        const requiredLandmarkIndices = [23, 24, 25, 26, 27, 28];
+        const requiredLandmarkIndices = [
+          11, 12, 13, 14, 23, 24, 25, 26, 27, 28,
+        ];
         const allLandmarksPresent = requiredLandmarkIndices.every(
           (index) => landmarks[index]
         );
@@ -109,38 +121,42 @@ function MediapipePlankTracking({ onCanvasUpdate, active, onCountUpdate }) {
           return;
         }
 
-        // 왼쪽 무릎 각도 (left_hip, left_knee, left_ankle)
-        const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
+        // 각도 계산
+        const leftHipAngle = angleCalc(landmarks, 11, 23, 25); // 왼쪽 엉덩이 각도
+        const rightHipAngle = angleCalc(landmarks, 12, 24, 26); // 오른쪽 엉덩이 각도
+        const leftShoulderAngle = angleCalc(landmarks, 13, 11, 23); // 왼쪽 어깨 각도
+        const rightShoulderAngle = angleCalc(landmarks, 14, 12, 24); // 오른쪽 어깨 각도
 
-        // 오른쪽 무릎 각도 (right_hip, right_knee, right_ankle)
-        const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
+        // 평균 각도 계산
+        const avgHipAngle = (leftHipAngle + rightHipAngle) / 2;
+        const avgShoulderAngle = (leftShoulderAngle + rightShoulderAngle) / 2;
 
-        // 각도 값이 유효한지 확인
-        if (leftKneeAngle === null || rightKneeAngle === null) {
-          console.warn("Angle calculation returned null");
-          return;
+        // 플랭크 자세 판단 기준 설정
+        const hipAngleThreshold = 165; // 엉덩이 각도
+        const shoulderAngleThreshold = 80; // 어깨 각도
+
+        // 플랭크 자세인지 확인
+        const isPlankPose =
+          avgHipAngle > hipAngleThreshold &&
+          avgShoulderAngle < shoulderAngleThreshold;
+
+        // 플랭크 상태 변화 감지
+        if (isPlankPose && !isPlankPoseRef.current) {
+          isPlankPoseRef.current = true;
+          onPlankStart();
+        } else if (!isPlankPose && isPlankPoseRef.current) {
+          isPlankPoseRef.current = false;
+          onPlankEnd();
         }
 
-        // 런지 다운 조건
-        const isLungeDown =
-          (leftKneeAngle < 90 && rightKneeAngle > 120) ||
-          (rightKneeAngle < 90 && leftKneeAngle > 120);
-
-        // 런지 업 조건
-        const isLungeUp =
-          leftKneeAngle > 140 &&
-          rightKneeAngle > 140 &&
-          lungeStateRef.current === "down";
-
-        // 상태 전환 및 카운트 업데이트
-        if (isLungeDown && lungeStateRef.current === "up") {
-          lungeStateRef.current = "down";
-          onPreMovement(); // 내려갈 때
-        }
-
-        if (isLungeUp) {
-          lungeStateRef.current = "up";
-          onCountIncrease(); // 올라올 때 카운트 증가
+        // 플랭크 유지 중 시간 업데이트
+        if (isPlankPoseRef.current && plankStartTimeRef.current) {
+          const currentTime = Date.now();
+          const plankDuration =
+            (currentTime - plankStartTimeRef.current) / 1000;
+          if (onCountUpdate) {
+            onCountUpdate(Math.floor(plankTimeRef.current + plankDuration));
+          }
         }
 
         // 효과 그리기
@@ -167,8 +183,8 @@ function MediapipePlankTracking({ onCanvasUpdate, active, onCountUpdate }) {
               await poseSingleton.send({ image: videoElement });
             }
           },
-          width: 640,
-          height: 480,
+          width: 0,
+          height: 0,
         });
         camera.start();
         cameraRef.current = camera;
@@ -186,33 +202,31 @@ function MediapipePlankTracking({ onCanvasUpdate, active, onCountUpdate }) {
         cameraRef.current = null;
       }
     };
-  }, [active, onCanvasUpdate, onCountUpdate]);
+  }, [active]);
 
   return (
     <div>
-      <video ref={videoRef} style={{ display: "none" }}></video>
+      <video
+        ref={videoRef}
+        width="800"
+        height="auto"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+      ></video>
       <canvas
         ref={canvasRef}
-        width="640"
-        height="480"
-        style={{ display: "none" }}
+        width="800"
+        height="640"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></canvas>
-
-      {/* 런지 카운트 출력 */}
-      <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
-      >
-        <h1>경과된 시간: {lungeCountRef.current}</h1>
+      {/* 플랭크 시간 출력 */}
+      <div className="vs_container">
+        <div className="vs_element">
+          {/* 아바타 운동 횟수 */}
+          <h1>{animationRepeatCount}</h1>
+          <h1>&nbsp; VS &nbsp;</h1>
+          {/* 플레이어 플랭크 시간 (초 단위) */}
+          <h1>{Math.floor(plankTimeRef.current)}</h1>
+        </div>
       </div>
     </div>
   );

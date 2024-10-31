@@ -1,11 +1,12 @@
-// MediapipeLungeTracking.js
+// situpCam.js
 
 import React, { useEffect, useRef } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { angleCalc } from "./angleCalc";
-import { useGreenFlashEffect } from "./greenFlashEffect"; // greenFlashEffect 임포트
+import { angleCalc } from "./angleCalc"; // 관절 각도 계산 함수
+import { useGreenFlashEffect } from "./greenFlashEffect";
+import "./exBL.css"; // 필요한 경우 CSS 파일 임포트
 
 const POSE_CONNECTIONS = [
   [11, 13],
@@ -26,13 +27,17 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
-// MediapipeSitupTracking 컴포넌트
-function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipeSitupTracking({
+  onCanvasUpdate,
+  active,
+  onCountUpdate,
+  animationRepeatCount,
+}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const lungeCountRef = useRef(0);
-  const lungeStateRef = useRef("up");
+  const situpCountRef = useRef(0);
+  const situpStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
 
   // greenFlashEffect 훅 사용
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
@@ -45,9 +50,9 @@ function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
   function onCountIncrease() {
     triggerGreenFlash();
     triggerGoodBox(); // "Good!" 박스 표시
-    lungeCountRef.current += 1;
+    situpCountRef.current += 1;
     if (onCountUpdate) {
-      onCountUpdate(lungeCountRef.current);
+      onCountUpdate(situpCountRef.current);
     }
   }
 
@@ -61,8 +66,8 @@ function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
       poseSingleton.setOptions({
         modelComplexity: 1,
         smoothLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
+        minDetectionConfidence: 0.7, // 정확도 향상을 위해 값 증가
+        minTrackingConfidence: 0.7, // 정확도 향상을 위해 값 증가
       });
 
       poseSingleton.onResults(onResults);
@@ -99,7 +104,7 @@ function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
         const landmarks = results.poseLandmarks;
 
         // 필수 랜드마크 확인
-        const requiredLandmarkIndices = [23, 24, 25, 26, 27, 28];
+        const requiredLandmarkIndices = [11, 12, 23, 24];
         const allLandmarksPresent = requiredLandmarkIndices.every(
           (index) => landmarks[index]
         );
@@ -109,38 +114,30 @@ function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
           return;
         }
 
-        // 왼쪽 무릎 각도 (left_hip, left_knee, left_ankle)
-        const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
+        // 각도 계산
+        const leftHipAngle = angleCalc(landmarks, 11, 23, 25); // 왼쪽 엉덩이 각도
+        const rightHipAngle = angleCalc(landmarks, 12, 24, 26); // 오른쪽 엉덩이 각도
 
-        // 오른쪽 무릎 각도 (right_hip, right_knee, right_ankle)
-        const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
+        // 평균 각도 계산
+        const avgHipAngle = (leftHipAngle + rightHipAngle) / 2;
 
-        // 각도 값이 유효한지 확인
-        if (leftKneeAngle === null || rightKneeAngle === null) {
-          console.warn("Angle calculation returned null");
-          return;
-        }
+        // 상태 판단 기준 설정
+        const hipAngleUpThreshold = 90; // 상체가 올라왔을 때 엉덩이 각도
+        const hipAngleDownThreshold = 140; // 상체가 누웠을 때 엉덩이 각도
 
-        // 런지 다운 조건
-        const isLungeDown =
-          (leftKneeAngle < 90 && rightKneeAngle > 120) ||
-          (rightKneeAngle < 90 && leftKneeAngle > 120);
-
-        // 런지 업 조건
-        const isLungeUp =
-          leftKneeAngle > 140 &&
-          rightKneeAngle > 140 &&
-          lungeStateRef.current === "down";
-
-        // 상태 전환 및 카운트 업데이트
-        if (isLungeDown && lungeStateRef.current === "up") {
-          lungeStateRef.current = "down";
-          onPreMovement(); // 내려갈 때
-        }
-
-        if (isLungeUp) {
-          lungeStateRef.current = "up";
-          onCountIncrease(); // 올라올 때 카운트 증가
+        // 윗몸 일으키기 상태 변화 감지
+        if (
+          avgHipAngle < hipAngleUpThreshold &&
+          situpStateRef.current === "down"
+        ) {
+          situpStateRef.current = "up";
+          onCountIncrease();
+        } else if (
+          avgHipAngle > hipAngleDownThreshold &&
+          situpStateRef.current === "up"
+        ) {
+          situpStateRef.current = "down";
+          onPreMovement();
         }
 
         // 효과 그리기
@@ -167,8 +164,8 @@ function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
               await poseSingleton.send({ image: videoElement });
             }
           },
-          width: 640,
-          height: 480,
+          width: 0,
+          height: 0,
         });
         camera.start();
         cameraRef.current = camera;
@@ -186,33 +183,31 @@ function MediapipeSitupTracking({ onCanvasUpdate, active, onCountUpdate }) {
         cameraRef.current = null;
       }
     };
-  }, [active, onCanvasUpdate, onCountUpdate]);
+  }, [active]);
 
   return (
     <div>
-      <video ref={videoRef} style={{ display: "none" }}></video>
+      <video
+        ref={videoRef}
+        width="800"
+        height="auto"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+      ></video>
       <canvas
         ref={canvasRef}
-        width="640"
-        height="480"
-        style={{ display: "none" }}
+        width="800"
+        height="640"
+        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></canvas>
-
-      {/* 런지 카운트 출력 */}
-      <div
-        style={{
-          position: "absolute",
-          width: "250px",
-          textAlign: "center",
-          top: "65%",
-          right: "10px",
-          zIndex: 10,
-          border: "2px solid black",
-          borderRadius: "30px",
-          background: "white",
-        }}
-      >
-        <h1>윗몸일으키기 횟수: {lungeCountRef.current}</h1>
+      {/* 윗몸 일으키기 카운트 출력 */}
+      <div className="vs_container">
+        <div className="vs_element">
+          {/* 아바타 운동 횟수 */}
+          <h1>{animationRepeatCount}</h1>
+          <h1>&nbsp; VS &nbsp;</h1>
+          {/* 플레이어 운동 횟수 */}
+          <h1>{situpCountRef.current}</h1>
+        </div>
       </div>
     </div>
   );
