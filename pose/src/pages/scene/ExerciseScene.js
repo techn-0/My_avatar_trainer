@@ -354,13 +354,16 @@ function ExerciseScene() {
 
           // 선택한 운동에 따라 초기 애니메이션 설정
           if (selectedExercise === "pushup") {
-            // 푸시업: 애니메이션 번호 9번을 한 번 재생하고 대기
+            // 푸시업: 애니메이션 번호 10번을 한 번 재생하고 대기
             playAnimation(10, THREE.LoopOnce);
           } else if (selectedExercise === "burpee") {
             // 버피: 애니메이션 번호 9번을 한 번 재생하고 대기
             playAnimation(9, THREE.LoopOnce);
+          } else if (selectedExercise === "plank") {
+            // 플랭크: 애니메이션 번호 16번을 한 번 재생하고 대기
+            playAnimation(16, THREE.LoopOnce);
           } else if (selectedExercise === "situp") {
-            // 윗몸: 애니메이션 번호 9번을 한 번 재생하고 대기
+            // 윗몸: 애니메이션 번호 17번을 한 번 재생하고 대기
             playAnimation(17, THREE.LoopOnce);
           } else {
             // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
@@ -415,6 +418,9 @@ function ExerciseScene() {
       } else if (selectedExercise === "burpee") {
         timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 버피 속도 조절
         animationIndex = 0; // 버피 애니메이션 번호
+      } else if (selectedExercise === "plank") {
+        timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 플랭크 속도 조절 -> 얜 사실 노상관
+        animationIndex = 11; // 플랭크 애니메이션 번호
       } else if (selectedExercise === "situp") {
         timeScale = normalSitupRepetitionDuration / desiredRepetitionDuration; // 윗몸 일으키기 속도 조절
         animationIndex = 14; // 윗몸 애니메이션 번호
@@ -490,6 +496,8 @@ function ExerciseScene() {
       endAnimationIndex = 1; // 버피 종료 애니메이션 번호
     } else if (selectedExercise === "situp") {
       endAnimationIndex = 5; // 윗몸 종료 애니메이션 번호
+    } else if (selectedExercise === "plank") {
+      endAnimationIndex = 4; // 플랭크 종료 애니메이션 번호
     } else {
       endAnimationIndex = 6; // 스쿼트 종료 애니메이션 번호
     }
