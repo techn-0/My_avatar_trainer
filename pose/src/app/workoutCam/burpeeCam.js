@@ -24,7 +24,7 @@ const POSE_CONNECTIONS = [
 
 let poseSingleton = null; // Pose 인스턴스를 싱글톤으로 선언
 
-function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
+function MediapipeBurpeeTracking({ onCanvasUpdate, active, onCountUpdate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -210,4 +210,4 @@ function MediapipeLegraiseTracking({ onCanvasUpdate, active, onCountUpdate }) {
   );
 }
 
-export default MediapipeLegraiseTracking;
+export default MediapipeBurpeeTracking;

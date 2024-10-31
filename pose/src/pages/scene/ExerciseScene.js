@@ -8,7 +8,7 @@ import { createPlane } from "../../app/createPlane"; // 바닥 추가
 import { useNavigate } from "react-router-dom";
 import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // 스쿼트 Mediapipe 컴포넌트
 import MediapipePushupTracking from "../../app/workoutCam/pushupCam"; // 푸시업 Mediapipe 컴포넌트
-import MediapipeLegraiseTracking from "../../app/workoutCam/legraiseCam"; // 레그레이즈 Mediapipe 컴포넌트
+import MediapipeBurpeeTracking from "../../app/workoutCam/burpeeCam"; // 버피 Mediapipe 컴포넌트
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
 import { setSkyboxBackground } from "../../shared/background";
@@ -59,7 +59,7 @@ function ExerciseScene() {
   const [selectedDuration, setSelectedDuration] = useState(null);
 
   // 운동 종목 리스트
-  const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
+  const exercises = ["squat", "pushup", "plank", "situp", "burpee"];
 
   // 운동 시간 리스트
   const durations = [1, 2, 0.1, 0.4]; // 듀레이션 디버깅
@@ -564,8 +564,8 @@ function ExerciseScene() {
         return <MediapipeSquatTracking {...commonProps} />;
       case "pushup":
         return <MediapipePushupTracking {...commonProps} />;
-      case "legraise":
-        return <MediapipeLegraiseTracking {...commonProps} />;
+      case "burpee":
+        return <MediapipeBurpeeTracking {...commonProps} />;
       default:
         return null;
     }
