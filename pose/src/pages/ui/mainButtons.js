@@ -47,7 +47,7 @@ function Buttons({
 
   const handleResultClick = () => {
     if (getToken()) {
-      navigate("/progress");
+      navigate("/user");
     } else {
       alert("로그인 먼저 해주세요.");
     }
@@ -126,7 +126,7 @@ function Buttons({
           className="input"
           type="radio"
           name="btn"
-          id="progress"
+          id="user"
           onClick={handleResultClick}
           onMouseEnter={handleMouseEnter}
         />

@@ -572,7 +572,7 @@ function ExerciseScene() {
   // 성장 기록 보기 클릭 핸들러
   const moveToResultPage = () => {
     // 성장 기록 페이지로 이동
-    navigate("/progress");
+    navigate("/user");
   };
 
   // Mediapipe 컴포넌트를 렌더링하는 함수

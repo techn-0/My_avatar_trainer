@@ -52,7 +52,7 @@ function Buttons({
                 className="input"
                 type="radio"
                 name="btn"
-                id="progress"
+                id="user"
                 onClick={onResultClick}
               />
               <div className="btn">
