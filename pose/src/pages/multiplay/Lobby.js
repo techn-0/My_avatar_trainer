@@ -14,8 +14,11 @@ function Lobby() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 로비에 접속 시 서버에 최신 방 목록 요청
+    socket.emit("getRooms");
+
     socket.on("updateRooms", (rooms) => {
-      console.log("Rooms received from server:", rooms); // 방 목록 디버깅 로그
+      console.log("Rooms received from server:", rooms); // 디버깅 로그
       setRooms(rooms);
     });
 
@@ -35,13 +38,13 @@ function Lobby() {
 
     socket.emit("createRoom", { roomName, duration, exercise, username });
     setShowCreateRoomModal(false);
-    navigate(`/room/${roomName}`); // 방 생성 후 Room으로 이동
+    navigate(`/room/${roomName}`);
   };
 
   const handleJoinRoom = (roomName) => {
     const username = sessionStorage.getItem("userId");
     socket.emit("joinRoom", { roomName, username });
-    navigate(`/room/${roomName}`); // 참여 시 해당 Room으로 이동
+    navigate(`/room/${roomName}`);
   };
 
   return (
