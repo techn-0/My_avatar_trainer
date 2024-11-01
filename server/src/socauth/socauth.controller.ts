@@ -61,8 +61,8 @@ export class SocauthController {
         }
 
     }
-    // Redirect to localhost:3000 after successful login
-    return res.redirect('http://localhost:3000');
+    // Redirect to 3.36.101.189:3000 after successful login
+    return res.redirect('http://3.36.101.189:3000');
   }
 
   
@@ -119,8 +119,8 @@ export class SocauthController {
 
     }
 
-    // Redirect to localhost:3000 after successful login
-    return res.redirect('http://localhost:3000') 
+    // Redirect to 3.36.101.189:3000 after successful login
+    return res.redirect('http://3.36.101.189:3000') 
 
   }
 
@@ -176,9 +176,7 @@ export class SocauthController {
     }
     
     
-    return res.redirect('http://localhost:3000');
+    return res.redirect('http://3.36.101.189:3000');
   }
 
 }
-
-

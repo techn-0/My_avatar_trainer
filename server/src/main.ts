@@ -9,7 +9,7 @@ async function bootstrap() {
   const port = serveConfig.port;
 
   app.enableCors({
-    origin: 'http://localhost:3000', // 클라이언트 URL
+    origin: 'http://3.36.101.189:3000', // 클라이언트 URL
     credentials: true,
   });
 

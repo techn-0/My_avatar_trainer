@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:3002"); // 서버 URL
+const socket = io("http://3.36.101.189:3002"); // 서버 URL
 
 function Lobby() {
   const [rooms, setRooms] = useState([]);

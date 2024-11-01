@@ -13,7 +13,7 @@ function RankingPage() {
   const fetchRanking = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3002/workout/get_ranking?exercise=${exercise}&duration=${duration}`
+        `http://3.36.101.189:3002/workout/get_ranking?exercise=${exercise}&duration=${duration}`
       );
       const data = await response.json();
       setRankings(Array.isArray(data) ? data : []);
