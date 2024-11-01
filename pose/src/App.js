@@ -11,8 +11,10 @@ import ThreeScene from "./pages/scene/MainScene";
 import ExerciseScene from "./pages/scene/ExerciseScene";
 import MyPage from "./pages/MyPage/MyPage";
 import Ranking from "./pages/ranking/ranking";
+import { getToken } from "./pages/login/AuthContext";
 
 function App() {
+  const ownerId = sessionStorage.getItem("userId");
   return (
     <React.Fragment>
       <CssBaseline />
@@ -23,7 +25,7 @@ function App() {
         {/* ThreeScene을 루트 경로에 렌더링 */}
         <Route path="/login" element={<Login />} />
         <Route path="/exercise" element={<ExerciseScene />} />
-        <Route path="/user" element={<MyPage />} />
+        <Route path="/user/:ownerId" element={<MyPage />} />
         <Route path="/ranking" element={<Ranking />} />
       </Routes>
     </React.Fragment>

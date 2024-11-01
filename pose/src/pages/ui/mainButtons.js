@@ -10,6 +10,7 @@ function Buttons({
   onResultClick,
   onLogout, // 로그아웃 콜백 추가
 }) {
+  const ownerId = sessionStorage.getItem("userId");
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
 
@@ -47,7 +48,7 @@ function Buttons({
 
   const handleResultClick = () => {
     if (getToken()) {
-      navigate("/user");
+      navigate(`/user/${ownerId}`);
     } else {
       alert("로그인 먼저 해주세요.");
     }

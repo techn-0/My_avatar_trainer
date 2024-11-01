@@ -249,7 +249,7 @@
 /* container와 main div 스타일 */
 .container {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
