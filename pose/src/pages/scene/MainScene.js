@@ -8,8 +8,8 @@ import { addLights } from "../../shared/lights";
 import { createPlane } from "../../app/createPlane";
 import { initOrbitControls } from "../../shared/initOrbitControls";
 import LoginModal from "../login/LoginModal"; // Import the new component
-import ExerciseGraph from "../ExerciseGraph/ExerciseGraph";
-import { setBackgroundColor } from "../../shared/background";
+import MyPage from "../MyPage/MyPage";
+import { setSkyboxBackground } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
 
@@ -70,7 +70,7 @@ function ThreeScene() {
       addLights(scene);
 
       // background
-      setBackgroundColor(scene);
+      setSkyboxBackground(scene);
 
       const plane = createPlane();
       scene.add(plane);

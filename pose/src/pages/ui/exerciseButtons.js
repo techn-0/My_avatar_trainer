@@ -52,13 +52,13 @@ function Buttons({
                 className="input"
                 type="radio"
                 name="btn"
-                id="progress"
+                id="user"
                 onClick={onResultClick}
               />
               <div className="btn">
-                성장 추이
+                마이페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  _성장 추이_
+                  _마이페이지_
                 </span>
               </div>
             </div>

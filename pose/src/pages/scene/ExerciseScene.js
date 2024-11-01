@@ -6,18 +6,24 @@ import { loadCharacter } from "../../shared/loadCharacter"; // 캐릭터 로드
 import { addLights } from "../../shared/lights"; // 조명 추가
 import { createPlane } from "../../app/createPlane"; // 바닥 추가
 import { useNavigate } from "react-router-dom";
-import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // Mediapipe 컴포넌트
+import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // 스쿼트 Mediapipe 컴포넌트
+import MediapipePushupTracking from "../../app/workoutCam/pushupCam"; // 푸시업 Mediapipe 컴포넌트
+import MediapipeBurpeeTracking from "../../app/workoutCam/burpeeCam"; // 버피 Mediapipe 컴포넌트
+import MediapipeSitupTracking from "../../app/workoutCam/situpCam"; // 윗몸 일으키기 Mediapipe 컴포넌트
+import MediapipePlankTracking from "../../app/workoutCam/plankCam"; // 플랭크 Mediapipe 컴포넌트
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
-import { setBackgroundColor } from "../../shared/background";
+import { setSkyboxBackground } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
 
-// 오디오 파일 불러오기 (public/sounds 경로의 파일 참조)
+// 오디오 파일 불러오기 (public/sound 경로의 파일 참조)
 const winSound = new Audio(`${process.env.PUBLIC_URL}/sound/wow.mp3`);
-const loseSound = new Audio(`${process.env.PUBLIC_URL}/sound/youre_too_slow.mp3`);
+const loseSound = new Audio(
+  `${process.env.PUBLIC_URL}/sound/youre_too_slow.mp3`
+);
 const drawSound = new Audio(`${process.env.PUBLIC_URL}/sound/hurry_up.mp3`);
 
 function interaction(characterCount, userCount, setInteractionMessage) {
@@ -34,6 +40,7 @@ function interaction(characterCount, userCount, setInteractionMessage) {
     drawSound.play();
   }
 }
+
 function ExerciseScene() {
   const mountRef = useRef(null); // Three.js 씬을 마운트할 DOM 요소
   const canvasRef = useRef(null); // Mediapipe 캔버스
@@ -54,7 +61,7 @@ function ExerciseScene() {
   const [selectedDuration, setSelectedDuration] = useState(null);
 
   // 운동 종목 리스트
-  const exercises = ["squat", "pushup", "plank", "situp", "legraise"];
+  const exercises = ["squat", "pushup", "plank", "situp", "burpee"];
 
   // 운동 시간 리스트
   const durations = [1, 2, 0.1, 0.4]; // 듀레이션 디버깅
@@ -71,9 +78,9 @@ function ExerciseScene() {
   ]);
   const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
 
-  // 스쿼트 카운트 상태
-  const [squatCount, setSquatCount] = useState(0);
-  const squatCountRef = useRef(0); // squatCount를 저장할 ref 생성
+  // 운동 카운트 상태
+  const [exerciseCount, setExerciseCount] = useState(0);
+  const exerciseCountRef = useRef(0); // 운동 카운트를 저장할 ref 생성
 
   // 운동 타이머 표시 상태
   const [showTimer, setShowTimer] = useState(false);
@@ -88,6 +95,9 @@ function ExerciseScene() {
 
   // 애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)
   const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
+  const normalPushupRepetitionDuration = 1.55; // 푸시업 1회에 1.55초 소요
+  const normalBurpeeRepetitionDuration = 3.13; // 버피 테스트 1회에 3.13초 소요
+  const normalSitupRepetitionDuration = 2.23; // 윗몸일으키기 1회에 3.13초 소요
 
   // 애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가
   const animationActionRef = useRef(null);
@@ -110,10 +120,10 @@ function ExerciseScene() {
     );
   };
 
-  // 스쿼트 카운트 업데이트 핸들러
-  const handleSquatCountUpdate = (count) => {
-    setSquatCount(count);
-    squatCountRef.current = count; // ref에 최신 카운트 값 저장
+  // 운동 카운트 업데이트 핸들러
+  const handleExerciseCountUpdate = (count) => {
+    setExerciseCount(count);
+    exerciseCountRef.current = count; // ref에 최신 카운트 값 저장
     SetUserScore(count);
   };
 
@@ -151,9 +161,9 @@ function ExerciseScene() {
     scene.add(plane);
 
     // 배경색 설정
-    setBackgroundColor(scene);
+    setSkyboxBackground(scene);
 
-    // 캐릭터 로드 캐릭터나 카메라 둘중 하나만 옮기자.
+    // 캐릭터 로드
     loadCharacter(scene, (mixer, model, animations) => {
       mixerRef.current = mixer;
       modelRef.current = model;
@@ -300,7 +310,7 @@ function ExerciseScene() {
                 }
 
                 // Idle 애니메이션 재생
-                playAnimation(5, THREE.LoopRepeat);
+                playAnimation(8, THREE.LoopRepeat);
               }
 
               return newCount;
@@ -341,8 +351,24 @@ function ExerciseScene() {
         .then((data) => {
           console.log("Server response:", data);
           setBestScore(data.count);
-          // 애니메이션 번호 4를 한 번 재생하고 대기
-          playAnimation(4, THREE.LoopOnce);
+
+          // 선택한 운동에 따라 초기 애니메이션 설정
+          if (selectedExercise === "pushup") {
+            // 푸시업: 애니메이션 번호 10번을 한 번 재생하고 대기
+            playAnimation(10, THREE.LoopOnce);
+          } else if (selectedExercise === "burpee") {
+            // 버피: 애니메이션 번호 9번을 한 번 재생하고 대기
+            playAnimation(9, THREE.LoopOnce);
+          } else if (selectedExercise === "plank") {
+            // 플랭크: 애니메이션 번호 16번을 한 번 재생하고 대기
+            playAnimation(16, THREE.LoopOnce);
+          } else if (selectedExercise === "situp") {
+            // 윗몸: 애니메이션 번호 17번을 한 번 재생하고 대기
+            playAnimation(17, THREE.LoopOnce);
+          } else {
+            // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
+            playAnimation(7, THREE.LoopOnce);
+          }
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
@@ -378,16 +404,36 @@ function ExerciseScene() {
       setCurrentCountdownIndex(null); // 카운트다운 초기화
       setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
 
-      // bestScore 횟수만큼 애니메이션 반복 재생 (무한 반복 설정)
+      // 운동 시간 및 반복 횟수 설정
       const durationInSeconds = parseFloat(selectedDuration) * 60; // 운동 시간 (초)
       const desiredRepetitionDuration = durationInSeconds / bestScore; // 각 반복에 필요한 시간
-      const timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 애니메이션 속도 조절
+
+      // 애니메이션 속도 조절
+      let timeScale;
+      let animationIndex;
+
+      if (selectedExercise === "pushup") {
+        timeScale = normalPushupRepetitionDuration / desiredRepetitionDuration; // 푸시업 속도 조절
+        animationIndex = 12; // 푸시업 애니메이션 번호
+      } else if (selectedExercise === "burpee") {
+        timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 버피 속도 조절
+        animationIndex = 0; // 버피 애니메이션 번호
+      } else if (selectedExercise === "plank") {
+        timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 플랭크 속도 조절 -> 얜 사실 노상관
+        animationIndex = 11; // 플랭크 애니메이션 번호
+      } else if (selectedExercise === "situp") {
+        timeScale = normalSitupRepetitionDuration / desiredRepetitionDuration; // 윗몸 일으키기 속도 조절
+        animationIndex = 14; // 윗몸 애니메이션 번호
+      } else {
+        timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 스쿼트 등 기타 운동 속도 조절
+        animationIndex = 15; // 스쿼트 애니메이션 번호
+      }
 
       // 애니메이션 반복 횟수 초기화
       setAnimationRepeatCount(0);
       animationRepeatCountRef.current = 0; // ref 초기화
 
-      playAnimation(11, THREE.LoopRepeat, timeScale); // repetitions 제거
+      playAnimation(animationIndex, THREE.LoopRepeat, timeScale);
 
       // 운동 타이머 시작
       startExerciseTimer(durationInSeconds);
@@ -426,7 +472,7 @@ function ExerciseScene() {
       setTimeout(() => {
         interaction(
           animationRepeatCountRef.current,
-          squatCountRef.current,
+          exerciseCountRef.current,
           setInteractionMessage
         );
       }, (durationInSeconds - 30) * 1000);
@@ -441,16 +487,37 @@ function ExerciseScene() {
   const endExercise = () => {
     setMediapipeActive(false); // Mediapipe 비활성화
 
-    // 애니메이션 번호 3을 한 번 재생하고, 이후 번호 5를 기본으로 설정
-    playAnimation(3, THREE.LoopOnce);
+    // 선택한 운동에 따라 종료 애니메이션 설정
+    let endAnimationIndex;
 
-    // 애니메이션 번호 3이 끝난 후 번호 5를 기본으로 재생
-    if (animationsRef.current[3]) {
+    if (selectedExercise === "pushup") {
+      endAnimationIndex = 13; // 푸시업 종료 애니메이션 번호
+    } else if (selectedExercise === "burpee") {
+      endAnimationIndex = 1; // 버피 종료 애니메이션 번호
+    } else if (selectedExercise === "situp") {
+      endAnimationIndex = 5; // 윗몸 종료 애니메이션 번호
+    } else if (selectedExercise === "plank") {
+      endAnimationIndex = 4; // 플랭크 종료 애니메이션 번호
+    } else {
+      endAnimationIndex = 6; // 스쿼트 종료 애니메이션 번호
+    }
+
+    // 애니메이션을 한 번 재생하고, 이후 번호 5를 기본으로 설정
+    playAnimation(endAnimationIndex, THREE.LoopOnce);
+
+    // 애니메이션이 끝난 후 추가 처리
+    if (animationsRef.current[endAnimationIndex]) {
       mixerRef.current.addEventListener("finished", () => {
-        playAnimation(5, THREE.LoopRepeat);
+        if (bestScore > userScore) {
+          // 유저의 운동 횟수가 캐릭터의 횟수보다 적을 때
+          playAnimation(6, THREE.LoopOnce);
+        } else {
+          // 그 외에는 Idle 애니메이션 재생
+          playAnimation(2, THREE.LoopRepeat);
+        }
       });
     } else {
-      // 번호 3 애니메이션이 없을 경우 즉시 번호 5를 재생
+      // 종료 애니메이션이 없을 경우 즉시 번호 5를 재생
       playAnimation(5, THREE.LoopRepeat);
     }
 
@@ -472,7 +539,7 @@ function ExerciseScene() {
     const requestData = {
       exercise: selectedExercise,
       duration: selectedDuration,
-      count: squatCountRef.current, // 최신 카운트 값 사용
+      count: exerciseCountRef.current, // 최신 카운트 값 사용
       date: formattedDate,
     };
     SetUserScore(requestData.count);
@@ -482,11 +549,6 @@ function ExerciseScene() {
     // 운동결과
     setPrevBestScore(bestScore); // 이전 최고 기록 저장
     console.log(bestScore, userScore);
-    if (bestScore > userScore) {
-      playAnimation(3, THREE.LoopRepeat);
-    } else {
-      playAnimation(0, THREE.LoopOnce);
-    }
     setShowResultModal(true); // 결과 모달 표시
 
     // 서버로 데이터 전송
@@ -507,10 +569,38 @@ function ExerciseScene() {
       });
   };
 
-  // 성장 추이 보기 클릭 핸들러
+  // 성장 기록 보기 클릭 핸들러
   const moveToResultPage = () => {
-    // 성장 추이 페이지로 이동
-    navigate("/progress");
+    // 성장 기록 페이지로 이동
+    navigate("/user");
+  };
+
+  // Mediapipe 컴포넌트를 렌더링하는 함수
+  const renderMediapipeComponent = () => {
+    if (!mediapipeActive) return null;
+
+    const commonProps = {
+      onCanvasUpdate: handleCanvasUpdate,
+      active: mediapipeActive,
+      onCountUpdate: handleExerciseCountUpdate, // 운동 카운트 업데이트 함수 전달
+      canvasRef: canvasRef, // canvasRef 전달
+      animationRepeatCount: animationRepeatCount, // 애니메이션 반복 횟수 전달
+    };
+
+    switch (selectedExercise) {
+      case "squat":
+        return <MediapipeSquatTracking {...commonProps} />;
+      case "pushup":
+        return <MediapipePushupTracking {...commonProps} />;
+      case "burpee":
+        return <MediapipeBurpeeTracking {...commonProps} />;
+      case "situp":
+        return <MediapipeSitupTracking {...commonProps} />;
+      case "plank":
+        return <MediapipePlankTracking {...commonProps} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -559,22 +649,8 @@ function ExerciseScene() {
         </div>
       )}
 
-      {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 캔버스 */}
-      {mediapipeActive && (
-        <>
-          <MediapipeSquatTracking
-            onCanvasUpdate={handleCanvasUpdate}
-            active={mediapipeActive}
-            onCountUpdate={handleSquatCountUpdate} // 스쿼트 카운트 업데이트 함수 전달
-            canvasRef={canvasRef} // canvasRef 전달
-            animationRepeatCount={animationRepeatCount} // 애니메이션 반복 횟수 전달
-          />
-
-          <div>
-            {/* 필요에 따라 캔버스나 추가 UI 요소를 여기에 추가하세요 */}
-          </div>
-        </>
-      )}
+      {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 컴포넌트 */}
+      {renderMediapipeComponent()}
 
       {/* 카운트다운 이미지 표시 */}
       {currentCountdownIndex !== null &&

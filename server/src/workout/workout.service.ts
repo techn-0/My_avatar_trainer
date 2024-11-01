@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { WorkOut } from './schemas/workout.schema';
@@ -62,7 +62,7 @@ export class WorkoutService {
         return { message : '기록 저장 성공!'};    
     } catch (error){
         console.log(error.message);
-        throw new Error('기록 저장 실패!');
+        throw new UnauthorizedException('기록 저장 실패!');
     }
   }
 
