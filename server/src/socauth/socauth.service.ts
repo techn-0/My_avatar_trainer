@@ -4,10 +4,12 @@ import { Injectable,
   InternalServerErrorException,
  } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { socUserCredentialDto } from './dto/socauth-credential.dto';
-import { User } from 'src/auth/schemas/user.schema';
+import { User } from '../auth/schemas/user.schema';
+
 
 @Injectable()
 export class SocauthService {
@@ -18,7 +20,7 @@ export class SocauthService {
 
   //소셜 미디어를 통해서 로그인 했는지 여부를 확인한다. 
   async userExists(userId: string): Promise<boolean> {
-    const user = await this.userModel.findOne({ username: userId });
+    const user = await this.userModel.findOne({username: userId});
     return !!user;
   }
 
@@ -46,11 +48,12 @@ export class SocauthService {
   }
 
   async signUp(socUserCredentialDto: socUserCredentialDto): Promise<{message: string}>{
-    const { id, email } = socUserCredentialDto;
+    const { id, email, social } = socUserCredentialDto;
     try{
         await this.userModel.create({
             username : id,
             email,
+            social
         });
         return { message: '회원가입 성공!'};
     } catch (error){
