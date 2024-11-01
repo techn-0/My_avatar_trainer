@@ -1,9 +1,9 @@
-// src/pages/Room.js
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import socket from "../../services/socket";
-import Chat from "../../components/Chat";
-import VideoStream from "../../components/VideoStream";
+import io from "socket.io-client";
+import "./Room.css";
+
+const socket = io("http://localhost:3002");
 
 function Room() {
   const { roomName } = useParams();
@@ -11,6 +11,8 @@ function Room() {
   const [users, setUsers] = useState([]);
   const [readyStates, setReadyStates] = useState({});
   const [isReady, setIsReady] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
   const [startMessage, setStartMessage] = useState(false);
 
   useEffect(() => {
@@ -23,9 +25,12 @@ function Room() {
     if (username) {
       socket.emit("joinRoom", { roomName, username });
 
+      // 방 상태를 새로 입장한 클라이언트가 즉시 받을 수 있도록 이벤트 처리
       socket.on("roomState", ({ users, readyStates }) => {
         setUsers(users);
         setReadyStates(readyStates);
+
+        // 모든 유저가 준비 상태인지 확인하여 시작 메시지 표시 여부 설정
         const allReady = Object.values(readyStates).every((state) => state === true);
         setStartMessage(allReady);
       });
@@ -37,20 +42,34 @@ function Room() {
 
     socket.on("updateReadyStates", (states) => {
       setReadyStates(states);
+
       const allReady = Object.values(states).every((state) => state === true);
       setStartMessage(allReady);
+    });
+
+    socket.on("receiveMessage", (messageData) => {
+      setMessages((prevMessages) => [...prevMessages, messageData]);
     });
 
     return () => {
       socket.off("roomState");
       socket.off("updateUsers");
       socket.off("updateReadyStates");
+      socket.off("receiveMessage");
     };
   }, [roomName]);
 
   const toggleReady = () => {
     setIsReady((prev) => !prev);
     socket.emit("toggleReady", roomName);
+  };
+
+  const handleSendMessage = () => {
+    const username = sessionStorage.getItem("userId");
+    if (newMessage.trim()) {
+      socket.emit("sendMessage", { roomName, message: newMessage, username });
+      setNewMessage("");
+    }
   };
 
   const handleExitRoom = () => {
@@ -79,11 +98,24 @@ function Room() {
         </div>
       )}
 
-      {/* VideoStream 컴포넌트 */}
-      <VideoStream roomName={roomName} />
-
-      {/* Chat 컴포넌트 */}
-      <Chat roomName={roomName} />
+      <div className="chat">
+        <h2>Chat</h2>
+        <div className="chat-messages">
+          {messages.map((msg, index) => (
+            <div key={index}>
+              <strong>{msg.username}:</strong> {msg.message}
+            </div>
+          ))}
+        </div>
+        <input
+          type="text"
+          placeholder="메시지를 입력하세요"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+        />
+        <button onClick={handleSendMessage}>전송</button>
+      </div>
     </div>
   );
 }
