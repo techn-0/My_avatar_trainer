@@ -9,9 +9,12 @@ import Login from "./pages/login/Login";
 import MainHeader from "./app/MainHeader";
 import ThreeScene from "./pages/scene/MainScene";
 import ExerciseScene from "./pages/scene/ExerciseScene";
-import ExerciseGraph from "./pages/ExerciseGraph/ExerciseGraph";
+import MyPage from "./pages/MyPage/MyPage";
 import Ranking from "./pages/ranking/ranking";
 import Social from "./app/socauth";
+import Lobby from "./pages/multiplay/Lobby"; // 새로 추가된 로비 컴포넌트
+import Room from "./pages/multiplay/Room"; // Room 컴포넌트 임포트
+
 
 function App() {
   return (
@@ -24,9 +27,11 @@ function App() {
         {/* ThreeScene을 루트 경로에 렌더링 */}
         <Route path="/login" element={<Login />} />
         <Route path="/exercise" element={<ExerciseScene />} />
-        <Route path="/progress" element={<ExerciseGraph />} />
+        <Route path="/user" element={<MyPage />} />
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/socauth/additional-data" element={<Social />} />
+        <Route path="/lobby" element={<Lobby />} /> {/* 멀티플레이 로비 페이지 */}
+        <Route path="/room/:roomName" element={<Room />} />
       </Routes>
     </React.Fragment>
   );
