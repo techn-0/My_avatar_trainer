@@ -31,6 +31,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       lastName: name.familyName,
       picture: photos[0].value,
       accessToken,
+      provider:'google'
     };
 
     // Pass user information to the request handler

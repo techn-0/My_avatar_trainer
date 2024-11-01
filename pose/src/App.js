@@ -11,6 +11,7 @@ import ThreeScene from "./pages/scene/MainScene";
 import ExerciseScene from "./pages/scene/ExerciseScene";
 import MyPage from "./pages/MyPage/MyPage";
 import Ranking from "./pages/ranking/ranking";
+import Social from "./app/socauth";
 import Lobby from "./pages/multiplay/Lobby"; // 새로 추가된 로비 컴포넌트
 import Room from "./pages/multiplay/Room"; // Room 컴포넌트 임포트
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/exercise" element={<ExerciseScene />} />
         <Route path="/user" element={<MyPage />} />
         <Route path="/ranking" element={<Ranking />} />
+        <Route path="/socauth/additional-data" element={<Social />} />
         <Route path="/lobby" element={<Lobby />} /> {/* 멀티플레이 로비 페이지 */}
         <Route path="/room/:roomName" element={<Room />} />
       </Routes>
