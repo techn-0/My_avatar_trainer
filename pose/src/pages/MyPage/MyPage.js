@@ -31,6 +31,13 @@ ChartJS.register(
   RadialLinearScale
 );
 
+const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
+const preloadImages = imageNames.map((name) => {
+  const img = new Image();
+  img.src = `${process.env.PUBLIC_URL}/tier/${name}`;
+  return img;
+});
+
 const MyPage = () => {
   const navigate = useNavigate();
   const { ownerId } = useParams(); // URL에서 ownerId를 가져옵니다.
@@ -41,6 +48,7 @@ const MyPage = () => {
   const [FriendId, setFriendId] = useState("");
   const [friendData, setFriendData] = useState("");
   const [commentData, setCommentData] = useState("");
+  const [tier, setTier] = useState("");
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem("userId");
@@ -52,6 +60,26 @@ const MyPage = () => {
   // 운동 기록 데이터를 백엔드에서 가져오기
   const token = getToken();
   useEffect(() => {
+    const fetchTier = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(`http://localhost:3002/tier`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        setTier(data.tier);
+        console.log("your tier: ", data.tier);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+      }
+    };
+
+    fetchTier();
+
     const fetchComments = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
@@ -456,7 +484,17 @@ const MyPage = () => {
         </button>
         {/* div1 */}
         <div className="div1">
-          <h1>{ownerId} 님의 페이지입니다.</h1>
+          <h1>
+            {ownerId} 님의 페이지입니다.
+            {tier >= 1 && tier <= 5 && (
+              <img
+                style={{ width: "50px" }}
+                src={preloadImages[tier - 1].src}
+                // alt={`Tier ${tier}`}
+                className="tier-image"
+              />
+            )}
+          </h1>
           <p>가장 좋아하는 운동: {favoriteExercise()}</p>
           {lastVisitDays === "오늘" ? (
             <p>오늘도 운동을 하셨군요!</p>
