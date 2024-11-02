@@ -9,7 +9,7 @@ export class TierController {
     constructor(private readonly tierService: TierService){}
 
     @Get()
-    async getTier(@Req() req:any): Promise<{ tier: any}>{
+    async getTier(@Req() req:any): Promise<{ tier: number}>{
         return this.tierService.getTier(req.user._id)   
         }
     }
