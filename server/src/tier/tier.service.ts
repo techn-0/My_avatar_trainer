@@ -143,11 +143,10 @@ export class TierService {
             }
           }
     
-      // async getSomeoneTier(userId: string): Promise< {tier: number} >{
-      //   const user = await this.userModel.findById(userId).select('tier');
-        
-      //   return 
-      // }      
+      async getSomeoneTier(username: string): Promise< {tier: number} >{
+        const user = await this.userModel.findOne({username}).select('tier');
+        return { tier: user.tier}
+      }      
     }
  
 
