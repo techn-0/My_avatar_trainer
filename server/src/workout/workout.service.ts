@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { WorkOut } from './schemas/workout.schema';
@@ -124,7 +124,7 @@ export class WorkoutService {
         }
       ]);
       if (workouts.length === 0){
-        throw new Error("랭킹이 존재하지 않습니다");
+        throw new NotFoundException("랭킹이 존재하지 않습니다");
       }
       console.log(workouts)
       const weigthedScores = workouts.map((workout) => {
