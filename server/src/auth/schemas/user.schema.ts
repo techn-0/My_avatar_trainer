@@ -19,5 +19,7 @@ export class User extends Document {
   @Prop()
   provider:string;
 
+  @Prop({ default: 5})
+  tier: string;
 }
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -24,6 +24,7 @@ export class SocauthController {
     // Initiates Google OAuth login
   }
 
+
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {    

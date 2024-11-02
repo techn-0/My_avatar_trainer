@@ -1,7 +1,7 @@
 // MyPage.js
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,6 +16,8 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
+import ClearIcon from "@mui/icons-material/Clear";
+import DoneIcon from "@mui/icons-material/Done";
 
 // Chart.js 구성 요소 등록
 ChartJS.register(
@@ -31,9 +33,14 @@ ChartJS.register(
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const { ownerId } = useParams(); // URL에서 ownerId를 가져옵니다.
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
+  const [content, setContent] = useState("");
+  const [FriendId, setFriendId] = useState("");
+  const [friendData, setFriendData] = useState("");
+  const [commentData, setCommentData] = useState("");
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem("userId");
@@ -45,11 +52,57 @@ const MyPage = () => {
   // 운동 기록 데이터를 백엔드에서 가져오기
   const token = getToken();
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(
+          `http://localhost:3002/comment?userId=${ownerId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        setCommentData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+        setLoading(false);
+      }
+    };
+    fetchComments();
+    const fetchFriends = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(
+          `http://localhost:3002/friends/find?userId=${ownerId}&friendUserId=${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        setFriendData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+        setLoading(false);
+      }
+    };
+    fetchFriends();
     const fetchWorkouts = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
         const response = await fetch(
-          `http://localhost:3002/workout?duration=${selectedDuration}`,
+          `http://localhost:3002/workout?duration=${selectedDuration}&userId=${ownerId}`,
           {
             method: "GET",
             headers: {
@@ -72,7 +125,7 @@ const MyPage = () => {
     };
 
     fetchWorkouts();
-  }, [selectedDuration]); // 선택한 시간에 따라 데이터 다시 불러오기
+  }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
   // 마지막 접속 날짜와 연속 로그인 일수 계산 함수
   const calculateVisitStats = (data) => {
@@ -300,6 +353,85 @@ const MyPage = () => {
     navigate("/"); // 메인 페이지로 이동
   };
 
+  // 방명록 내용 상태 관리
+  const handleContentChange = (e) => {
+    setContent(e.target.value);
+  };
+
+  // 방명록 제출 핸들러
+  const handleSubmit = async () => {
+    if (!content) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+
+    const data = {
+      date: new Date().toISOString(),
+      authorId: userId,
+      content,
+      ownerId,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3002/myPage/addComment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert("코멘트가 작성되었습니다.");
+        setContent("");
+      } else {
+        alert("코멘트 작성에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
+  // Friend function
+  // 친구 ID 내용 상태 관리
+  const handleAddFriendChange = (e) => {
+    setFriendId(e.target.value);
+  };
+
+  // 방명록 제출 핸들러
+  const handleAddFriendSubmit = async () => {
+    if (!FriendId) {
+      alert("친구의 ID를 입력해주세요.");
+      return;
+    }
+
+    const data = {
+      userId,
+      FriendId,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3002/friends/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert("요청을 보냈어요!.");
+        setContent("");
+      } else {
+        alert("요청을 보내지 못했어요.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className="container">
       <div
@@ -324,7 +456,7 @@ const MyPage = () => {
         </button>
         {/* div1 */}
         <div className="div1">
-          <h1>{userId} 님의 페이지입니다.</h1>
+          <h1>{ownerId} 님의 페이지입니다.</h1>
           <p>가장 좋아하는 운동: {favoriteExercise()}</p>
           {lastVisitDays === "오늘" ? (
             <p>오늘도 운동을 하셨군요!</p>
@@ -337,16 +469,6 @@ const MyPage = () => {
 
         {/* div2 */}
         <div className="div2">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px", // 버튼 사이의 간격
-              justifyContent: "flex-start", // 왼쪽 정렬
-              marginLeft: "0", // 왼쪽 여백 제거
-            }}
-          ></div>
-
           {/* 그래프 블록 */}
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             {/* 꺾은선 그래프 */}
@@ -418,9 +540,75 @@ const MyPage = () => {
 
         {/* div3 */}
         <div className="div3">
-          <h2>방명록</h2>
-          {/* 방명록 구현 부분 */}
-          {/* 실제로 구현하려면 백엔드 API와 상태 관리가 필요합니다. */}
+          <div style={{ display: "flex", gap: "10px" }}>
+            <div
+              style={{
+                width: "60%",
+                flexGrow: 1,
+                border: "2px solid black",
+                padding: "10px",
+              }}
+            >
+              <h2>방명록</h2>
+              <div>방명록 리스트가 표시될 자리입니다.</div>
+              <input
+                type="text"
+                placeholder="내용을 입력하세요"
+                style={{ width: "400px", height: "50px" }}
+                value={content}
+                onChange={handleContentChange}
+              />
+              <button
+                className="submitComment"
+                type="submit"
+                style={{ width: "70px", height: "50px", padding: "10px" }}
+                onClick={handleSubmit}
+              >
+                제출
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* div3 */}
+        <div className="div3">
+          <div style={{ display: "flex", gap: "10px" }}>
+            <div
+              style={{
+                width: "30%",
+                flexGrow: 1,
+                border: "2px solid black",
+                padding: "10px",
+              }}
+            >
+              <h2>친구추가 기능</h2>
+              <input
+                type="text"
+                placeholder="UID를 입력하세요"
+                style={{ width: "400px", height: "50px" }}
+                value={FriendId}
+                onChange={handleAddFriendChange}
+              />
+              <button
+                className="submitAddFriend"
+                type="submit"
+                style={{ width: "70px", height: "50px", padding: "10px" }}
+                onClick={handleAddFriendSubmit}
+              >
+                제출
+              </button>
+            </div>
+            <div
+              style={{
+                flexGrow: 1,
+                border: "2px solid black",
+                borderRadius: "30px",
+                padding: "10px",
+              }}
+            >
+              친구창이 될 예정입니다.
+              <div>친구 목록이 나올 자리입니다.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

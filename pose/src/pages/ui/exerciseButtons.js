@@ -46,7 +46,7 @@ function Buttons({
               </div>
             </div>
 
-            {/* 글리치 버튼 - 성장 추이 보기 */}
+            {/* 글리치 버튼 - 마이페이지 보기 */}
             <div className="radio-wrapper">
               <input
                 className="input"
@@ -95,7 +95,9 @@ function Buttons({
                     checked={selectedDuration === duration}
                     onChange={() => handleDurationSelect(duration)}
                   />
-                  {duration * 60}초
+                  {typeof duration === "number"
+                    ? `${duration * 60}초`
+                    : duration}
                 </label>
               ))}
             </div>
