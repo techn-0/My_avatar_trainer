@@ -14,7 +14,7 @@ export class TierService {
   async getTier(userId: string): Promise<{ tier: number }> {
     try {
       const exercise = 'squat';
-      const duration = 1;
+      const duration = 0.2;
 
       const lastWeek = new Date();
       lastWeek.setDate(lastWeek.getDate() - 7);

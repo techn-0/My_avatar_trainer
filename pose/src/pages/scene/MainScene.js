@@ -226,6 +226,7 @@ function ThreeScene() {
             <span className="name">{userId}</span>님
             {tier >= 1 && tier <= 5 && (
               <img
+                style={{ width: "50px" }}
                 src={preloadImages[tier - 1].src}
                 // alt={`Tier ${tier}`}
                 className="tier-image"
