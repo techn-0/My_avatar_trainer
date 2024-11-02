@@ -23,7 +23,7 @@ export class SocauthController {
     // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
     res.cookie('token', result.token, {
       maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
-      secure: false, // HTTPS에서만 작동
+      // secure: false, // HTTPS에서만 작동
       sameSite: 'Lax', // SameSite 설정
       path: '/',
     });
@@ -81,7 +81,7 @@ export class SocauthController {
     // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
     res.cookie('token', result.token, {
       maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
-      secure: true, // HTTPS에서만 작동
+      // secure: true, // HTTPS에서만 작동
       sameSite: 'Strict', // SameSite 설정
       path: '/',
     });
@@ -138,7 +138,7 @@ export class SocauthController {
     // 쿠키에 `token` 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
     res.cookie('token', result.token, {
       maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
-      secure: true, // HTTPS에서만 작동
+      // secure: true, // HTTPS에서만 작동
       sameSite: 'Strict', // SameSite 설정
       path: '/',
     });

@@ -20,7 +20,7 @@ export class AuthController {
     const { accessToken } = await this.authService.signIn(userCredentialDto);
     res.cookie('token', accessToken, {
       httpOnly: false,
-      secure: true, // 개발 중에는 false, 배포 시 true로 변경
+      // secure: true, // 개발 중에는 false, 배포 시 true로 변경
       sameSite: 'None', // 포트가 다를 경우 'None' 사용
       maxAge: 3600000,
     });

@@ -2,7 +2,7 @@
 const saveToken = (token) => {
   try {
     // 쿠키에 토큰 저장 (유효기간 1시간, Secure, SameSite 설정 추가)
-    document.cookie = `token=${token}; max-age=3600; path=/; SameSite=Strict; Secure`;
+    document.cookie = `token=${token}; max-age=3600; path=/; SameSite=Strict;`;
   } catch (error) {
     console.error("Error saving token to cookie", error);
   }
@@ -12,7 +12,7 @@ const saveToken = (token) => {
 const removeToken = () => {
   try {
     // 쿠키에서 토큰 삭제 (만료 시간을 과거로 설정)
-    document.cookie = `token=; max-age=0; path=/; SameSite=Strict; Secure`;
+    document.cookie = `token=; max-age=0; path=/; SameSite=Strict; `;
     // sessionStorage에서 userId 삭제
     sessionStorage.removeItem("userId");
   } catch (error) {

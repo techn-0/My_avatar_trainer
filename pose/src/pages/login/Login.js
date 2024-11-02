@@ -25,13 +25,11 @@ const LoginToggle = ({ onClose }) => {
       });
 
       const data = await response.json();
-      console.log("Login response:", data);
-
       if (data.message) {
-        alert(data.message);
+        alert(data);
       }
       if (data.accessToken) {
-        saveToken(data.accessToken);
+        saveToken(data.accessToken); // 토큰을 쿠키에 저장
         window.location.href = "/";// 리다이렉트
       }
     } catch (error) {
