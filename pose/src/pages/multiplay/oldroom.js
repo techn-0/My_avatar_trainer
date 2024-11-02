@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import "./Room.css";
 
-const socket = io("http://localhost:3002");
+const socket = io("http://15.165.191.221:3002");
 
 function Room() {
   const { roomName } = useParams();

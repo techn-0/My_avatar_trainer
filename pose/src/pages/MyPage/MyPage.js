@@ -49,7 +49,7 @@ const MyPage = () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
         const response = await fetch(
-          `http://localhost:3002/workout?duration=${selectedDuration}`,
+          `http://15.165.191.221:3002/workout?duration=${selectedDuration}`,
           {
             method: "GET",
             headers: {

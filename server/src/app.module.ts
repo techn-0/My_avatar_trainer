@@ -8,7 +8,7 @@ import { MultiplayerGateway } from './multiplay/multiplayer.gateway';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017'),
+    MongooseModule.forRoot('mongodb://15.165.191.221:27017'),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

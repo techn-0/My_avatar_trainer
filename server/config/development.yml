@@ -1,5 +1,5 @@
 db:
-  host: 'localhost'
+  host: '15.165.191.221'
   synchronize: true
 jwt:
   secret: 'My trainer hides his identity'
