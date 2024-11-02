@@ -3,9 +3,12 @@ import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import * as config from 'config';
 import * as cookieParser from 'cookie-parser';
+import {ValidationPipe} from '@nestjs/common';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe()); // Enable validation globally
   const serveConfig = config.get('server');
   const port = serveConfig.port;
 
