@@ -1,6 +1,6 @@
 import React, { act, useState } from "react";
 import "./Login.css";
-
+import { saveToken } from "./AuthContext"; // 쿠키에 저장하는 saveToken 사용
 const LoginToggle = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginData, setLoginData] = useState({ id: "", password: "" });
