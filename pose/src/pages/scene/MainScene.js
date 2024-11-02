@@ -13,6 +13,13 @@ import { setSkyboxBackground } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
 
+const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
+const preloadImages = imageNames.map((name) => {
+  const img = new Image();
+  img.src = `${process.env.PUBLIC_URL}/tier/${name}`;
+  return img;
+});
+
 function ThreeScene() {
   const mountRef = useRef(null);
   const [openLogin, setOpenLogin] = useState(false);
@@ -53,8 +60,8 @@ function ThreeScene() {
           },
         });
         const data = await response.json();
-        console.log("your tier: ", data);
-        setTier(data);
+        setTier(data.tier);
+        console.log("your tier: ", data.tier);
       } catch (error) {
         console.error("Error fetching workout data:", error);
       }
@@ -208,6 +215,13 @@ function ThreeScene() {
           <div className="welcome_text">
             안녕하세요 <br />
             <span className="name">{userId}</span>님
+            {tier >= 1 && tier <= 5 && (
+              <img
+                src={preloadImages[tier - 1].src}
+                // alt={`Tier ${tier}`}
+                className="tier-image"
+              />
+            )}
           </div>
         )}
       </div>
