@@ -5,8 +5,10 @@ import { WorkoutModule } from './workout/workout.module';
 import { SocauthModule } from './socauth/socauth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MultiplayerGateway } from './multiplay/multiplayer.gateway';
+import { MyPageModule } from './my-page/my-page.module';
 import { TierModule } from './tier/tier.module';
 import { MyPageModule } from './my-page/my-page.module';
+
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { MyPageModule } from './my-page/my-page.module';
     AuthModule,
     WorkoutModule,
     SocauthModule,
+    MyPageModule,
     TierModule,
     MyPageModule,
   ],
