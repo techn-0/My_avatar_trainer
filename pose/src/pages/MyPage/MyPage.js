@@ -45,7 +45,7 @@ const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
   const [content, setContent] = useState("");
-  const [FriendId, setFriendId] = useState("");
+  const [friendUserId, setFriendUserId] = useState("");
   const [friendData, setFriendData] = useState("");
   const [commentData, setCommentData] = useState("");
   const [tier, setTier] = useState("");
@@ -107,7 +107,7 @@ const MyPage = () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
         const response = await fetch(
-          `http://localhost:3002/friends/find?userId=${ownerId}&friendUserId=${userId}`,
+          `http://localhost:3002/friends/list?userId=${ownerId}`,
           {
             method: "GET",
             headers: {
@@ -424,19 +424,19 @@ const MyPage = () => {
   // Friend function
   // 친구 ID 내용 상태 관리
   const handleAddFriendChange = (e) => {
-    setFriendId(e.target.value);
+    setFriendUserId(e.target.value);
   };
 
   // 방명록 제출 핸들러
   const handleAddFriendSubmit = async () => {
-    if (!FriendId) {
+    if (!friendUserId) {
       alert("친구의 ID를 입력해주세요.");
       return;
     }
 
     const data = {
       userId,
-      FriendId,
+      friendUserId,
     };
 
     try {
@@ -623,7 +623,7 @@ const MyPage = () => {
                 type="text"
                 placeholder="UID를 입력하세요"
                 style={{ width: "400px", height: "50px" }}
-                value={FriendId}
+                value={friendUserId}
                 onChange={handleAddFriendChange}
               />
               <button
