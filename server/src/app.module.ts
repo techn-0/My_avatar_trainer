@@ -6,6 +6,7 @@ import { SocauthModule } from './socauth/socauth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MultiplayerGateway } from './multiplay/multiplayer.gateway';
 import { TierModule } from './tier/tier.module';
+import { MyPageModule } from './my-page/my-page.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TierModule } from './tier/tier.module';
     WorkoutModule,
     SocauthModule,
     TierModule,
+    MyPageModule,
   ],
   providers: [MultiplayerGateway], // MultiplayerGateway 추가
 })
