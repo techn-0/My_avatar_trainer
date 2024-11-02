@@ -55,6 +55,7 @@ function ExerciseScene() {
   const [openLogin, setOpenLogin] = useState(false);
   const [bestScore, setBestScore] = useState(0);
   const [userScore, SetUserScore] = useState(0);
+  const [userId, setUserId] = useState(null); // userId
 
   // 운동 종목 및 시간 선택 상태
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -64,7 +65,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "situp", "burpee"];
 
   // 운동 시간 리스트
-  const durations = [1, 2, 0.1, 0.4]; // 듀레이션 디버깅
+  const durations = [1, 2, 0.1, 0.4, "챌린지 모드"]; // 듀레이션 디버깅
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -138,6 +139,9 @@ function ExerciseScene() {
     const aspect = window.innerWidth / window.innerHeight;
     const near = 1;
     const far = 1000;
+
+    const storedUserId = sessionStorage.getItem("userId");
+    setUserId(storedUserId);
 
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     // 애니메이션 루프 외부에서 카메라 설정
@@ -572,7 +576,7 @@ function ExerciseScene() {
   // 성장 기록 보기 클릭 핸들러
   const moveToResultPage = () => {
     // 성장 기록 페이지로 이동
-    navigate("/user");
+    navigate(`/user/${userId}`);
   };
 
   // Mediapipe 컴포넌트를 렌더링하는 함수
