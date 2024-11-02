@@ -12,6 +12,7 @@ export class FriendService {
         @InjectModel(Friend.name) private friendModel: Model<Friend>) {}
 
     // 친구 추가하기 위한 코드이다.
+    // friendUserId 가 User DB에 존재하는지 확인하고, 추가할 수 있도록 한다.
     async addFriend( userId: string, friendUserId:string){
         const existingFriendship = await this.friendModel.findOne({
             $or:[
@@ -134,7 +135,7 @@ export class FriendService {
     }
 
 
-
+    // userId의 친구를 가져오는 함수이다.
     async getFriends(userId:string){
         const friends = await this.friendModel.find({
             $or:[
@@ -147,5 +148,29 @@ export class FriendService {
 
 
     }
+
+    // userId가 보낸 요청을 가져오는 함수이다. 
+    async getSendRequest(userId:string){
+        const friends = await this.friendModel.find({
+                userId : userId,
+                status:'pending'
+        }).select('friendUserId');
+
+        return friends;
+
+
+    }
+
+    // userId에게 들어온 요청을 가져오는 함수이다.
+    async getRequest(userId:string){
+        const friends = await this.friendModel.find({
+                friendUserId:userId, 
+                status:'pending'
+        }).select('userId');
+
+        return friends;
+
+    }
+
 
 }

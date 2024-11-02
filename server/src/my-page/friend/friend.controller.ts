@@ -87,4 +87,18 @@ export class FriendController {
     }
 
 
+    // userId가 보낸 요청을 가져오기 위한 코드이다.
+    @Get('pendingRequestList')
+    async getSendRequest(@Query('userId') userId:string){
+        return this.friendService.getSendRequest(userId);
+    }
+
+
+    // userId에게 들어온 요청을 가져오기 위한 코드이다.
+    @Get('pendingRequestList')
+    async getRequest(@Query('userId') userId:string){
+        return this.friendService.getRequest(userId);
+    }
+
+
 }
