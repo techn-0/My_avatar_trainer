@@ -20,6 +20,13 @@ const preloadImages = imageNames.map((name) => {
   return img;
 });
 
+const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
+const preloadImages = imageNames.map((name) => {
+  const img = new Image();
+  img.src = `${process.env.PUBLIC_URL}/tier/${name}`;
+  return img;
+});
+
 function ThreeScene() {
   const mountRef = useRef(null);
   const [openLogin, setOpenLogin] = useState(false);
@@ -60,6 +67,8 @@ function ThreeScene() {
           },
         });
         const data = await response.json();
+        setTier(data.tier);
+        console.log("your tier: ", data.tier);
         setTier(data.tier);
         console.log("your tier: ", data.tier);
       } catch (error) {
@@ -217,7 +226,6 @@ function ThreeScene() {
             <span className="name">{userId}</span>님
             {tier >= 1 && tier <= 5 && (
               <img
-                style={{ width: "50px" }}
                 src={preloadImages[tier - 1].src}
                 // alt={`Tier ${tier}`}
                 className="tier-image"
