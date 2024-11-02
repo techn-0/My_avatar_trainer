@@ -16,6 +16,8 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
+import ClearIcon from "@mui/icons-material/Clear";
+import DoneIcon from "@mui/icons-material/Done";
 
 // Chart.js 구성 요소 등록
 ChartJS.register(
@@ -36,6 +38,9 @@ const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
   const [content, setContent] = useState("");
+  const [FriendId, setFriendId] = useState("");
+  const [friendData, setFriendData] = useState("");
+  const [commentData, setCommentData] = useState("");
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem("userId");
@@ -47,6 +52,52 @@ const MyPage = () => {
   // 운동 기록 데이터를 백엔드에서 가져오기
   const token = getToken();
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(
+          `http://localhost:3002/comment?userId=${ownerId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        setCommentData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+        setLoading(false);
+      }
+    };
+    fetchComments();
+    const fetchFriends = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(
+          `http://localhost:3002/friends/find?userId=${ownerId}&friendUserId=${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        setFriendData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+        setLoading(false);
+      }
+    };
+    fetchFriends();
     const fetchWorkouts = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
@@ -74,7 +125,7 @@ const MyPage = () => {
     };
 
     fetchWorkouts();
-  }, [selectedDuration, ownerId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
+  }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
   // 마지막 접속 날짜와 연속 로그인 일수 계산 함수
   const calculateVisitStats = (data) => {
@@ -322,7 +373,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("/myPage/addComment", {
+      const response = await fetch("http://localhost:3002/myPage/addComment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -335,6 +386,45 @@ const MyPage = () => {
         setContent("");
       } else {
         alert("코멘트 작성에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
+  // Friend function
+  // 친구 ID 내용 상태 관리
+  const handleAddFriendChange = (e) => {
+    setFriendId(e.target.value);
+  };
+
+  // 방명록 제출 핸들러
+  const handleAddFriendSubmit = async () => {
+    if (!FriendId) {
+      alert("친구의 ID를 입력해주세요.");
+      return;
+    }
+
+    const data = {
+      userId,
+      FriendId,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3002/friends/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert("요청을 보냈어요!.");
+        setContent("");
+      } else {
+        alert("요청을 보내지 못했어요.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -460,6 +550,7 @@ const MyPage = () => {
               }}
             >
               <h2>방명록</h2>
+              <div>방명록 리스트가 표시될 자리입니다.</div>
               <input
                 type="text"
                 placeholder="내용을 입력하세요"
@@ -470,7 +561,7 @@ const MyPage = () => {
               <button
                 className="submitComment"
                 type="submit"
-                style={{ width: "100px", height: "50px", padding: "10px" }}
+                style={{ width: "70px", height: "50px", padding: "10px" }}
                 onClick={handleSubmit}
               >
                 제출
@@ -483,7 +574,7 @@ const MyPage = () => {
           <div style={{ display: "flex", gap: "10px" }}>
             <div
               style={{
-                width: "60%",
+                width: "30%",
                 flexGrow: 1,
                 border: "2px solid black",
                 padding: "10px",
@@ -494,11 +585,14 @@ const MyPage = () => {
                 type="text"
                 placeholder="UID를 입력하세요"
                 style={{ width: "400px", height: "50px" }}
+                value={FriendId}
+                onChange={handleAddFriendChange}
               />
               <button
                 className="submitAddFriend"
                 type="submit"
-                style={{ width: "100px", height: "50px", padding: "10px" }}
+                style={{ width: "70px", height: "50px", padding: "10px" }}
+                onClick={handleAddFriendSubmit}
               >
                 제출
               </button>
@@ -512,6 +606,7 @@ const MyPage = () => {
               }}
             >
               친구창이 될 예정입니다.
+              <div>친구 목록이 나올 자리입니다.</div>
             </div>
           </div>
         </div>
