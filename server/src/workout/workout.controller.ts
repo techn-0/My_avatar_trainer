@@ -5,7 +5,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { WorkOut } from './schemas/workout.schema';
 
 @Controller('workout')
-
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 

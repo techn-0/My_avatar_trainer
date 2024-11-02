@@ -20,6 +20,9 @@ export class AuthService {
 
   async signUp(userCredentialDto: UserCredentialDto): Promise<{message: string}>{
         const { id, password, email } = userCredentialDto;
+        if( !password ){
+          throw new InternalServerErrorException('비밀번호를 입력해주세요!');
+        }
         try{
             await this.userModel.create({
                 username : id,
