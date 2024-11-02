@@ -1,14 +1,16 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { User } from 'src/auth/schemas/user.schema';
 import { WorkOut } from 'src/workout/schemas/workout.schema';
 @Injectable()
 export class TierService {
     constructor(
-        @InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>
+        @InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>,
+        @InjectModel(User.name) private userModel: Model<User>,
     ) {}
 
-    async getTier(userId: string): Promise<{tier: string}> {
+    async getTier(userId: string): Promise<{tier: number}> {
         try{
             const exercise = 'squat';
             const duration = 1;
@@ -114,18 +116,25 @@ export class TierService {
                 });
                 currentIndex++;
               }
+
+              // 사용자들의 티어를 업데이트
+              const bulkOperations = usersWithTiers.map((user) => ({
+                updateOne: {
+                  filter: { _id: user.userId },
+                  update: { $set: { tier: user.tier } },
+                },
+              }));
+
+              await this.userModel.bulkWrite(bulkOperations);
           
-              // 요청한 사용자의 티어 찾기
-              const userTierInfo = usersWithTiers.find(
-                (user) => user.userId === userId.toString(),
-              );
-          
-              if (!userTierInfo) {
-                throw new Error('사용자의 티어를 찾을 수 없습니다.');
-              }
-          
-              // 사용자 티어 반환
-              return { tier: userTierInfo.tier };
+
+            // 요청한 사용자의 티어 정보를 DB에서 조회
+            const user = await this.userModel.findById(userId).select('tier');
+            if (!user) {
+                throw new NotFoundException('사용자의 티어를 찾을 수 없습니다!');
+            }
+
+            return { tier: user.tier };
             } catch (error) {
               console.error(error);
               throw new Error('티어를 가져오는 데 오류가 발생했습니다.');
