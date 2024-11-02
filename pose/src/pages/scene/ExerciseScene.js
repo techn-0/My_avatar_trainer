@@ -336,7 +336,7 @@ function ExerciseScene() {
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
       // 서버로 선택한 종목과 시간 전송
-      fetch("http://15.165.191.221:3002/workout/start_exercise", {
+      fetch("https://techn0.shop/workout/start_exercise", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -552,7 +552,7 @@ function ExerciseScene() {
     setShowResultModal(true); // 결과 모달 표시
 
     // 서버로 데이터 전송
-    fetch("http://15.165.191.221:3002/workout/end_exercise", {
+    fetch("https://techn0.shop/workout/end_exercise", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
