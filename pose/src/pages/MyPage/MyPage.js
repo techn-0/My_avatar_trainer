@@ -16,6 +16,8 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
+import ClearIcon from "@mui/icons-material/Clear";
+import DoneIcon from "@mui/icons-material/Done";
 
 // Chart.js 구성 요소 등록
 ChartJS.register(
@@ -37,6 +39,8 @@ const MyPage = () => {
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
   const [content, setContent] = useState("");
   const [FriendId, setFriendId] = useState("");
+  const [friendData, setFriendData] = useState("");
+  const [commentData, setCommentData] = useState("");
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem("userId");
@@ -63,12 +67,14 @@ const MyPage = () => {
         );
         const data = await response.json();
         console.log(data);
+        setCommentData(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching workout data:", error);
         setLoading(false);
       }
     };
-
+    fetchComments();
     const fetchFriends = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
@@ -84,12 +90,14 @@ const MyPage = () => {
         );
         const data = await response.json();
         console.log(data);
+        setFriendData(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching workout data:", error);
         setLoading(false);
       }
     };
-
+    fetchFriends();
     const fetchWorkouts = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
@@ -117,7 +125,7 @@ const MyPage = () => {
     };
 
     fetchWorkouts();
-  }, [selectedDuration, ownerId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
+  }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
   // 마지막 접속 날짜와 연속 로그인 일수 계산 함수
   const calculateVisitStats = (data) => {
