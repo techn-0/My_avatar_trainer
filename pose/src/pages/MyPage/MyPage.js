@@ -56,7 +56,7 @@ const MyPage = () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
         const response = await fetch(
-          `https://techn0.shop/workout?duration=${selectedDuration}`,
+          `https://techn0.shop/comment?userId=${ownerId}`,
           {
             method: "GET",
             headers: {

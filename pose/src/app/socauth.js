@@ -7,7 +7,7 @@ const Social = ({}) => { // Add provId and provider as props
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3002/socauth/additional-data', { // 주소
+      const response = await fetch('https://techn0.shop/socauth/additional-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

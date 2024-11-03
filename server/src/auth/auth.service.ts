@@ -17,11 +17,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(
-    userCredentialDto: UserCredentialDto,
-  ): Promise<{ message: string }> {
+  async signUp(userCredentialDto: UserCredentialDto): Promise<{message: string}>{
     const { id, password, email } = userCredentialDto;
-    if (!password) {
+    if( !password ){
       throw new InternalServerErrorException('비밀번호를 입력해주세요!');
     }
     try {

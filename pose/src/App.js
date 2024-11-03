@@ -31,8 +31,7 @@ function App() {
         <Route path="/user/:ownerId" element={<MyPage />} />
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/socauth/additional-data" element={<Social />} />
-        <Route path="/lobby" element={<Lobby />} />{" "}
-        {/* 멀티플레이 로비 페이지 */}
+        <Route path="/lobby" element={<Lobby />} /> {/* 멀티플레이 로비 페이지 */}
         <Route path="/room/:roomName" element={<Room />} />
       </Routes>
     </React.Fragment>
