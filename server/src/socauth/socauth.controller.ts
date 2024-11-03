@@ -65,7 +65,7 @@ export class SocauthController {
           await this.socauthService.signUp(socUserCredentialDto);
   
           
-          return res.redirect('http://localhost:3000/socauth/additional-data');
+          return res.redirect('http://15.165.191.221:3000/socauth/additional-data');
 
         }catch(error){
           console.error('Token verification failed:', error);
@@ -87,7 +87,7 @@ export class SocauthController {
     });
 
     // Redirect to localhost:3000 after successful login
-    return res.redirect('http://localhost:3000');
+    return res.redirect('http://15.165.191.221:3000');
   }
 
   @Post('additional-data')
@@ -131,7 +131,7 @@ export class SocauthController {
         path: '/',
       });
       
-      return res.redirect('http://localhost:3000/')
+      return res.redirect('http://15.165.191.221:3000/')
     }catch(error){
       console.error(error);
       throw new InternalServerErrorException('Failed to update username information');
@@ -187,7 +187,7 @@ export class SocauthController {
         await this.socauthService.signUp(socUserCredentialDto);
 
         
-        return res.redirect('http://localhost:3000/socauth/additional-data');
+        return res.redirect('http://15.165.191.221:3000/socauth/additional-data');
 
       }catch(error){
         console.error('Token verification failed:', error);
@@ -209,7 +209,7 @@ export class SocauthController {
     });
 
     // Redirect to localhost:3000 after successful login
-    return res.redirect('http://localhost:3000') 
+    return res.redirect('http://15.165.191.221:3000') 
 
   }
 
@@ -261,7 +261,7 @@ export class SocauthController {
       const returnmessage = await this.socauthService.signUp(socUserCredentialDto);
       console.log(returnmessage);
 
-      return res.redirect('http://localhost:3000/socauth/additional-data');
+      return res.redirect('http://15.165.191.221:3000/socauth/additional-data');
 
     }catch(error){
       console.error('Token verification failed:', error);
@@ -285,7 +285,7 @@ export class SocauthController {
 
     
     
-    return res.redirect('http://localhost:3000');
+    return res.redirect('http://15.165.191.221:3000');
   }
 
 }
