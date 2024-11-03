@@ -1,16 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
-
 import * as config from 'config';
 import * as cookieParser from 'cookie-parser';
 import {ValidationPipe} from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule); // NestExpressApplication 타입으로 설정
+  app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe());
+  
   const serveConfig = config.get('server');
   const port = serveConfig.port;
 
