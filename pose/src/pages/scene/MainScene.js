@@ -25,6 +25,8 @@ function ThreeScene() {
   const sceneRef = useRef();
   const raycaster = useRef(new THREE.Raycaster());
   const mouse = useRef(new THREE.Vector2());
+  const token = getToken();
+  const [tier, setTier] = useState("");
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -37,7 +39,29 @@ function ThreeScene() {
     } else {
       console.log("token does not exists");
     }
-  }, []);
+
+    //////////////////////// 티어 구현 /////////////////////////////////////////////////
+
+    const fetchTier = async () => {
+      try {
+        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
+        const response = await fetch(`https://techn0.shop/tier`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        console.log("your tier: ", data);
+        setTier(data);
+      } catch (error) {
+        console.error("Error fetching workout data:", error);
+      }
+    };
+
+    fetchTier();
+  }, [userId]);
 
   useEffect(() => {
     // Three.js scene setup

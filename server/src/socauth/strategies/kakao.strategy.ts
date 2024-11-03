@@ -19,7 +19,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       id,
       username,
       email: _json.kakao_account.email,
-      accessToken
+      accessToken,
+      provider:'kakao',
     };
     done(null, user);
   }

@@ -6,6 +6,8 @@ import { SocauthModule } from './socauth/socauth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MultiplayerGateway } from './multiplay/multiplayer.gateway';
 import { AppController } from './app.controller'; // AppController 추가
+import { MyPageModule } from './my-page/my-page.module';
+import { TierModule } from './tier/tier.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AppController } from './app.controller'; // AppController 추가
     AuthModule,
     WorkoutModule,
     SocauthModule,
+    MyPageModule,
+    TierModule,
   ],
   controllers: [AppController], // AppController 추가
   providers: [MultiplayerGateway], // MultiplayerGateway 추가

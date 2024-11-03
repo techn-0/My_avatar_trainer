@@ -1,7 +1,6 @@
 import React, { act, useState } from "react";
 import "./Login.css";
 import { saveToken } from "./AuthContext"; // 쿠키에 저장하는 saveToken 사용
-
 const LoginToggle = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginData, setLoginData] = useState({ id: "", password: "" });
@@ -29,8 +28,8 @@ const LoginToggle = ({ onClose }) => {
         alert(data);
       }
       if (data.accessToken) {
-        saveToken(data.accessToken); // 토큰을 쿠키에 저장
-        window.location.href = "/";// 리다이렉트
+        saveToken(data.accessToken);
+        window.location.href = "/"; // 리다이렉트
       }
     } catch (error) {
       console.error("Login error:", error);
