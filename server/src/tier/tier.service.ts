@@ -15,7 +15,7 @@ export class TierService {
     
     @Cron(CronExpression.EVERY_HOUR)
     async updateAllUserTier(): Promise<void> {
-        console.log('실행중!!');
+        console.log('티어 업데이트 !!!');
         try{
             const lastWeek = new Date();
             lastWeek.setDate(lastWeek.getDate() - 7);
