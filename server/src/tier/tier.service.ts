@@ -90,14 +90,14 @@ export class TierService {
           userScoresMap.set(userIdStr, score);
         }
       });
-      const combinedScores = Array.from(userScoresMap, ([userId, score]) => ({
+      const finalScores = Array.from(userScoresMap, ([userId, score]) => ({
         userId,
         score,
       }));
-      combinedScores.sort((a, b) => b.score - a.score);
+      finalScores.sort((a, b) => b.score - a.score);
 
       // 전체 사용자 수
-      const totalUsers = combinedScores.length;
+      const totalUsers = finalScores.length;
 
       // 티어별 비율 설정
       const tierPercentages = [
@@ -124,8 +124,8 @@ export class TierService {
           i++
         ) {
           usersWithTiers.push({
-            userId: combinedScores[currentIndex].userId,
-            score: combinedScores[currentIndex].score,
+            userId: finalScores[currentIndex].userId,
+            score: finalScores[currentIndex].score,
             tier: tier,
           });
           currentIndex++;
@@ -135,8 +135,8 @@ export class TierService {
       // 남은 사용자 처리 (총합이 모자랄 수 있음)
       while (currentIndex < totalUsers) {
         usersWithTiers.push({
-          userId: combinedScores[currentIndex].userId,
-          score: combinedScores[currentIndex].score,
+          userId: finalScores[currentIndex].userId,
+          score: finalScores[currentIndex].score,
           tier: tierPercentages[tierPercentages.length - 1].tier, // 가장 낮은 티어로 할당
         });
         currentIndex++;
@@ -154,6 +154,10 @@ export class TierService {
       console.error(error);
       throw new Error('티어를 가져오는 데 오류가 발생했습니다.');
     }
+  }
+
+  async updateOneUser(): Promise<void> {
+    
   }
 
   async getSomeoneTier(username: string): Promise<{ tier: number }> {
