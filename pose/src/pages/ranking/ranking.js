@@ -13,7 +13,17 @@ function RankingPage() {
   const fetchRanking = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3002/workout/get_ranking?exercise=${exercise}&duration=${duration}`
+        `http://localhost:3002/workout/get_ranking`,
+        {
+          method: "POST", // GET에서 POST로 변경
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            exercise: exercise,
+            duration: duration,
+          }), // 쿼리 파라미터 대신 body에 데이터 포함
+        }
       );
       const data = await response.json();
       setRankings(Array.isArray(data) ? data : []);
@@ -22,6 +32,8 @@ function RankingPage() {
       setRankings([]);
     }
   };
+
+  fetchRanking();
 
   useEffect(() => {
     fetchRanking();

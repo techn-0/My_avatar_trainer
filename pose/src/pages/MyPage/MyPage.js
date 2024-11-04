@@ -84,46 +84,41 @@ const MyPage = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
-        const response = await fetch(
-          `http://localhost:3002/comment?userId=${ownerId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // JWT 토큰 추가
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // GET에서 POST로 변경하고, 데이터를 body에 포함
+        const response = await fetch(`http://localhost:3002/comment`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: ownerId }),
+        });
         const data = await response.json();
         console.log(data);
         setCommentData(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching workout data:", error);
+        console.error("Error fetching comments:", error);
         setLoading(false);
       }
     };
     fetchComments();
     const fetchFriends = async () => {
       try {
-        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
-        const response = await fetch(
-          `http://localhost:3002/friends/list?userId=${ownerId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // JWT 토큰 추가
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3002/friends/list`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: ownerId }),
+        });
         const data = await response.json();
         console.log("friend list: ", data);
         setFriendData(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching workout data:", error);
+        console.error("Error fetching friend list:", error);
         setLoading(false);
       }
     };
@@ -132,13 +127,14 @@ const MyPage = () => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3002/friends/pendingRequestList?userId=${ownerId}`,
+          `http://localhost:3002/friends/pendingRequestList`,
           {
-            method: "GET",
+            method: "POST",
             headers: {
               Authorization: `Bearer ${token}`, // JWT 토큰 추가
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({ userId: ownerId }),
           }
         );
         const data = await response.json();
@@ -154,17 +150,17 @@ const MyPage = () => {
     //
     const fetchWorkouts = async () => {
       try {
-        // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
-        const response = await fetch(
-          `http://localhost:3002/workout?duration=${selectedDuration}&userId=${ownerId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // JWT 토큰 추가
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3002/workout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            duration: selectedDuration,
+            userId: ownerId,
+          }),
+        });
         const data = await response.json();
         console.log(data);
         setWorkoutData(data); // 운동 기록 데이터를 상태로 저장
@@ -489,21 +485,18 @@ const MyPage = () => {
   // 유저 검색 함수
   const handleSearchUser = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:3002/friends/findUser?userId=${searchUserId}`, // 친구 삭제 API 엔드포인트
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:3002/friends/findUser`, {
+        method: "POST", // GET에서 POST로 변경
+        headers: {
+          Authorization: `Bearer ${token}`, // JWT 토큰 추가
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: searchUserId }),
+      });
       const data = await response.json();
       console.log(data);
       setSearchResult(data); // 검색 결과 상태에 유저 ID 저장
-      if (response.ok) {
-      } else {
+      if (!response.ok) {
         alert("그런 유저는 없는데요");
         setSearchResult(null);
       }
