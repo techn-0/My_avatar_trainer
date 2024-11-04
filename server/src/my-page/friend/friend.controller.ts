@@ -15,7 +15,7 @@ import { Model } from 'mongoose';
 import { Friend } from './schemas/friend.schema';
 import { FriendService } from './friend.service';
 
-@Controller('friends')
+@Controller('api/friends')
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 

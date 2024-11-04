@@ -10,7 +10,7 @@ import { User } from '../auth/schemas/user.schema'; // Update this path to where
 
 import { access } from 'fs';
 
-@Controller('socauth')
+@Controller('api/socauth')
 export class SocauthController {
   constructor(
     @InjectModel(User.name) private userModel:Model<User>,
@@ -65,7 +65,7 @@ export class SocauthController {
           await this.socauthService.signUp(socUserCredentialDto);
   
           
-          return res.redirect('http://localhost:3000/socauth/additional-data');
+          return res.redirect('https://techn0.shop/socauth/additional-data');
 
         }catch(error){
           console.error('Token verification failed:', error);
@@ -87,7 +87,7 @@ export class SocauthController {
     });
 
     // Redirect to localhost:3000 after successful login
-    return res.redirect('http://localhost:3000');
+    return res.redirect('https://techn0.shop');
   }
 
   @Post('additional-data')
@@ -131,7 +131,7 @@ export class SocauthController {
         path: '/',
       });
       
-      return res.redirect('http://localhost:3000/')
+      return res.redirect('https://techn0.shop/')
     }catch(error){
       console.error(error);
       throw new InternalServerErrorException('Failed to update username information');
@@ -187,7 +187,7 @@ export class SocauthController {
         await this.socauthService.signUp(socUserCredentialDto);
 
         
-        return res.redirect('http://localhost:3000/socauth/additional-data');
+        return res.redirect('https://techn0.shop/socauth/additional-data');
 
       }catch(error){
         console.error('Token verification failed:', error);
@@ -209,7 +209,7 @@ export class SocauthController {
     });
 
     // Redirect to localhost:3000 after successful login
-    return res.redirect('http://localhost:3000') 
+    return res.redirect('https://techn0.shop') 
 
   }
 
@@ -261,7 +261,7 @@ export class SocauthController {
       const returnmessage = await this.socauthService.signUp(socUserCredentialDto);
       console.log(returnmessage);
 
-      return res.redirect('http://localhost:3000/socauth/additional-data');
+      return res.redirect('https://techn0.shop/socauth/additional-data');
 
     }catch(error){
       console.error('Token verification failed:', error);
@@ -285,7 +285,8 @@ export class SocauthController {
 
     
     
-    return res.redirect('http://localhost:3000');
+    // return res.redirect('http://localhost:3000');
+    return res.redirect('https://techn0.shop');
   }
 
 }

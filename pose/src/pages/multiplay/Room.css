@@ -1,0 +1,27 @@
+/* Room.css */
+
+.room-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  max-width: 1000px; /* 최대 너비 */
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden; /* 비디오가 컨테이너를 넘지 않도록 설정 */
+}
+
+.start-message {
+  margin: 20px 0;
+  font-size: 1.5rem;
+  color: #4caf50;
+  text-align: center;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}

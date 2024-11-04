@@ -51,7 +51,7 @@ function ThreeScene() {
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/tier`, {
+        const response = await fetch(`https://techn0.shop/api/tier`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가

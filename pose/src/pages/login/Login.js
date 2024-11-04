@@ -16,7 +16,7 @@ const LoginToggle = ({ onClose }) => {
     sessionStorage.setItem("userId", loginData.id); // 사용방법 : let userId = sessionStorage.getItem('userId');
 
     try {
-      const response = await fetch("http://localhost:3002/auth/signin", {
+      const response = await fetch("https://techn0.shop/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -42,7 +42,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("SignUp data:", signUpData);
 
     try {
-      const response = await fetch("http://localhost:3002/auth/signup", {
+      const response = await fetch("https://techn0.shop/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signUpData),
@@ -74,7 +74,7 @@ const LoginToggle = ({ onClose }) => {
 
   // 소셜 로그인 버튼 클릭 핸들러
   const handleSocialLogin = (provider) => {
-    const baseURL = "http://localhost:3002/socauth"; // 소셜 로그인 엔드포인트의 베이스 URL
+    const baseURL = "https://techn0.shop/api/socauth"; // 소셜 로그인 엔드포인트의 베이스 URL
     window.location.href = `${baseURL}/${provider}`;
   }; // 소셜로그인 jwt
 

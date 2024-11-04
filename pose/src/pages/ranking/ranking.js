@@ -13,7 +13,7 @@ function RankingPage() {
   const fetchRanking = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3002/workout/get_ranking`,
+        `https://techn0.shop/api/workout/get_ranking`,
         {
           method: "POST", // GET에서 POST로 변경
           headers: {

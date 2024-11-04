@@ -4,7 +4,7 @@ import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { WorkOut } from './schemas/workout.schema';
 
-@Controller('workout')
+@Controller('api/workout')
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 

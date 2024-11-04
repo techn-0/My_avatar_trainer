@@ -15,7 +15,7 @@ const PendingRequests = ({ pendingRequests = [], onRequestUpdate }) => {
     console.log("friend user Id: ", friendUserId);
     const data = { userId, friendUserId };
     try {
-      await fetch(`http://localhost:3002/friends/accept`, {
+      await fetch(`https://techn0.shop/api/friends/accept`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -36,7 +36,7 @@ const PendingRequests = ({ pendingRequests = [], onRequestUpdate }) => {
     console.log("friend user Id: ", friendUserId);
     const data = { userId, friendUserId };
     try {
-      await fetch(`http://localhost:3002/friends/decline`, {
+      await fetch(`https://techn0.shop/api/friends/decline`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가

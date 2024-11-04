@@ -7,7 +7,7 @@ const Social = ({}) => { // Add provId and provider as props
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3002/socauth/additional-data', {
+      const response = await fetch('https://techn0.shop/api/socauth/additional-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ const Social = ({}) => { // Add provId and provider as props
       const result = await response.json();
       if (response.ok) {
         alert('Username added successfully!');
-        window.location.href = 'http://localhost:3000'; // Redirect to homepage or desired page
+        window.location.href = 'https://techn0.shop'; // Redirect to homepage or desired page
       } else if (response.status === 409) {
         alert(result.message); // Handle duplicate username error
       }

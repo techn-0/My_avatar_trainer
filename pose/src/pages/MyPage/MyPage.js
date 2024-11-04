@@ -85,7 +85,7 @@ const MyPage = () => {
     const fetchComments = async () => {
       try {
         // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(`http://localhost:3002/comment`, {
+        const response = await fetch(`https://techn0.shop/api/comment`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -105,7 +105,7 @@ const MyPage = () => {
     fetchComments();
     const fetchFriends = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/friends/list`, {
+        const response = await fetch(`https://techn0.shop/api/friends/list`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -127,7 +127,7 @@ const MyPage = () => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3002/friends/pendingRequestList`,
+          `https://techn0.shop/api/friends/pendingRequestList`,
           {
             method: "POST",
             headers: {
@@ -150,7 +150,7 @@ const MyPage = () => {
     //
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/workout`, {
+        const response = await fetch(`https://techn0.shop/api/workout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -423,7 +423,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3002/myPage/addComment", {
+      const response = await fetch("https://techn0.shop/api/myPage/addComment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -457,7 +457,7 @@ const MyPage = () => {
   const handleDeleteFriend = async (friendUserId) => {
     try {
       const response = await fetch(
-        `http://localhost:3002/friends/delete`, // 친구 삭제 API 엔드포인트
+        `https://techn0.shop/api/friends/delete`, // 친구 삭제 API 엔드포인트
         {
           method: "Delete",
           headers: {
@@ -485,7 +485,7 @@ const MyPage = () => {
   // 유저 검색 함수
   const handleSearchUser = async () => {
     try {
-      const response = await fetch(`http://localhost:3002/friends/findUser`, {
+      const response = await fetch(`https://techn0.shop/api/friends/findUser`, {
         method: "POST", // GET에서 POST로 변경
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -523,7 +523,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3002/friends/add", {
+      const response = await fetch("https://techn0.shop/api/friends/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,7 +2,7 @@ import { Controller, Get, Req, UseGuards, Param, Post } from '@nestjs/common';
 import { TierService } from './tier.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('tier')
+@Controller('api/tier')
 @UseGuards(AuthGuard('jwt'))
 
 export class TierController {
