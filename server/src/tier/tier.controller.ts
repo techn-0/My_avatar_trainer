@@ -14,7 +14,6 @@ export class TierController {
         return await this.tierService.getTier(req.user._id)   
         }
     
-
     @Get('/:username')
     async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
         return await this.tierService.getSomeoneTier(username)
