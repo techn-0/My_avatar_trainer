@@ -81,30 +81,30 @@ export class FriendController {
         message: 'Friend does not exist',
       };
     }
-  }
+  }  
+    
+    // userId가 friendId를 삭제하기 위한 코드이다.
+    @Delete('delete')
+    async removeFriend(@Body() body: {userId: string, friendUserId:string}){
+        const {userId, friendUserId} = body;
+        return this.friendService.removeFriend(userId, friendUserId);
+    }
 
-  // userId가 friendId를 삭제하기 위한 코드이다.
-  @Delete('delete')
-  async removeFriend(@Body() body: { userId: string; friendUserId: string }) {
-    const { userId, friendUserId } = body;
-    return this.friendService.removeFriend(userId, friendUserId);
-  }
+    // userId의 모든 친구 목록을 가져오기 위한 코드이다.
+    @Get('list')
+    async getFriends(@Query('userId') userId:string){
+        return this.friendService.getFriends(userId);
+    }
 
-  // userId의 모든 친구 목록을 가져오기 위한 코드이다.
-  @Get('list')
-  async getFriends(@Query('userId') userId: string) {
-    return this.friendService.getFriends(userId);
-  }
+    // userId가 보낸 요청을 가져오기 위한 코드이다.
+    @Get('sendRequestList')
+    async getSendRequest(@Query('userId') userId:string){
+        return this.friendService.getSendRequest(userId);
+    }
 
-  // userId가 보낸 요청을 가져오기 위한 코드이다.
-  @Get('sendRequestList')
-  async getSendRequest(@Query('userId') userId: string) {
-    return this.friendService.getSendRequest(userId);
-  }
-
-  // userId에게 들어온 요청을 가져오기 위한 코드이다.
-  @Get('pendingRequestList')
-  async getRequest(@Query('userId') userId: string) {
-    return this.friendService.getRequest(userId);
-  }
+    // userId에게 들어온 요청을 가져오기 위한 코드이다.
+    @Get('pendingRequestList')
+    async getRequest(@Query('userId') userId:string){
+        return this.friendService.getRequest(userId);
+    }
 }
