@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 
-@Schema()
 // Document Represents a MongoDB document
+@Schema()
 export class Friend extends Document {
     @Prop({ type:String, ref:'User', required: true})
     userId : string;
