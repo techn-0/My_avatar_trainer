@@ -83,7 +83,7 @@ export class FriendController {
     }
   }
 
-  // userId가 friendUserId를 삭제하기 위한 코드이다.
+  // userId가 friendId를 삭제하기 위한 코드이다.
   @Delete('delete')
   async removeFriend(@Body() body: { userId: string; friendUserId: string }) {
     const { userId, friendUserId } = body;
