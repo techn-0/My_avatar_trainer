@@ -141,5 +141,3 @@ export class TierService {
         return { tier: user.tier}
       } 
     }
-  }
-}
