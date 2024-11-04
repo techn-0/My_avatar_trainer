@@ -125,25 +125,25 @@ function RankingCard({ rank, userName, score }) {
                 : "green"
             }-gradient)`}
             data-spm-anchor-id="a313x.search_index.0.i10.40193a81WcxQiT"
-            class=""
+            className=""
           ></path>
           <path
             d="M384 853.333333h256a42.666667 42.666667 0 0 1 42.666667 42.666667v42.666667H341.333333v-42.666667a42.666667 42.666667 0 0 1 42.666667-42.666667z"
             fill="#6e4a32"
             data-spm-anchor-id="a313x.search_index.0.i1.40193a81WcxQiT"
-            class=""
+            className=""
           ></path>
           <path
             d="M213.333333 256v85.333333a42.666667 42.666667 0 0 0 85.333334 0V256H213.333333zM170.666667 213.333333h170.666666v128a85.333333 85.333333 0 1 1-170.666666 0V213.333333zM725.333333 256v85.333333a42.666667 42.666667 0 0 0 85.333334 0V256h-85.333334z m-42.666666-42.666667h170.666666v128a85.333333 85.333333 0 1 1-170.666666 0V213.333333z"
             fill="#f4ea2a"
             data-spm-anchor-id="a313x.search_index.0.i9.40193a81WcxQiT"
-            class=""
+            className=""
           ></path>
           <path
             d="M298.666667 85.333333h426.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v341.333333a256 256 0 1 1-512 0V128a42.666667 42.666667 0 0 1 42.666667-42.666667z"
             fill={`url(#${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : rank === 4 ? 'blue' : 'green'}-gradient)`}
             data-spm-anchor-id="a313x.search_index.0.i5.40193a81WcxQiT"
-            class=""
+            className=""
           ></path>
           <path
             d="M512 469.333333l-100.309333 52.736 19.157333-111.701333-81.152-79.104 112.128-16.298667L512 213.333333l50.176 101.632 112.128 16.298667-81.152 79.104 19.157333 111.701333z"
@@ -244,19 +244,19 @@ function RankingCard({ rank, userName, score }) {
               d="M382.6 805H242.2c-6.7 0-12.2-5.5-12.2-12.2V434.3c0-6.7 5.5-12.2 12.2-12.2h140.4c6.7 0 12.2 5.5 12.2 12.2v358.6c0 6.6-5.4 12.1-12.2 12.1z"
               fill={`url(#${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : rank === 4 ? 'blue' : 'green'}-gradient)`}
               data-spm-anchor-id="a313x.search_index.0.i36.40193a81WcxQiT"
-              class=""
+              className=""
             ></path>
             <path
               d="M591.1 805H450.7c-6.7 0-12.2-5.5-12.2-12.2V254.9c0-6.7 5.5-12.2 12.2-12.2h140.4c6.7 0 12.2 5.5 12.2 12.2v537.9c0 6.7-5.5 12.2-12.2 12.2z"
               fill={`url(#${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : rank === 4 ? 'blue' : 'green'}-gradient)`}
               data-spm-anchor-id="a313x.search_index.0.i35.40193a81WcxQiT"
-              class=""
+              className=""
             ></path>
             <path
               d="M804.4 805H663.9c-6.7 0-12.2-5.5-12.2-12.2v-281c0-6.7 5.5-12.2 12.2-12.2h140.4c6.7 0 12.2 5.5 12.2 12.2v281c0.1 6.7-5.4 12.2-12.1 12.2z"
               fill={`url(#${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : rank === 4 ? 'blue' : 'green'}-gradient)`}
               data-spm-anchor-id="a313x.search_index.0.i37.40193a81WcxQiT"
-              class=""
+              className=""
             ></path>
           </svg>
           <p className="gradesBoxLabel">SCORE</p>
