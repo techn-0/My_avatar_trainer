@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, Param } from '@nestjs/common';
 import { TierService } from './tier.service';
 import { AuthGuard } from '@nestjs/passport';
 import { userInfo } from 'os';
@@ -13,10 +13,9 @@ export class TierController {
     async getTier(@Req() req:any): Promise<{ tier: number}>{
         return await this.tierService.getTier(req.user._id)   
         }
-    }
-
-    // @Get()
-    // async getSomeoneTier(@Param('userId') userId: string): Promise< {tier: number}>{
-    //     return await this.tierService.getSomeoneTier(userId : string)
-    //     }
-    // }
+    
+    @Get('/:username')
+    async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
+        return await this.tierService.getSomeoneTier(username)
+        }
+}

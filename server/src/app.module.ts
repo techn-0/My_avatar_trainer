@@ -4,10 +4,9 @@ import { AuthModule } from './auth/auth.module';
 import { WorkoutModule } from './workout/workout.module';
 import { SocauthModule } from './socauth/socauth.module';
 import { ConfigModule } from '@nestjs/config';
-import { MultiplayerGateway } from './multiplay/multiplayer.gateway';
 import { MyPageModule } from './my-page/my-page.module';
 import { TierModule } from './tier/tier.module';
-
+import { GatewayModule } from './multiplay/gateway.module';
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { TierModule } from './tier/tier.module';
     SocauthModule,
     MyPageModule,
     TierModule,
+    GatewayModule,
   ],
-  providers: [MultiplayerGateway], // MultiplayerGateway 추가
 })
 export class AppModule {}

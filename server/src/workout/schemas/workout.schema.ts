@@ -18,6 +18,9 @@ export class WorkOut extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'User',  })  // 유저와의 참조
   userId: User;
+
+  @Prop({ ref: 'User'})
+  username: string
 }
 
 export const WorkOutSchema = SchemaFactory.createForClass(WorkOut);

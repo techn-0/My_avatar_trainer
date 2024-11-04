@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Friend } from './schemas/friend.schema';
 import { User } from '../../auth/schemas/user.schema';
-import { NotFound } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class FriendService {
