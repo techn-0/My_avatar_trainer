@@ -81,7 +81,7 @@ export class FriendController {
         message: 'Friend does not exist',
       };
     }
-
+  }  
     
     // userId가 friendId를 삭제하기 위한 코드이다.
     @Delete('delete')
