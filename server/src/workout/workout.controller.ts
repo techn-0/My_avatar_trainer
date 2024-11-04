@@ -27,7 +27,7 @@ export class WorkoutController {
   createRecord(@Body() body: { exercise: string, duration: number, count: number, date: string },
               @Req() req:any,
             ): Promise<{ message: string }> {
-            return this.workoutService.createRecord(body.exercise, Number(body.duration), body.count, body.date, req.user._id);
+            return this.workoutService.createRecord(body.exercise, Number(body.duration), body.count, body.date, req.user._id, req.user.username);
           }
   
   @Get('/get_ranking')

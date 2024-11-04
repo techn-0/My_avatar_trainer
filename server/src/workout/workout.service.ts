@@ -49,7 +49,8 @@ export class WorkoutService {
     duration: number,
     count: number,
     date: string,
-    userId : string
+    userId : string,
+    username : string
   ) : Promise<{ message : string}>{
     try{
       await this.workoutModel.create({
@@ -57,7 +58,8 @@ export class WorkoutService {
             duration,
             count,
             date,
-            userId
+            userId,
+            username
         });
         return { message : '기록 저장 성공!'};    
     } catch (error){
