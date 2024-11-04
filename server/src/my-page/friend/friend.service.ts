@@ -135,7 +135,7 @@ export class FriendService {
     }
 
 
-    // userId의 친구를 가져오는 함수이다.
+    // userId의 친구목록을 가져오는 함수이다.
     async getFriends(userId:string){
         const friends = await this.friendModel.find({
             $or:[
@@ -144,8 +144,13 @@ export class FriendService {
             ],
         });
 
-        return friends;
+        const otherUsers = [];
+        for (const friend of friends){
+            const otherUser = friend.userId === userId ? friend.friendUserId : friend.userId;
+            otherUsers.push(otherUser);
+        }
 
+        return otherUsers;
 
     }
 
