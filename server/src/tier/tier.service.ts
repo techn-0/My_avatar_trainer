@@ -1,8 +1,10 @@
 import { ConsoleLogger, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schemas/user.schema';
 import { WorkOut } from 'src/workout/schemas/workout.schema';
+
 @Injectable()
 export class TierService {
     constructor(
@@ -10,7 +12,10 @@ export class TierService {
         @InjectModel(User.name) private userModel: Model<User>,
     ) {}
 
-    async getTier(userId: string): Promise<{tier: number}> {
+    
+    @Cron(CronExpression.EVERY_HOUR)
+    async updateAllUserTier(): Promise<void> {
+        console.log('실행중!!');
         try{
             const lastWeek = new Date();
             lastWeek.setDate(lastWeek.getDate() - 7);
@@ -64,7 +69,6 @@ export class TierService {
                 } 
               });
               const combinedScores = Array.from(userScoresMap, ([userId, score]) => ({ userId, score }));
-              console.log(combinedScores);
               combinedScores.sort((a, b) => b.score - a.score);
             
               // 전체 사용자 수
@@ -121,16 +125,6 @@ export class TierService {
               }));
 
               await this.userModel.bulkWrite(bulkOperations);
-          
-
-            // 요청한 사용자의 티어 정보를 DB에서 조회
-            const user = await this.userModel.findById(userId).select('tier');
-            console.log(user);
-            if (!user) {
-                throw new NotFoundException('사용자의 티어를 찾을 수 없습니다!');
-            }
-
-            return { tier: user.tier };
             } catch (error) {
               console.error(error);
               throw new Error('티어를 가져오는 데 오류가 발생했습니다.');
@@ -140,7 +134,12 @@ export class TierService {
       async getSomeoneTier(username: string): Promise< {tier: number} >{
         const user = await this.userModel.findOne({username}).select('tier');
         return { tier: user.tier}
-      }      
+      }
+      
+      async getTier(userId: string): Promise< {tier: number} >{
+        const user = await this.userModel.findById(userId).select('tier');
+        return { tier: user.tier}
+      } 
     }
  
 
