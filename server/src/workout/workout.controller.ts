@@ -31,7 +31,7 @@ export class WorkoutController {
           }
   
   @Post('/get_ranking')
-  getRanking(@Query('exercise') exercise: string , @Body('duration') duration: string): Promise<{ username: string, score: number}[]>{
+  getRanking(@Body('exercise') exercise: string , @Body('duration') duration: string): Promise<{ username: string, score: number}[]>{
     try {
       return this.workoutService.getRanking(exercise, duration)
     } catch (error){
