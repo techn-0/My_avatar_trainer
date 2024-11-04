@@ -17,7 +17,13 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
-import { Card, CardContent, Typography, IconButton } from "@mui/material"; // MUI 카드 컴포넌트
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Button,
+} from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
 
 // Chart.js 구성 요소 등록
@@ -45,6 +51,26 @@ const MyPage = () => {
   const [commentData, setCommentData] = useState("");
   const [pendingRequest, setPendingRequest] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
+  const friendsPerPage = 4; // 페이지당 친구 수
+  // 페이지에 표시할 친구 데이터 계산
+  const indexOfLastFriend = currentPage * friendsPerPage;
+  const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
+  const currentFriends = friendData.slice(
+    indexOfFirstFriend,
+    indexOfLastFriend
+  );
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(friendData.length / friendsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem("userId");
@@ -718,8 +744,18 @@ const MyPage = () => {
                   }}
                   onClick={() => handleFriendClick(searchResult.user.username)}
                 >
-                  검색된 유저 ID: {searchResult.user.username}{" "}
-                  {/* Display username or _id */}
+                  <div
+                    style={{
+                      width: "470px",
+                      height: "50px",
+                      border: "1px solid black",
+                      textAlign: "left",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    검색된 유저 ID: {searchResult.user.username}{" "}
+                  </div>
                 </div>
               )}
             </div>
@@ -735,13 +771,13 @@ const MyPage = () => {
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column", // 세로로 정렬
+                  flexDirection: "column",
                   gap: "10px",
                 }}
               >
-                {friendData.map((friend) => (
+                {currentFriends.map((friend, index) => (
                   <Card
-                    key={friend.userId}
+                    key={`${friend.userId}-${index}`}
                     sx={{ minWidth: 100, height: "50px" }}
                   >
                     <CardContent
@@ -770,9 +806,32 @@ const MyPage = () => {
                   </Card>
                 ))}
               </div>
+              {/* 페이지 네비게이션 버튼 */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "10px",
+                }}
+              >
+                <Button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  이전
+                </Button>
+                <Button
+                  onClick={handleNextPage}
+                  disabled={
+                    currentPage >= Math.ceil(friendData.length / friendsPerPage)
+                  }
+                >
+                  다음
+                </Button>
+              </div>
 
               <div>
-                {pendingRequest.length > 0 && (
+                {userId === ownerId && pendingRequest.length > 0 && (
                   <PendingRequests
                     pendingRequests={pendingRequest} // Updated here
                     onRequestUpdate={handleRequestUpdate} // 추가된 핸들러
