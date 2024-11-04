@@ -1,7 +1,6 @@
 import { Controller, Get, Req, UseGuards, Param } from '@nestjs/common';
 import { TierService } from './tier.service';
 import { AuthGuard } from '@nestjs/passport';
-import { userInfo } from 'os';
 
 @Controller('tier')
 @UseGuards(AuthGuard('jwt'))

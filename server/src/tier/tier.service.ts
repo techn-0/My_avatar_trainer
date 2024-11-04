@@ -1,6 +1,4 @@
 import {
-  ConsoleLogger,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,85 +15,95 @@ export class TierService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
+  //티어 배정을 위한 전체 유저 점수 계산
+  private async calUserScore(): Promise<Array<{ userId: string; score: number }>>{
+      try{
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        const lastWeekDateString = lastWeek.toISOString().split('T')[0];
+
+        const workouts = await this.workoutModel.aggregate([
+          {
+            $match: {
+              date: { $gte: lastWeekDateString },
+            },
+          },
+          {
+            //날짜에서 시간 부분을 제거하여 "YYYY-MM-DD" 형식으로 만듦
+            $addFields: {
+              dateOnly: { $substr: ['$date', 0, 10] },
+            },
+          },
+          {
+            // 동일 사용자 및 날짜 기준으로 기록을 그룹화하고, 최대 운동 횟수를 추출
+            $group: {
+              _id: {
+                userId: '$userId',
+                date: '$dateOnly',
+                exercise: '$exercise',
+                duration: '$duration',
+              },
+              count: { $max: '$count' },
+            },
+          },
+          {
+            // 사용자별로 모든 운동 횟수를 배열로 수집
+            $group: {
+              _id: {
+                userId: '$_id.userId',
+                exercise: '$_id.exercise',
+                duration: '$_id.duration',
+              },
+              records: {
+                $push: {
+                  count: '$count',
+                  duration: '$_id.duration',
+                  date: '$_id.date',
+                },
+              },
+            },
+          },
+        ]);
+        if (workouts.length === 0) {
+          throw new NotFoundException('티어 배정에 필요한 기록이 없습니다!');
+        }
+
+        const userScoresMap = new Map();
+        workouts.forEach((workout) => {
+          const userIdStr = workout._id.userId.toString(); // ObjectId를 문자열로 변환
+          const { records } = workout;
+          const duration = workout._id.duration;
+          const totlacount = records.reduce(
+            (sum, record) => sum + record.count,
+            0,
+          );
+          const averageCount = totlacount / records.length;
+          const weight = 0.1 + 0.15 * records.length; // 가중치 계산
+          const score = averageCount * weight * (1 / Math.log(duration + 1));
+
+          if (userScoresMap.has(userIdStr)) {
+            userScoresMap.set(userIdStr, userScoresMap.get(userIdStr) + score);
+          } else {
+            userScoresMap.set(userIdStr, score);
+          }
+        });
+        const finalScores = Array.from(userScoresMap, ([userId, score]) => ({
+          userId,
+          score,
+        }));
+        finalScores.sort((a, b) => b.score - a.score);
+        return finalScores;
+      } catch(error){
+        throw new Error('티어 배정을 위한 유저 점수를 계산하는데 오류가 발생했습니다!');
+      }
+  }
+  
+  
   @Cron(CronExpression.EVERY_HOUR)
   async updateAllUserTier(): Promise<void> {
     console.log('티어 업데이트 !!!');
     try {
-      const lastWeek = new Date();
-      lastWeek.setDate(lastWeek.getDate() - 7);
-      const lastWeekDateString = lastWeek.toISOString().split('T')[0];
-
-      const workouts = await this.workoutModel.aggregate([
-        {
-          $match: {
-            date: { $gte: lastWeekDateString },
-          },
-        },
-        {
-          //날짜에서 시간 부분을 제거하여 "YYYY-MM-DD" 형식으로 만듦
-          $addFields: {
-            dateOnly: { $substr: ['$date', 0, 10] },
-          },
-        },
-        {
-          // 동일 사용자 및 날짜 기준으로 기록을 그룹화하고, 최대 운동 횟수를 추출
-          $group: {
-            _id: {
-              userId: '$userId',
-              date: '$dateOnly',
-              exercise: '$exercise',
-              duration: '$duration',
-            },
-            count: { $max: '$count' },
-          },
-        },
-        {
-          // 사용자별로 모든 운동 횟수를 배열로 수집
-          $group: {
-            _id: {
-              userId: '$_id.userId',
-              exercise: '$_id.exercise',
-              duration: '$_id.duration',
-            },
-            records: {
-              $push: {
-                count: '$count',
-                duration: '$_id.duration',
-                date: '$_id.date',
-              },
-            },
-          },
-        },
-      ]);
-      if (workouts.length === 0) {
-        throw new NotFoundException('티어 배정에 필요한 기록이 없습니다!');
-      }
-
-      const userScoresMap = new Map();
-      workouts.forEach((workout) => {
-        const userIdStr = workout._id.userId.toString(); // ObjectId를 문자열로 변환
-        const { records } = workout;
-        const duration = workout._id.duration;
-        const totlacount = records.reduce(
-          (sum, record) => sum + record.count,
-          0,
-        );
-        const averageCount = totlacount / records.length;
-        const weight = 0.1 + 0.15 * records.length; // 가중치 계산
-        const score = averageCount * weight * (1 / Math.log(duration + 1));
-
-        if (userScoresMap.has(userIdStr)) {
-          userScoresMap.set(userIdStr, userScoresMap.get(userIdStr) + score);
-        } else {
-          userScoresMap.set(userIdStr, score);
-        }
-      });
-      const finalScores = Array.from(userScoresMap, ([userId, score]) => ({
-        userId,
-        score,
-      }));
-      finalScores.sort((a, b) => b.score - a.score);
-
+      const finalScores = await this.calUserScore();
       // 전체 사용자 수
       const totalUsers = finalScores.length;
 
@@ -156,8 +164,14 @@ export class TierService {
     }
   }
 
-  async updateOneUser(): Promise<void> {
-    
+  async updateOneUser(userId:string): Promise<void> {
+    try{
+      const finalScores = await this.calUserScore();
+      const totalUsers = finalScores.length;
+      
+    } catch(error){
+      throw new Error('유저의 티어를 업데이트 하는데 실패했습니다!');
+    }
   }
 
   async getSomeoneTier(username: string): Promise<{ tier: number }> {
