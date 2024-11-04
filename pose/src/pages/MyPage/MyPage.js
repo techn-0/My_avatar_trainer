@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PendingRequests from "./pendingRequests";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,8 +17,8 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
-import ClearIcon from "@mui/icons-material/Clear";
-import DoneIcon from "@mui/icons-material/Done";
+import { Card, CardContent, Typography, IconButton } from "@mui/material"; // MUI 카드 컴포넌트
+import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
 
 // Chart.js 구성 요소 등록
 ChartJS.register(
@@ -38,9 +39,12 @@ const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
   const [content, setContent] = useState("");
-  const [FriendId, setFriendId] = useState("");
-  const [friendData, setFriendData] = useState("");
+  const [friendUserId, setFriendUserId] = useState("");
+  const [searchUserId, setSearchUserId] = useState("");
+  const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
   const [commentData, setCommentData] = useState("");
+  const [pendingRequest, setPendingRequest] = useState([]);
+  const [searchResult, setSearchResult] = useState(null);
 
   // sessionStorage에서 로그인된 유저의 ID 가져오기
   const userId = sessionStorage.getItem("userId");
@@ -79,7 +83,7 @@ const MyPage = () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
         const response = await fetch(
-          `http://localhost:3002/friends/find?userId=${ownerId}&friendUserId=${userId}`,
+          `http://localhost:3002/friends/list?userId=${ownerId}`,
           {
             method: "GET",
             headers: {
@@ -89,7 +93,7 @@ const MyPage = () => {
           }
         );
         const data = await response.json();
-        console.log(data);
+        console.log("friend list: ", data);
         setFriendData(data);
         setLoading(false);
       } catch (error) {
@@ -98,6 +102,30 @@ const MyPage = () => {
       }
     };
     fetchFriends();
+    //
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3002/friends/pendingRequestList?userId=${ownerId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        console.log("pending requests: ", data);
+        setPendingRequest(data); // 전체 요청 배열로 설정
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching pending requests:", error);
+        setLoading(false);
+      }
+    };
+    fetchRequests();
+    //
     const fetchWorkouts = async () => {
       try {
         // 선택된 duration 값을 쿼리 파라미터로 추가하여 백엔드 요청
@@ -396,19 +424,83 @@ const MyPage = () => {
   // Friend function
   // 친구 ID 내용 상태 관리
   const handleAddFriendChange = (e) => {
-    setFriendId(e.target.value);
+    setFriendUserId(e.target.value);
+  };
+  // Find User 내용 상태 관리
+  const handleSearchUserChange = (e) => {
+    setSearchUserId(e.target.value);
+  };
+
+  // 친구 삭제 함수
+  const handleDeleteFriend = async (friendUserId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3002/friends/delete`, // 친구 삭제 API 엔드포인트
+        {
+          method: "Delete",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: ownerId, friendUserId }),
+        }
+      );
+      if (response.ok) {
+        // 삭제 성공 시 친구 목록에서 해당 친구 제거
+        setFriendData((prevFriends) =>
+          prevFriends.filter((friend) => friend.userId !== friendUserId)
+        );
+        alert("친구가 삭제되었습니다.");
+      } else {
+        alert("친구 삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error deleting friend:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
+  // 유저 검색 함수
+  const handleSearchUser = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3002/friends/findUser?userId=${searchUserId}`, // 친구 삭제 API 엔드포인트
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      setSearchResult(data); // 검색 결과 상태에 유저 ID 저장
+      if (response.ok) {
+      } else {
+        alert("그런 유저는 없는데요");
+        setSearchResult(null);
+      }
+    } catch (error) {
+      alert("서버 오류가 발생했습니다.");
+      setSearchResult(null);
+    }
+  };
+
+  const handleFriendClick = (friendUserId) => {
+    navigate(`/user/${friendUserId}`);
   };
 
   // 방명록 제출 핸들러
   const handleAddFriendSubmit = async () => {
-    if (!FriendId) {
+    if (!friendUserId) {
       alert("친구의 ID를 입력해주세요.");
       return;
     }
 
     const data = {
       userId,
-      FriendId,
+      friendUserId,
     };
 
     try {
@@ -431,6 +523,11 @@ const MyPage = () => {
       alert("서버 오류가 발생했습니다.");
     }
   };
+  const handleRequestUpdate = (friendUserId) => {
+    setPendingRequest((prevRequests) =>
+      prevRequests.filter((request) => request.userId !== friendUserId)
+    );
+  };
 
   return (
     <div className="container">
@@ -439,7 +536,7 @@ const MyPage = () => {
         style={{
           padding: "20px",
           maxWidth: "1200px",
-          margin: "8% auto",
+          margin: "0 auto",
           boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)",
           backgroundColor: "White",
           borderRadius: "8px",
@@ -583,9 +680,9 @@ const MyPage = () => {
               <h2>친구추가 기능</h2>
               <input
                 type="text"
-                placeholder="UID를 입력하세요"
+                placeholder="ID를 입력하세요"
                 style={{ width: "400px", height: "50px" }}
-                value={FriendId}
+                value={friendUserId}
                 onChange={handleAddFriendChange}
               />
               <button
@@ -596,6 +693,35 @@ const MyPage = () => {
               >
                 제출
               </button>
+              <h2>유저검색 기능</h2>
+              <input
+                type="text"
+                placeholder="ID를 입력하세요"
+                style={{ width: "400px", height: "50px" }}
+                value={searchUserId}
+                onChange={handleSearchUserChange}
+              />
+              <button
+                className="submitSearchUser"
+                type="submit"
+                style={{ width: "70px", height: "50px", padding: "10px" }}
+                onClick={handleSearchUser}
+              >
+                제출
+              </button>
+              {searchResult && (
+                <div
+                  style={{
+                    marginTop: "10px",
+                    color: "green",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleFriendClick(searchResult.user.username)}
+                >
+                  검색된 유저 ID: {searchResult.user.username}{" "}
+                  {/* Display username or _id */}
+                </div>
+              )}
             </div>
             <div
               style={{
@@ -605,8 +731,54 @@ const MyPage = () => {
                 padding: "10px",
               }}
             >
-              친구창이 될 예정입니다.
-              <div>친구 목록이 나올 자리입니다.</div>
+              <h2>친구 목록</h2>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column", // 세로로 정렬
+                  gap: "10px",
+                }}
+              >
+                {friendData.map((friend) => (
+                  <Card
+                    key={friend.userId}
+                    sx={{ minWidth: 100, height: "50px" }}
+                  >
+                    <CardContent
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{ cursor: "pointer", color: "blue" }}
+                        onClick={() => handleFriendClick(friend.userId)}
+                      >
+                        {friend.userId}
+                      </Typography>
+                      {userId === ownerId && (
+                        <IconButton
+                          onClick={() => handleDeleteFriend(friend.userId)}
+                          color="secondary"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div>
+                {pendingRequest.length > 0 && (
+                  <PendingRequests
+                    pendingRequests={pendingRequest} // Updated here
+                    onRequestUpdate={handleRequestUpdate} // 추가된 핸들러
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
