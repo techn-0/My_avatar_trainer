@@ -9,9 +9,9 @@ export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 
   // userId와 duration에 따른 운동 기록 가져오기
-  @Get()
+  @Post()
   @UseGuards(AuthGuard())
-  async getWorkouts(@Req() req:any , @Query('duration') duration: number) {
+  async getWorkouts(@Req() req:any , @Body('duration') duration: number) {
     return this.workoutService.findWorkoutsByUserAndDuration(req.user._id, duration);
   }
 
@@ -30,8 +30,8 @@ export class WorkoutController {
             return this.workoutService.createRecord(body.exercise, Number(body.duration), body.count, body.date, req.user._id, req.user.username);
           }
   
-  @Get('/get_ranking')
-  getRanking(@Query('exercise') exercise: string , @Query('duration') duration: string): Promise<{ username: string, score: number}[]>{
+  @Post('/get_ranking')
+  getRanking(@Query('exercise') exercise: string , @Body('duration') duration: string): Promise<{ username: string, score: number}[]>{
     try {
       return this.workoutService.getRanking(exercise, duration)
     } catch (error){
