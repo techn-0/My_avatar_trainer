@@ -20,11 +20,11 @@ export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
   // userId가 다른 이용자를 찾기 위한 코드이다.
-  @Get('findUser')
-  async findUser(@Query() query: { userId: string }) {
-    const { userId } = query;
+  @Post('findUser')
+  async findUser(@Body() body: { userId: string }) {
+    const { userId } = body;
     const user = await this.friendService.findUser(userId);
-
+  
     if (user) {
       return {
         message: 'User exists',
@@ -63,13 +63,12 @@ export class FriendController {
   }
 
   // userId가 자기 자신의 친구 목록에서 friendUserId를 찾기 위한 코드이다.
-  @Get('findFriend')
-  async findFriend(@Query() query: { userId: string; friendUserId: string }) {
-    const { userId, friendUserId } = query;
+  @Post('findFriend')
+  async findFriend(@Body() body: { userId: string; friendUserId: string }) {
+    const { userId, friendUserId } = body;
     const friendUsername = await this.friendService.findFriend(
       userId,
-      friendUserId,
-    );
+      friendUserId);
 
     if (friendUsername) {
       return {
@@ -81,7 +80,7 @@ export class FriendController {
         message: 'Friend does not exist',
       };
     }
-  }  
+  } 
     
     // userId가 friendId를 삭제하기 위한 코드이다.
     @Delete('delete')
@@ -91,20 +90,20 @@ export class FriendController {
     }
 
     // userId의 모든 친구 목록을 가져오기 위한 코드이다.
-    @Get('list')
-    async getFriends(@Query('userId') userId:string){
-        return this.friendService.getFriends(userId);
+    @Post('list')
+      async getFriends(@Body('userId') userId: string) {
+      return this.friendService.getFriends(userId);
     }
 
     // userId가 보낸 요청을 가져오기 위한 코드이다.
-    @Get('sendRequestList')
-    async getSendRequest(@Query('userId') userId:string){
-        return this.friendService.getSendRequest(userId);
+    @Post('sendRequestList')
+      async getSendRequest(@Body('userId') userId: string) {
+      return this.friendService.getSendRequest(userId);
     }
 
     // userId에게 들어온 요청을 가져오기 위한 코드이다.
-    @Get('pendingRequestList')
-    async getRequest(@Query('userId') userId:string){
-        return this.friendService.getRequest(userId);
+    @Post('pendingRequestList')
+    async getRequest(@Body('userId') userId: string) {
+      return this.friendService.getRequest(userId);
     }
 }
