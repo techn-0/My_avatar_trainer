@@ -1,6 +1,6 @@
 // src/hooks/useWebRTC.js
 import { useEffect, useRef, useState } from "react";
-import socket from "./Socket";
+import socket from "../services/Socket";
 
 export default function useWebRTC(roomName) {
   const localStreamRef = useRef(null);

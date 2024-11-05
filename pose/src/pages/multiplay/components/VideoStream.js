@@ -1,6 +1,6 @@
 // src/components/VideoStream.js
 import React, { useRef, useEffect } from "react";
-import useWebRTC from "./useWebRTC";
+import useWebRTC from "../hooks/useWebRTC";
 import "./VideoStream.css";
 
 function VideoStream({ roomName }) {
