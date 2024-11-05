@@ -15,14 +15,15 @@ function Room() {
 
   useEffect(() => {
     const username = sessionStorage.getItem("userId");
-
+  
     if (!socket.connected) {
       socket.connect();
     }
-
+  
     if (username) {
       socket.emit("joinRoom", { roomName, username });
-
+  
+      // 방 상태 수신 이벤트 설정
       socket.on("roomState", ({ users, readyStates }) => {
         setUsers(users);
         setReadyStates(readyStates);
@@ -30,17 +31,18 @@ function Room() {
         setStartMessage(allReady);
       });
     }
-
+  
+    // 유저 목록 및 레디 상태 업데이트
     socket.on("updateUsers", (users) => {
       setUsers(users);
     });
-
+  
     socket.on("updateReadyStates", (states) => {
       setReadyStates(states);
       const allReady = Object.values(states).every((state) => state === true);
       setStartMessage(allReady);
     });
-
+  
     return () => {
       socket.off("roomState");
       socket.off("updateUsers");

@@ -84,32 +84,31 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
 
   // 방 참여 처리
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(
-    client: Socket,
-    payload: { roomName: string; username: string },
-  ) {
-    const { roomName, username } = payload;
+handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) {
+  const { roomName, username } = payload;
 
-    if (this.rooms[roomName]) {
-      if (!this.rooms[roomName].users.includes(username)) {
-        this.rooms[roomName].users.push(username);
-        this.rooms[roomName].readyStates[username] = false;
-        console.log(`User ${username} joined room ${roomName}`);
-      }
-      client.join(roomName);
-      client.data.username = username;
-
-      console.log(`Emitting updateUsers for room ${roomName}:`, this.rooms[roomName].users);
-      this.server.to(roomName).emit('updateUsers', this.rooms[roomName].users);
-
-      client.emit('roomState', {
-        users: this.rooms[roomName].users,
-        readyStates: this.rooms[roomName].readyStates,
-      });
-    } else {
-      client.emit('error', 'Room does not exist');
+  if (this.rooms[roomName]) {
+    if (!this.rooms[roomName].users.includes(username)) {
+      this.rooms[roomName].users.push(username);
+      this.rooms[roomName].readyStates[username] = false;
+      console.log(`User ${username} joined room ${roomName}`);
     }
+    client.join(roomName);
+    client.data.username = username;
+
+    // 방의 현재 상태를 새로운 사용자에게 전송
+    client.emit('roomState', {
+      users: this.rooms[roomName].users,
+      readyStates: this.rooms[roomName].readyStates,
+    });
+
+    // 모든 사용자에게 업데이트된 유저 목록 전송
+    this.server.to(roomName).emit('updateUsers', this.rooms[roomName].users);
+  } else {
+    client.emit('error', 'Room does not exist');
   }
+}
+
 
   // 레디 상태 전환 처리
   @SubscribeMessage('toggleReady')
