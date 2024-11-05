@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
 
-import {MongooseModule} from '@nestjs/mongoose'
+import { MongooseModule } from '@nestjs/mongoose';
 import { FriendModule } from './friend/friend.module';
 import { MessageModule } from './message/message.module';
 
 import { UserSchema, User } from '../auth/schemas/user.schema';
 import { FriendSchema, Friend } from './friend/schemas/friend.schema';
-import { CommentModule } from './comment/comment.module';
 // import { MessageSchema, Message } from './schemas/message.schema';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   controllers: [],
   providers: [],
   imports: [
     // Used to make dependency Injection available
-        
+
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Friend.name, schema: FriendSchema },
@@ -22,7 +22,7 @@ import { CommentModule } from './comment/comment.module';
     ]),
     FriendModule,
     MessageModule,
-    CommentModule
-  ]
+    CommentModule,
+  ],
 })
 export class MyPageModule {}

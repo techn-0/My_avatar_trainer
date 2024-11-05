@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import socket from './Socket';
+import socket from './services/Socket';
 
 function ChatRoom() {
   const { roomName } = useParams();

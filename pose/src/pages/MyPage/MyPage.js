@@ -51,7 +51,7 @@ const MyPage = () => {
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
-  const [content, setContent] = useState("");
+  const [comment, setComment] = useState("");
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
   const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
@@ -94,17 +94,17 @@ const MyPage = () => {
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/tier`, {
+        const response = await fetch(`http://localhost:3002/tier/${ownerId}`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: ownerId }), // 필요한 데이터가 있다면 body에 포함
+          body: JSON.stringify({ username: ownerId }), // 필요한 데이터가 있다면 body에 포함
         });
         const data = await response.json();
         setTier(data.tier);
-        console.log("your tier: ", data.tier);
+        console.log("your tier for real: ", data.tier);
       } catch (error) {
         console.error("Error fetching tier data:", error);
       }
@@ -116,16 +116,19 @@ const MyPage = () => {
     const fetchComments = async () => {
       try {
         // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(`http://localhost:3002/comment`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: ownerId }),
-        });
+        const response = await fetch(
+          `http://localhost:3002/comment${ownerId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: ownerId }),
+          }
+        );
         const data = await response.json();
-        console.log(data);
+        console.log("your data", data);
         setCommentData(data);
         setLoading(false);
       } catch (error) {
@@ -189,7 +192,7 @@ const MyPage = () => {
           },
           body: JSON.stringify({
             duration: selectedDuration,
-            userId: ownerId,
+            username: ownerId,
           }),
         });
         const data = await response.json();
@@ -435,26 +438,26 @@ const MyPage = () => {
   };
 
   // 방명록 내용 상태 관리
-  const handleContentChange = (e) => {
-    setContent(e.target.value);
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
   };
 
   // 방명록 제출 핸들러
   const handleSubmit = async () => {
-    if (!content) {
+    if (!comment) {
       alert("내용을 입력해주세요.");
       return;
     }
 
     const data = {
-      date: new Date().toISOString(),
-      authorId: userId,
-      content,
-      ownerId,
+      ownerId: ownerId,
+      userId: userId,
+      comment: comment,
+      profilePic: "",
     };
 
     try {
-      const response = await fetch("http://localhost:3002/myPage/add", {
+      const response = await fetch("http://localhost:3002/comment/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -464,8 +467,10 @@ const MyPage = () => {
 
       if (response.ok) {
         alert("코멘트가 작성되었습니다.");
-        setContent("");
+        console.log(response);
+        setComment(response);
       } else {
+        console.log(data);
         alert("코멘트 작성에 실패했습니다.");
       }
     } catch (error) {
@@ -541,7 +546,7 @@ const MyPage = () => {
     navigate(`/user/${friendUserId}`);
   };
 
-  // 방명록 제출 핸들러
+  // 친구 제출 핸들러
   const handleAddFriendSubmit = async () => {
     if (!friendUserId) {
       alert("친구의 ID를 입력해주세요.");
@@ -564,7 +569,6 @@ const MyPage = () => {
 
       if (response.ok) {
         alert("요청을 보냈어요!.");
-        setContent("");
       } else {
         alert("요청을 보내지 못했어요.");
       }
@@ -714,8 +718,8 @@ const MyPage = () => {
                 type="text"
                 placeholder="내용을 입력하세요"
                 style={{ width: "400px", height: "50px" }}
-                value={content}
-                onChange={handleContentChange}
+                value={comment}
+                onChange={handleCommentChange}
               />
               <button
                 className="submitComment"

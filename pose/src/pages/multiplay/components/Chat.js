@@ -1,6 +1,6 @@
 // src/components/Chat.js
 import React, { useState, useEffect } from "react";
-import socket from "./services/Socket"; // 소켓 인스턴스 가져오기
+import socket from "../services/Socket"; // 소켓 인스턴스 가져오기
 
 function Chat({ roomName }) {
   const [messages, setMessages] = useState([]);

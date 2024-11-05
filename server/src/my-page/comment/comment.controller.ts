@@ -38,7 +38,7 @@ export class CommentController {
     }
 
     // ownerId가 자기 자신의 방명록에 달린 댓글을 볼 수 있게하는 코드이다.
-    @Post(':ownerId')
+    @Post('/:ownerId')
     async getComments(@Param ('ownerId') ownerId : string ){
         return this.commentService.getComments(ownerId);
     }
