@@ -98,58 +98,33 @@ export class TierService {
       }
   }
   
-  
-  @Cron(CronExpression.EVERY_HOUR)
   async updateAllUserTier(): Promise<void> {
     console.log('티어 업데이트 !!!');
     try {
       const finalScores = await this.calUserScore();
-      // 전체 사용자 수
       const totalUsers = finalScores.length;
-
-      // 티어별 비율 설정
+      
       const tierPercentages = [
-        { tier: 1, percentage: 15 },
-        { tier: 2, percentage: 20 },
-        { tier: 3, percentage: 30 },
-        { tier: 4, percentage: 20 },
-        { tier: 5, percentage: 15 },
+        { tier: 1, maxPercentile: 20 },
+        { tier: 2, maxPercentile: 40 },
+        { tier: 3, maxPercentile: 60 },
+        { tier: 4, maxPercentile: 80 },
+        { tier: 5, maxPercentile: 100 },
       ];
 
-      // 사용자들에게 티어 할당
-      let currentIndex = 0;
       const usersWithTiers = [];
 
-      //티어 배정
-      for (const tierInfo of tierPercentages) {
-        const { tier, percentage } = tierInfo;
-        //전체 유저 몇 명이 해당 티어에 속할지 계산
-        const numberOfUsersInTier = Math.round((percentage / 100) * totalUsers);
+      for(let i =0; i < totalUsers; i++){
+        const user = finalScores[i];
+        const percentile = (( i + 1) / totalUsers) * 100;
 
-        for (
-          let i = 0;
-          i < numberOfUsersInTier && currentIndex < totalUsers;
-          i++
-        ) {
-          usersWithTiers.push({
-            userId: finalScores[currentIndex].userId,
-            score: finalScores[currentIndex].score,
-            tier: tier,
-          });
-          currentIndex++;
-        }
-      }
-
-      // 남은 사용자 처리 (총합이 모자랄 수 있음)
-      while (currentIndex < totalUsers) {
+        const userTier = tierPercentages.find(tierInfo => percentile <= tierInfo.maxPercentile);
         usersWithTiers.push({
-          userId: finalScores[currentIndex].userId,
-          score: finalScores[currentIndex].score,
-          tier: tierPercentages[tierPercentages.length - 1].tier, // 가장 낮은 티어로 할당
+          userId: user.userId,
+          score: user.score,
+          tier: userTier.tier
         });
-        currentIndex++;
       }
-      // 사용자들의 티어를 업데이트
       const bulkOperations = usersWithTiers.map((user) => ({
         updateOne: {
           filter: { _id: user.userId },
@@ -161,16 +136,6 @@ export class TierService {
     } catch (error) {
       console.error(error);
       throw new Error('티어를 가져오는 데 오류가 발생했습니다.');
-    }
-  }
-
-  async updateOneUser(userId:string): Promise<void> {
-    try{
-      const finalScores = await this.calUserScore();
-      const totalUsers = finalScores.length;
-      
-    } catch(error){
-      throw new Error('유저의 티어를 업데이트 하는데 실패했습니다!');
     }
   }
 
