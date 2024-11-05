@@ -567,6 +567,14 @@ function ExerciseScene() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Exercise ended, server response:", data);
+        console.log('운동끝나고 티어 업뎃');
+        return fetch("http://localhost:3002/tier/update", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
       })
       .catch((error) => {
         console.error("Error ending exercise:", error);
