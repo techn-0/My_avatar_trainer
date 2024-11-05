@@ -166,29 +166,21 @@ handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) 
   // WebRTC 신호 처리
 
   @SubscribeMessage('offer')
-  handleOffer(
-    client: Socket,
-    payload: { roomName: string; offer: RTCSessionDescriptionInit },
-  ) {
-    const { roomName, offer } = payload;
-    client.to(roomName).emit('offer', offer);
-  }
+handleOffer(client: Socket, payload: { roomName: string; offer: RTCSessionDescriptionInit }) {
+  const { roomName, offer } = payload;
+  client.to(roomName).emit('offer', offer);
+}
 
-  @SubscribeMessage('answer')
-  handleAnswer(
-    client: Socket,
-    payload: { roomName: string; answer: RTCSessionDescriptionInit },
-  ) {
-    const { roomName, answer } = payload;
-    client.to(roomName).emit('answer', answer);
-  }
+@SubscribeMessage('answer')
+handleAnswer(client: Socket, payload: { roomName: string; answer: RTCSessionDescriptionInit }) {
+  const { roomName, answer } = payload;
+  client.to(roomName).emit('answer', answer);
+}
 
-  @SubscribeMessage('iceCandidate')
-  handleIceCandidate(
-    client: Socket,
-    payload: { roomName: string; candidate: RTCIceCandidate },
-  ) {
-    const { roomName, candidate } = payload;
-    client.to(roomName).emit('iceCandidate', candidate);
-  }
+@SubscribeMessage('iceCandidate')
+handleIceCandidate(client: Socket, payload: { roomName: string; candidate: RTCIceCandidate }) {
+  const { roomName, candidate } = payload;
+  client.to(roomName).emit('iceCandidate', candidate);
+}
+
 }
