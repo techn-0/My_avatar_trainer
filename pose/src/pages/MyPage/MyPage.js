@@ -26,6 +26,13 @@ import {
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
 
+const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
+const preloadImages = imageNames.map((name) => {
+  const img = new Image();
+  img.src = `${process.env.PUBLIC_URL}/tier/${name}`;
+  return img;
+});
+
 // Chart.js 구성 요소 등록
 ChartJS.register(
   CategoryScale,
@@ -53,6 +60,7 @@ const MyPage = () => {
   const [searchResult, setSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
   const friendsPerPage = 4; // 페이지당 친구 수
+  const [tier, setTier] = useState("");
   // 페이지에 표시할 친구 데이터 계산
   const indexOfLastFriend = currentPage * friendsPerPage;
   const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
@@ -82,6 +90,29 @@ const MyPage = () => {
   // 운동 기록 데이터를 백엔드에서 가져오기
   const token = getToken();
   useEffect(() => {
+    //////////////////////// 티어 구현 /////////////////////////////////////////////////
+
+    const fetchTier = async () => {
+      try {
+        const response = await fetch(`http://localhost:3002/tier`, {
+          method: "POST", // GET에서 POST로 변경
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: ownerId }), // 필요한 데이터가 있다면 body에 포함
+        });
+        const data = await response.json();
+        setTier(data.tier);
+        console.log("your tier: ", data.tier);
+      } catch (error) {
+        console.error("Error fetching tier data:", error);
+      }
+    };
+
+    fetchTier();
+
+    console.log("게시판 주인: ", ownerId, ", 로그인된 유저: ", userId);
     const fetchComments = async () => {
       try {
         // GET에서 POST로 변경하고, 데이터를 body에 포함
@@ -470,7 +501,7 @@ const MyPage = () => {
       if (response.ok) {
         // 삭제 성공 시 친구 목록에서 해당 친구 제거
         setFriendData((prevFriends) =>
-          prevFriends.filter((friend) => friend.userId !== friendUserId)
+          prevFriends.filter((friend) => friend !== friendUserId)
         );
         alert("친구가 삭제되었습니다.");
       } else {
@@ -571,16 +602,28 @@ const MyPage = () => {
           <div className="text">Return</div>
         </button>
         {/* div1 */}
-        <div className="div1">
-          <h1>{ownerId} 님의 페이지입니다.</h1>
-          <p>가장 좋아하는 운동: {favoriteExercise()}</p>
-          {lastVisitDays === "오늘" ? (
-            <p>오늘도 운동을 하셨군요!</p>
-          ) : consecutiveDays > 0 ? (
-            <p>연속 접속일: {consecutiveDays}일</p>
-          ) : (
-            <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
-          )}
+        <div className="div1" style={{ display: "flex" }}>
+          <div>
+            <h1>{ownerId} 님의 페이지입니다.</h1>
+            <p>가장 좋아하는 운동: {favoriteExercise()}</p>
+            {lastVisitDays === "오늘" ? (
+              <p>오늘도 운동을 하셨군요!</p>
+            ) : consecutiveDays > 0 ? (
+              <p>연속 접속일: {consecutiveDays}일</p>
+            ) : (
+              <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
+            )}
+          </div>
+          <div style={{ margin: "auto" }}>
+            {tier >= 1 && tier <= 5 && (
+              <img
+                style={{ width: "200px" }}
+                src={preloadImages[tier - 1].src}
+                // alt={`Tier ${tier}`}
+                className="tier-image"
+              />
+            )}
+          </div>
         </div>
 
         {/* div2 */}
@@ -770,7 +813,7 @@ const MyPage = () => {
               >
                 {currentFriends.map((friend, index) => (
                   <Card
-                    key={`${friend.userId}-${index}`}
+                    key={`${friend}-${index}`}
                     sx={{ minWidth: 100, height: "50px" }}
                   >
                     <CardContent
@@ -783,13 +826,13 @@ const MyPage = () => {
                       <Typography
                         variant="body1"
                         style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => handleFriendClick(friend.userId)}
+                        onClick={() => handleFriendClick(friend)}
                       >
-                        {friend.userId}
+                        {friend}
                       </Typography>
                       {userId === ownerId && (
                         <IconButton
-                          onClick={() => handleDeleteFriend(friend.userId)}
+                          onClick={() => handleDeleteFriend(friend)}
                           color="secondary"
                         >
                           <DeleteIcon />

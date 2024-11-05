@@ -33,7 +33,7 @@ function RankingPage() {
     }
   };
 
-  fetchRanking();
+  // fetchRanking();
 
   useEffect(() => {
     fetchRanking();
