@@ -1,9 +1,10 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Queue } from 'bull';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schemas/user.schema';
 import { WorkOut } from 'src/workout/schemas/workout.schema';
@@ -13,6 +14,7 @@ export class TierService {
   constructor(
     @InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectQueue('tier-update') private tierQueue: Queue,
   ) {}
 
   //티어 배정을 위한 전체 유저 점수 계산
@@ -98,6 +100,22 @@ export class TierService {
       }
   }
   
+  async addUpdateTierWork(): Promise<void>{
+    const job =await this.tierQueue.add('tier-update-job',{});
+    const jobId = job.id;
+
+    const fetchedJob = await this.tierQueue.getJob(jobId);
+    if (fetchedJob) {
+      console.log('Fetched Job Details:', {
+        id: fetchedJob.id,
+        data: fetchedJob.data,
+        progress: fetchedJob.progress(),
+        status: await fetchedJob.getState(),
+      });
+    } else {
+      console.log(`Job with ID ${jobId} not found.`);
+    }
+  }
   async updateAllUserTier(): Promise<void> {
     console.log('티어 업데이트 !!!');
     try {
