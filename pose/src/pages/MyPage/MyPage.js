@@ -94,17 +94,17 @@ const MyPage = () => {
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/tier`, {
+        const response = await fetch(`http://localhost:3002/tier/${ownerId}`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: ownerId }), // 필요한 데이터가 있다면 body에 포함
+          body: JSON.stringify({ username: ownerId }), // 필요한 데이터가 있다면 body에 포함
         });
         const data = await response.json();
         setTier(data.tier);
-        console.log("your tier: ", data.tier);
+        console.log("your tier for real: ", data.tier);
       } catch (error) {
         console.error("Error fetching tier data:", error);
       }
@@ -189,7 +189,7 @@ const MyPage = () => {
           },
           body: JSON.stringify({
             duration: selectedDuration,
-            userId: ownerId,
+            username: ownerId,
           }),
         });
         const data = await response.json();
