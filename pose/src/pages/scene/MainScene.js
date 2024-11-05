@@ -12,6 +12,7 @@ import MyPage from "../MyPage/MyPage";
 import { setSkyboxBackground } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
+import PendingRequests from "../MyPage/pendingRequests";
 
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
@@ -34,9 +35,32 @@ function ThreeScene() {
   const mouse = useRef(new THREE.Vector2());
   const token = getToken();
   const [tier, setTier] = useState("");
+  const [pendingRequest, setPendingRequest] = useState([]);
 
   const navigate = useNavigate();
   useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(
+          `https://techn0.shop/api/friends/pendingRequestList`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: userId }),
+          }
+        );
+        const data = await response.json();
+        console.log("pending requests: ", data);
+        setPendingRequest(data); // 전체 요청 배열로 설정
+      } catch (error) {
+        console.error("Error fetching pending requests:", error);
+      }
+    };
+    fetchRequests();
+
     // 페이지가 로드될 때 세션 스토리지에서 userId를 가져옴
     const storedUserId = sessionStorage.getItem("userId");
     setUserId(storedUserId);
@@ -195,9 +219,22 @@ function ThreeScene() {
       window.removeEventListener("click", onClick);
     };
   }, []);
+  const handleRequestUpdate = (friendUserId) => {
+    setPendingRequest((prevRequests) =>
+      prevRequests.filter((request) => request.userId !== friendUserId)
+    );
+  };
 
   return (
     <div ref={mountRef} style={{ position: "relative" }}>
+      <div>
+        {userId && pendingRequest.length > 0 && (
+          <PendingRequests
+            pendingRequests={pendingRequest} // Updated here
+            onRequestUpdate={handleRequestUpdate} // 추가된 핸들러
+          />
+        )}
+      </div>
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
       >

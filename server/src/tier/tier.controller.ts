@@ -2,7 +2,7 @@ import { Controller, Get, Req, UseGuards, Param, Post } from '@nestjs/common';
 import { TierService } from './tier.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('api/tier')
+@Controller('tier')
 @UseGuards(AuthGuard('jwt'))
 
 export class TierController {
@@ -13,9 +13,13 @@ export class TierController {
         return await this.tierService.getTier(req.user._id)   
         }
     
-    @Post('/:username')
-    async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
-        return await this.tierService.getSomeoneTier(username)
-    }
+    @Post('/update')
+        async updateAllUserTier(): Promise<void>{
+            await this.tierService.updateAllUserTier()
+        }
     
+    @Post('/:username')
+        async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
+            return await this.tierService.getSomeoneTier(username)
+        }  
 }

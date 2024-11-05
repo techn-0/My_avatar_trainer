@@ -26,6 +26,13 @@ import {
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
 
+const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
+const preloadImages = imageNames.map((name) => {
+  const img = new Image();
+  img.src = `${process.env.PUBLIC_URL}/tier/${name}`;
+  return img;
+});
+
 // Chart.js 구성 요소 등록
 ChartJS.register(
   CategoryScale,
@@ -44,7 +51,7 @@ const MyPage = () => {
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
-  const [content, setContent] = useState("");
+  const [comment, setComment] = useState("");
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
   const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
@@ -53,6 +60,7 @@ const MyPage = () => {
   const [searchResult, setSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
   const friendsPerPage = 4; // 페이지당 친구 수
+  const [tier, setTier] = useState("");
   // 페이지에 표시할 친구 데이터 계산
   const indexOfLastFriend = currentPage * friendsPerPage;
   const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
@@ -82,19 +90,45 @@ const MyPage = () => {
   // 운동 기록 데이터를 백엔드에서 가져오기
   const token = getToken();
   useEffect(() => {
-    const fetchComments = async () => {
+    //////////////////////// 티어 구현 /////////////////////////////////////////////////
+
+    const fetchTier = async () => {
       try {
-        // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(`https://techn0.shop/api/comment`, {
-          method: "POST",
+        const response = await fetch(`https://techn0.shop/api/tier/${ownerId}`, {
+          method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: ownerId }),
+          body: JSON.stringify({ username: ownerId }), // 필요한 데이터가 있다면 body에 포함
         });
         const data = await response.json();
-        console.log(data);
+        setTier(data.tier);
+        console.log("your tier for real: ", data.tier);
+      } catch (error) {
+        console.error("Error fetching tier data:", error);
+      }
+    };
+
+    fetchTier();
+
+    console.log("게시판 주인: ", ownerId, ", 로그인된 유저: ", userId);
+    const fetchComments = async () => {
+      try {
+        // GET에서 POST로 변경하고, 데이터를 body에 포함
+        const response = await fetch(
+          `https://techn0.shop/api/comment/${ownerId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: ownerId }),
+          }
+        );
+        const data = await response.json();
+        console.log("your data", data);
         setCommentData(data);
         setLoading(false);
       } catch (error) {
@@ -158,7 +192,7 @@ const MyPage = () => {
           },
           body: JSON.stringify({
             duration: selectedDuration,
-            userId: ownerId,
+            username: ownerId,
           }),
         });
         const data = await response.json();
@@ -404,26 +438,26 @@ const MyPage = () => {
   };
 
   // 방명록 내용 상태 관리
-  const handleContentChange = (e) => {
-    setContent(e.target.value);
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
   };
 
   // 방명록 제출 핸들러
   const handleSubmit = async () => {
-    if (!content) {
+    if (!comment) {
       alert("내용을 입력해주세요.");
       return;
     }
 
     const data = {
-      date: new Date().toISOString(),
-      authorId: userId,
-      content,
-      ownerId,
+      ownerId: ownerId,
+      userId: userId,
+      comment: comment,
+      profilePic: "",
     };
 
     try {
-      const response = await fetch("https://techn0.shop/api/myPage/addComment", {
+      const response = await fetch("https://techn0.shop/api/comment/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -433,8 +467,10 @@ const MyPage = () => {
 
       if (response.ok) {
         alert("코멘트가 작성되었습니다.");
-        setContent("");
+        console.log(response);
+        setComment(response);
       } else {
+        console.log(data);
         alert("코멘트 작성에 실패했습니다.");
       }
     } catch (error) {
@@ -470,7 +506,7 @@ const MyPage = () => {
       if (response.ok) {
         // 삭제 성공 시 친구 목록에서 해당 친구 제거
         setFriendData((prevFriends) =>
-          prevFriends.filter((friend) => friend.userId !== friendUserId)
+          prevFriends.filter((friend) => friend !== friendUserId)
         );
         alert("친구가 삭제되었습니다.");
       } else {
@@ -510,7 +546,7 @@ const MyPage = () => {
     navigate(`/user/${friendUserId}`);
   };
 
-  // 방명록 제출 핸들러
+  // 친구 제출 핸들러
   const handleAddFriendSubmit = async () => {
     if (!friendUserId) {
       alert("친구의 ID를 입력해주세요.");
@@ -533,7 +569,6 @@ const MyPage = () => {
 
       if (response.ok) {
         alert("요청을 보냈어요!.");
-        setContent("");
       } else {
         alert("요청을 보내지 못했어요.");
       }
@@ -571,16 +606,28 @@ const MyPage = () => {
           <div className="text">Return</div>
         </button>
         {/* div1 */}
-        <div className="div1">
-          <h1>{ownerId} 님의 페이지입니다.</h1>
-          <p>가장 좋아하는 운동: {favoriteExercise()}</p>
-          {lastVisitDays === "오늘" ? (
-            <p>오늘도 운동을 하셨군요!</p>
-          ) : consecutiveDays > 0 ? (
-            <p>연속 접속일: {consecutiveDays}일</p>
-          ) : (
-            <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
-          )}
+        <div className="div1" style={{ display: "flex" }}>
+          <div>
+            <h1>{ownerId} 님의 페이지입니다.</h1>
+            <p>가장 좋아하는 운동: {favoriteExercise()}</p>
+            {lastVisitDays === "오늘" ? (
+              <p>오늘도 운동을 하셨군요!</p>
+            ) : consecutiveDays > 0 ? (
+              <p>연속 접속일: {consecutiveDays}일</p>
+            ) : (
+              <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
+            )}
+          </div>
+          <div style={{ margin: "auto" }}>
+            {tier >= 1 && tier <= 5 && (
+              <img
+                style={{ width: "200px" }}
+                src={preloadImages[tier - 1].src}
+                // alt={`Tier ${tier}`}
+                className="tier-image"
+              />
+            )}
+          </div>
         </div>
 
         {/* div2 */}
@@ -671,8 +718,8 @@ const MyPage = () => {
                 type="text"
                 placeholder="내용을 입력하세요"
                 style={{ width: "400px", height: "50px" }}
-                value={content}
-                onChange={handleContentChange}
+                value={comment}
+                onChange={handleCommentChange}
               />
               <button
                 className="submitComment"
@@ -770,7 +817,7 @@ const MyPage = () => {
               >
                 {currentFriends.map((friend, index) => (
                   <Card
-                    key={`${friend.userId}-${index}`}
+                    key={`${friend}-${index}`}
                     sx={{ minWidth: 100, height: "50px" }}
                   >
                     <CardContent
@@ -783,13 +830,13 @@ const MyPage = () => {
                       <Typography
                         variant="body1"
                         style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => handleFriendClick(friend.userId)}
+                        onClick={() => handleFriendClick(friend)}
                       >
-                        {friend.userId}
+                        {friend}
                       </Typography>
                       {userId === ownerId && (
                         <IconButton
-                          onClick={() => handleDeleteFriend(friend.userId)}
+                          onClick={() => handleDeleteFriend(friend)}
                           color="secondary"
                         >
                           <DeleteIcon />

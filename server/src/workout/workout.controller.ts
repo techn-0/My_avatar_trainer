@@ -4,15 +4,15 @@ import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { WorkOut } from './schemas/workout.schema';
 
-@Controller('api/workout')
+@Controller('workout')
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 
   // userId와 duration에 따른 운동 기록 가져오기
   @Post()
   @UseGuards(AuthGuard())
-  async getWorkouts(@Req() req:any , @Body('duration') duration: number) {
-    return this.workoutService.findWorkoutsByUserAndDuration(req.user._id, duration);
+  async getWorkouts(@Body()  { duration, username }: { duration: number; username: string }) {
+    return this.workoutService.findWorkoutsByUserAndDuration( username, duration );
   }
 
   @Post('/start_exercise')

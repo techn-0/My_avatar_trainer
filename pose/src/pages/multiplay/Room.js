@@ -1,9 +1,9 @@
 // src/pages/Room.js
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import socket from "../../services/socket";
-import Chat from "../../components/Chat";
-import VideoStream from "../../components/VideoStream";
+import socket from "./services/Socket";
+import Chat from "./components/Chat";
+import VideoStream from "./components/VideoStream";
 
 function Room() {
   const { roomName } = useParams();

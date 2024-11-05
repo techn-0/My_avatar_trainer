@@ -10,7 +10,7 @@ import { User } from '../auth/schemas/user.schema'; // Update this path to where
 
 import { access } from 'fs';
 
-@Controller('api/socauth')
+@Controller('socauth')
 export class SocauthController {
   constructor(
     @InjectModel(User.name) private userModel:Model<User>,
@@ -285,7 +285,6 @@ export class SocauthController {
 
     
     
-    // return res.redirect('http://localhost:3000');
     return res.redirect('https://techn0.shop');
   }
 

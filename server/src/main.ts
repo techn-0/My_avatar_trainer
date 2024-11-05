@@ -21,8 +21,12 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // 모든 경로에 '/api' prefix 추가
+  app.setGlobalPrefix('api');
+
   const port = process.env.PORT || 3002;
   await app.listen(port);
   Logger.log(`Server is running on port ${port}`);
 }
+
 bootstrap();
