@@ -232,15 +232,21 @@ function MediapipeSquatTracking({
     <div>
       <video
         ref={videoRef}
-        width="800"
-        height="auto"
+        width="500"
+        height="500"
         style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></video>
       <canvas
         ref={canvasRef}
         width="800"
         height="640"
-        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+        style={{
+          display: "block",
+          position: "absolute",
+          top: 100,
+          right: 10,
+          borderRadius: "30px",
+        }}
       ></canvas>
       {/* Squat count display */}
       <div className="vs_container">

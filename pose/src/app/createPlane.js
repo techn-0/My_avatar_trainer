@@ -1,8 +1,8 @@
 import * as THREE from "three";
 
 export function createPlane() {
-  const planeGeometry = new THREE.PlaneGeometry(20, 20, 1, 1);
-  const planeMaterial = new THREE.MeshStandardMaterial({ color: 0xaeeeee });
+  const planeGeometry = new THREE.PlaneGeometry(30, 20, 1, 1);
+  const planeMaterial = new THREE.MeshStandardMaterial({ color: "#948EB9" });
   const plane = new THREE.Mesh(planeGeometry, planeMaterial);
   plane.rotation.x = -0.5 * Math.PI;
   plane.position.y = 0;
