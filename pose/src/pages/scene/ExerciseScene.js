@@ -567,7 +567,7 @@ function ExerciseScene() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Exercise ended, server response:", data);
-        console.log('운동끝나고 티어 업뎃');
+        console.log('티어가 업데이트 됩니다!');
         return fetch("http://localhost:3002/tier/update", {
           method: "POST",
           headers: {

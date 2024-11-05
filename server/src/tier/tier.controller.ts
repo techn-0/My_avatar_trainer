@@ -15,7 +15,6 @@ export class TierController {
     
     @Post('/update')
         async updateAllUserTier(): Promise<void>{
-            console.log('업데이트 완료!!!');
             await this.tierService.updateAllUserTier()
         }
     
