@@ -189,15 +189,22 @@ function MediapipeSitupTracking({
     <div>
       <video
         ref={videoRef}
-        width="800"
-        height="auto"
+        width="500"
+        height="500"
         style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></video>
       <canvas
         ref={canvasRef}
         width="800"
         height="640"
-        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+        style={{
+          display: "block",
+          position: "absolute",
+          top: 100,
+          right: 10,
+          borderRadius: "30px",
+          border: "5px solid white",
+        }}
       ></canvas>
       {/* 윗몸 일으키기 카운트 출력 */}
       <div className="vs_container">

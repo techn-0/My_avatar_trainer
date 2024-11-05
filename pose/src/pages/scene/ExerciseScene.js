@@ -11,6 +11,7 @@ import MediapipePushupTracking from "../../app/workoutCam/pushupCam"; // 푸시�
 import MediapipeBurpeeTracking from "../../app/workoutCam/burpeeCam"; // 버피 Mediapipe 컴포넌트
 import MediapipeSitupTracking from "../../app/workoutCam/situpCam"; // 윗몸 일으키기 Mediapipe 컴포넌트
 import MediapipePlankTracking from "../../app/workoutCam/plankCam"; // 플랭크 Mediapipe 컴포넌트
+import OkCam from "../../app/workoutCam/okCam"; // OkCam 컴포넌트
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
 import { setSkyboxBackground } from "../../shared/background";
@@ -56,6 +57,7 @@ function ExerciseScene() {
   const [bestScore, setBestScore] = useState(0);
   const [userScore, SetUserScore] = useState(0);
   const [userId, setUserId] = useState(null); // userId
+  const [showOkCam, setShowOkCam] = useState(false); // OkCam 활성화 상태
 
   // 운동 종목 및 시간 선택 상태
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -98,7 +100,7 @@ function ExerciseScene() {
   const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
   const normalPushupRepetitionDuration = 1.55; // 푸시업 1회에 1.55초 소요
   const normalBurpeeRepetitionDuration = 3.13; // 버피 테스트 1회에 3.13초 소요
-  const normalSitupRepetitionDuration = 2.23; // 윗몸일으키기 1회에 3.13초 소요
+  const normalSitupRepetitionDuration = 2.23; // 윗몸일으키기 1회에 2.23초 소요
 
   // 애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가
   const animationActionRef = useRef(null);
@@ -356,30 +358,35 @@ function ExerciseScene() {
           console.log("Server response:", data);
           setBestScore(data.count);
 
-          // 선택한 운동에 따라 초기 애니메이션 설정
-          if (selectedExercise === "pushup") {
-            // 푸시업: 애니메이션 번호 10번을 한 번 재생하고 대기
-            playAnimation(10, THREE.LoopOnce);
-          } else if (selectedExercise === "burpee") {
-            // 버피: 애니메이션 번호 9번을 한 번 재생하고 대기
-            playAnimation(9, THREE.LoopOnce);
-          } else if (selectedExercise === "plank") {
-            // 플랭크: 애니메이션 번호 16번을 한 번 재생하고 대기
-            playAnimation(16, THREE.LoopOnce);
-          } else if (selectedExercise === "situp") {
-            // 윗몸: 애니메이션 번호 17번을 한 번 재생하고 대기
-            playAnimation(17, THREE.LoopOnce);
-          } else {
-            // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
-            playAnimation(7, THREE.LoopOnce);
-          }
+          // OkCam 활성화
+          setShowOkCam(true);
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
         });
-      // 카운트다운 시작
-      startCountdown();
     }
+  };
+
+  const handleOkPoseDetected = () => {
+    setShowOkCam(false); // OkCam 비활성화
+    // 선택한 운동에 따라 초기 애니메이션 설정
+    if (selectedExercise === "pushup") {
+      // 푸시업: 애니메이션 번호 10번을 한 번 재생하고 대기
+      playAnimation(10, THREE.LoopOnce);
+    } else if (selectedExercise === "burpee") {
+      // 버피: 애니메이션 번호 9번을 한 번 재생하고 대기
+      playAnimation(9, THREE.LoopOnce);
+    } else if (selectedExercise === "plank") {
+      // 플랭크: 애니메이션 번호 16번을 한 번 재생하고 대기
+      playAnimation(16, THREE.LoopOnce);
+    } else if (selectedExercise === "situp") {
+      // 윗몸: 애니메이션 번호 17번을 한 번 재생하고 대기
+      playAnimation(17, THREE.LoopOnce);
+    } else {
+      // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
+      playAnimation(7, THREE.LoopOnce);
+    }
+    startCountdown(); // 카운트다운 시작
   };
 
   // 카운트다운 시작 함수
@@ -653,6 +660,15 @@ function ExerciseScene() {
         </div>
       )}
 
+      {/* OkCam 컴포넌트 렌더링 */}
+      {showOkCam && (
+        <OkCam
+          active={showOkCam}
+          onCanvasUpdate={handleCanvasUpdate}
+          onOkPoseDetected={handleOkPoseDetected}
+        />
+      )}
+
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 컴포넌트 */}
       {renderMediapipeComponent()}
 
@@ -683,6 +699,7 @@ function ExerciseScene() {
 
       {/* 로그인 모달 */}
       <LoginModal open={openLogin} onClose={closeLoginDialog} />
+
       {/* 운동 결과 모달 표시 */}
       {showResultModal && (
         <ExerciseResultModal

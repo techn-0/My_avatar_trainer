@@ -39,6 +39,7 @@ function MediapipePushupTracking({
   const pushupCountRef = useRef(0);
   const pushupStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
   const isBodyHorizontalRef = useRef(false);
+  const okStateRef = useRef(false);
 
   // greenFlashEffect 훅 사용
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
@@ -116,13 +117,46 @@ function MediapipePushupTracking({
         }
 
         // 어깨와 엉덩이의 Y 좌표 계산
-        const leftShoulderY = landmarks[11].y;
-        const rightShoulderY = landmarks[12].y;
         const leftHipY = landmarks[23].y;
         const rightHipY = landmarks[24].y;
+        // 팔꿈치, 손목, 어께 Y좌표 계산
+        const leftElbowY = landmarks[13].y;
+        const rightElbowY = landmarks[14].y;
+        const leftWristY = landmarks[15].y;
+        const rightWristY = landmarks[16].y;
+        const leftShoulderY = landmarks[11].y;
+        const rightShoulderY = landmarks[12].y;
 
-        // 평균 Y 좌표 계산
+        // 평균 팔꿈치, 손목 Y 좌표 계산
+        const avgElbowY = (leftElbowY + rightElbowY) / 2;
+        const avgWristY = (leftWristY + rightWristY) / 2;
         const avgShoulderY = (leftShoulderY + rightShoulderY) / 2;
+
+        let timerId = null;
+
+        if (
+          !okStateRef.current &&
+          avgElbowY < avgShoulderY &&
+          avgWristY < avgElbowY
+        ) {
+          // 타이머가 이미 설정된 경우 재설정하지 않음
+          if (!timerId) {
+            timerId = setTimeout(() => {
+              okStateRef.current = "true";
+              console.log("current ok state: ", okStateRef.current);
+
+              // 타이머 초기화
+              timerId = null;
+            }, 1000); // 1초 동안 유지되면 상태 변경
+          }
+        } else {
+          // 조건이 충족되지 않으면 타이머 초기화
+          if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+          }
+        }
+        // 평균 Y 좌표 계산
         const avgHipY = (leftHipY + rightHipY) / 2;
 
         // 어깨와 엉덩이의 Y 좌표 차이 계산
@@ -240,15 +274,22 @@ function MediapipePushupTracking({
     <div>
       <video
         ref={videoRef}
-        width="800"
-        height="auto"
+        width="500"
+        height="500"
         style={{ display: "block", position: "absolute", top: 100, right: 10 }}
       ></video>
       <canvas
         ref={canvasRef}
         width="800"
         height="640"
-        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+        style={{
+          display: "block",
+          position: "absolute",
+          top: 100,
+          right: 10,
+          borderRadius: "30px",
+          border: "5px solid white",
+        }}
       ></canvas>
       {/* 푸시업 카운트 출력 */}
       <div className="vs_container">

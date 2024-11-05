@@ -68,7 +68,7 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
           timerId = null;
         }
 
-        // 효과 그리기 (필요한 경우)
+        // // 효과 그리기 (필요한 경우)
         // drawEffects(
         //   canvasCtx,
         //   canvasRef.current.width,
@@ -120,9 +120,16 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
     <div>
       <video
         ref={videoRef}
-        width="500"
-        height="500"
-        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+        width="800"
+        height="640"
+        style={{
+          display: "block",
+          position: "absolute",
+          top: 100,
+          right: 10,
+          borderRadius: "30px",
+          border: "5px solid white",
+        }}
       ></video>
       <canvas
         ref={canvasRef}
@@ -133,8 +140,8 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
           position: "absolute",
           top: 100,
           right: 10,
-          borderRadius: "30px",
-          border: "5px solid white",
+          //   borderRadius: "30px",
+          //   border: "5px solid white",
         }}
       ></canvas>
     </div>
