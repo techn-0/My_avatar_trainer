@@ -17,9 +17,6 @@ export class Comment extends Document{
     
     @Prop({ default:Date.now })
     createdAt:Date;
-    
-    // @Prop({type:String, ref:'User'})
-    // tier: string;
 }
 
 

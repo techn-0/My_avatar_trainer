@@ -15,8 +15,8 @@ export class CommentDto{
     @IsString()
     comment:string;
 
-    @IsDate()
-    @Type(() => Date)
-    createdAt:Date;
+    // @IsDate()
+    // @Type(() => Date)
+    // createdAt:Date;
 
 }
