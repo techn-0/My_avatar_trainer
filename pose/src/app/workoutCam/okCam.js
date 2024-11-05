@@ -46,7 +46,7 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
     });
 
     pose.onResults((results) => {
-      const canvasCtx = canvasRef.current.getContext("2d");
+      //   const canvasCtx = canvasRef.current.getContext("2d");
       const landmarks = results.poseLandmarks;
 
       if (landmarks) {
