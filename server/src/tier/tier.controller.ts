@@ -13,13 +13,13 @@ export class TierController {
         return await this.tierService.getTier(req.user._id)   
         }
     
-    @Post('/:username')
-    async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
-        return await this.tierService.getSomeoneTier(username)
-    }
-    
     @Post('/update')
-    async updateAllUserTier(): Promise<void>{
-        await this.tierService.updateAllUserTier()
-    }
+        async updateAllUserTier(): Promise<void>{
+            await this.tierService.updateAllUserTier()
+        }
+    
+    @Post('/:username')
+        async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
+            return await this.tierService.getSomeoneTier(username)
+        }  
 }
