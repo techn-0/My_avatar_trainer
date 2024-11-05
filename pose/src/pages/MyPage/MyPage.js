@@ -454,7 +454,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3002/myPage/addComment", {
+      const response = await fetch("http://localhost:3002/myPage/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

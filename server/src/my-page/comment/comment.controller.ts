@@ -9,9 +9,8 @@ export class CommentController {
     
     // ownerId의 방명록에 userId가 댓글을 작성하는 코드이다.
     @Post('add')
-    async postComment(
-        @Body() commentDto: CommentDto)
-        {
+    async postComment(@Body() commentDto: CommentDto){
+        console.log('dfd');
         return this.commentService.postComment(commentDto);
     }
 

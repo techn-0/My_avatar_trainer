@@ -6,6 +6,7 @@ import { MessageModule } from './message/message.module';
 
 import { UserSchema, User } from '../auth/schemas/user.schema';
 import { FriendSchema, Friend } from './friend/schemas/friend.schema';
+import { CommentModule } from './comment/comment.module';
 // import { MessageSchema, Message } from './schemas/message.schema';
 
 @Module({
@@ -20,7 +21,8 @@ import { FriendSchema, Friend } from './friend/schemas/friend.schema';
       // { name: Message.name, schema: MessageSchema },
     ]),
     FriendModule,
-    MessageModule
+    MessageModule,
+    CommentModule
   ]
 })
 export class MyPageModule {}
