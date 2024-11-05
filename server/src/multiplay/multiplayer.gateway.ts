@@ -1,3 +1,4 @@
+// 서버의 MultiplayerGateway.ts
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -46,8 +47,9 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
         this.server.to(roomName).emit('updateUsers', room.users);
       }
     });
+
     // WebRTC 연결 해제를 위해 피어들에게 알림
-  client.broadcast.emit('removePeer', client.id);
+    client.broadcast.emit('removePeer', client.id);
   }
 
   // 방 생성 처리
@@ -86,31 +88,30 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
 
   // 방 참여 처리
   @SubscribeMessage('joinRoom')
-handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) {
-  const { roomName, username } = payload;
+  handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) {
+    const { roomName, username } = payload;
 
-  if (this.rooms[roomName]) {
-    if (!this.rooms[roomName].users.includes(username)) {
-      this.rooms[roomName].users.push(username);
-      this.rooms[roomName].readyStates[username] = false;
-      console.log(`User ${username} joined room ${roomName}`);
+    if (this.rooms[roomName]) {
+      if (!this.rooms[roomName].users.includes(username)) {
+        this.rooms[roomName].users.push(username);
+        this.rooms[roomName].readyStates[username] = false;
+        console.log(`User ${username} joined room ${roomName}`);
+      }
+      client.join(roomName);
+      client.data.username = username;
+
+      // 방의 현재 상태를 새로운 사용자에게 전송
+      client.emit('roomState', {
+        users: this.rooms[roomName].users,
+        readyStates: this.rooms[roomName].readyStates,
+      });
+
+      // 모든 사용자에게 업데이트된 유저 목록 전송
+      this.server.to(roomName).emit('updateUsers', this.rooms[roomName].users);
+    } else {
+      client.emit('error', 'Room does not exist');
     }
-    client.join(roomName);
-    client.data.username = username;
-
-    // 방의 현재 상태를 새로운 사용자에게 전송
-    client.emit('roomState', {
-      users: this.rooms[roomName].users,
-      readyStates: this.rooms[roomName].readyStates,
-    });
-
-    // 모든 사용자에게 업데이트된 유저 목록 전송
-    this.server.to(roomName).emit('updateUsers', this.rooms[roomName].users);
-  } else {
-    client.emit('error', 'Room does not exist');
   }
-}
-
 
   // 레디 상태 전환 처리
   @SubscribeMessage('toggleReady')
@@ -167,34 +168,31 @@ handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) 
 
   // WebRTC 신호 처리
 
+  @SubscribeMessage('joinWebRTC')
+  handleJoinWebRTC(client: Socket, roomName: string) {
+    client.join(roomName);
+    // 현재 방의 다른 사용자들에게 새로운 피어가 참여했음을 알림
+    client.to(roomName).emit('newPeer', client.id);
+    // 현재 방에 있는 다른 피어들의 ID를 새로운 클라이언트에게 전송
+    const socketsInRoom = this.server.sockets.adapter.rooms.get(roomName);
+    const otherPeerIds = Array.from(socketsInRoom || []).filter(
+      (id) => id !== client.id,
+    );
+    client.emit('existingPeers', otherPeerIds);
+  }
+
   @SubscribeMessage('offer')
-handleOffer(client: Socket, payload: { to: string; offer: any }) {
-  this.server.to(payload.to).emit('offer', { from: client.id, offer: payload.offer });
-}
+  handleOffer(client: Socket, payload: { to: string; offer: any }) {
+    this.server.to(payload.to).emit('offer', { from: client.id, offer: payload.offer });
+  }
 
+  @SubscribeMessage('answer')
+  handleAnswer(client: Socket, payload: { to: string; answer: any }) {
+    this.server.to(payload.to).emit('answer', { from: client.id, answer: payload.answer });
+  }
 
-@SubscribeMessage('answer')
-handleAnswer(client: Socket, payload: { to: string; answer: any }) {
-  this.server.to(payload.to).emit('answer', { from: client.id, answer: payload.answer });
-}
-
-@SubscribeMessage('iceCandidate')
-handleIceCandidate(client: Socket, payload: { to: string; candidate: any }) {
-  this.server.to(payload.to).emit('iceCandidate', { from: client.id, candidate: payload.candidate });
-}
-
-// 서버 코드에 추가
-@SubscribeMessage('joinWebRTC')
-handleJoinWebRTC(client: Socket, roomName: string) {
-  client.join(roomName);
-  // 현재 방의 다른 사용자들에게 새로운 피어가 참여했음을 알림
-  client.to(roomName).emit('newPeer', client.id);
-  // 현재 방에 있는 다른 피어들의 ID를 새로운 클라이언트에게 전송
-  const socketsInRoom = this.server.sockets.adapter.rooms.get(roomName);
-  const otherPeerIds = Array.from(socketsInRoom || []).filter(
-    (id) => id !== client.id,
-  );
-  client.emit('existingPeers', otherPeerIds);
-}
-
+  @SubscribeMessage('iceCandidate')
+  handleIceCandidate(client: Socket, payload: { to: string; candidate: any }) {
+    this.server.to(payload.to).emit('iceCandidate', { from: client.id, candidate: payload.candidate });
+  }
 }
