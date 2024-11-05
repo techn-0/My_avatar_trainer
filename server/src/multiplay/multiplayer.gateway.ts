@@ -46,6 +46,8 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
         this.server.to(roomName).emit('updateUsers', room.users);
       }
     });
+    // WebRTC 연결 해제를 위해 피어들에게 알림
+  client.broadcast.emit('removePeer', client.id);
   }
 
   // 방 생성 처리
@@ -166,21 +168,33 @@ handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) 
   // WebRTC 신호 처리
 
   @SubscribeMessage('offer')
-handleOffer(client: Socket, payload: { roomName: string; offer: RTCSessionDescriptionInit }) {
-  const { roomName, offer } = payload;
-  client.to(roomName).emit('offer', offer);
+handleOffer(client: Socket, payload: { to: string; offer: any }) {
+  this.server.to(payload.to).emit('offer', { from: client.id, offer: payload.offer });
 }
 
+
 @SubscribeMessage('answer')
-handleAnswer(client: Socket, payload: { roomName: string; answer: RTCSessionDescriptionInit }) {
-  const { roomName, answer } = payload;
-  client.to(roomName).emit('answer', answer);
+handleAnswer(client: Socket, payload: { to: string; answer: any }) {
+  this.server.to(payload.to).emit('answer', { from: client.id, answer: payload.answer });
 }
 
 @SubscribeMessage('iceCandidate')
-handleIceCandidate(client: Socket, payload: { roomName: string; candidate: RTCIceCandidate }) {
-  const { roomName, candidate } = payload;
-  client.to(roomName).emit('iceCandidate', candidate);
+handleIceCandidate(client: Socket, payload: { to: string; candidate: any }) {
+  this.server.to(payload.to).emit('iceCandidate', { from: client.id, candidate: payload.candidate });
+}
+
+// 서버 코드에 추가
+@SubscribeMessage('joinWebRTC')
+handleJoinWebRTC(client: Socket, roomName: string) {
+  client.join(roomName);
+  // 현재 방의 다른 사용자들에게 새로운 피어가 참여했음을 알림
+  client.to(roomName).emit('newPeer', client.id);
+  // 현재 방에 있는 다른 피어들의 ID를 새로운 클라이언트에게 전송
+  const socketsInRoom = this.server.sockets.adapter.rooms.get(roomName);
+  const otherPeerIds = Array.from(socketsInRoom || []).filter(
+    (id) => id !== client.id,
+  );
+  client.emit('existingPeers', otherPeerIds);
 }
 
 }
