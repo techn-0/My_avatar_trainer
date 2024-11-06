@@ -145,8 +145,8 @@ const MultiSquatCam = ({ roomName }) => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "800px",
-              height: "600px",
+              width: "80hv",
+              height: "1850px",
               display: "flex",
               justifyContent: "space-between",
             }}
@@ -164,8 +164,8 @@ const MultiSquatCam = ({ roomName }) => {
             height="640"
             style={{
               display: "block",
-              width: "100%",
-              height: "100%",
+              width: "50%",
+              height: "50%",
               objectFit: "cover",
             }}
           ></video>
@@ -178,8 +178,8 @@ const MultiSquatCam = ({ roomName }) => {
               position: "absolute",
               top: 0,
               left: 0,
-              width: "100%",
-              height: "100%",
+              width: "50%",
+              height: "50%",
             }}
           ></canvas>
         </div>
