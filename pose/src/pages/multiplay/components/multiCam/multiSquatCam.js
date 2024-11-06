@@ -11,24 +11,42 @@ const MultiSquatCam = ({ roomName }) => {
   const [localReady, setLocalReady] = useState(false);
   const [bothReady, setBothReady] = useState(false);
 
+  // 운동 시간과 종목 상태
+  const [selectedExercise, setSelectedExercise] = useState("");
+  const [selectedDuration, setSelectedDuration] = useState(0);
+
   // OK 포즈 감지를 위한 참조 및 상태
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
+  const poseRef = useRef(null); // Pose 인스턴스를 저장할 참조 추가
   const okStateRef = useRef(false);
 
-  // 서버로부터 두 플레이어 모두 준비 완료 이벤트 수신
+  // 서버로부터 운동 정보 받아오기
+  useEffect(() => {
+    socket.on("exerciseInfo", ({ exercise, duration }) => {
+      console.log("Received exerciseInfo:", exercise, duration);
+      setSelectedExercise(exercise);
+      setSelectedDuration(duration);
+    });
+
+    return () => {
+      socket.off("exerciseInfo");
+    };
+  }, []);
+
+  // 서버로부터 게임 시작 이벤트 수신
   useEffect(() => {
     if (!socket.connected) {
       socket.connect();
     }
 
-    socket.on("bothPlayersReady", () => {
+    socket.on("startGame", () => {
       setBothReady(true);
     });
 
     return () => {
-      socket.off("bothPlayersReady");
+      socket.off("startGame");
     };
   }, []);
 
@@ -51,61 +69,56 @@ const MultiSquatCam = ({ roomName }) => {
     return false;
   };
 
+  // OK 포즈 감지 및 처리
   useEffect(() => {
     let timerId = null;
 
-    const pose = new Pose({
-      locateFile: (file) =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-    });
-
-    pose.setOptions({
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      enableSegmentation: false,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
-    pose.onResults((results) => {
-      const landmarks = results.poseLandmarks;
-
-      if (landmarks) {
-        if (!okStateRef.current && detectOkPose(landmarks)) {
-          if (!timerId) {
-            timerId = setTimeout(() => {
-              okStateRef.current = true;
-              timerId = null;
-
-              // 로컬 플레이어 준비 완료 상태 설정
-              setLocalReady(true);
-
-              // 서버에 플레이어 준비 완료 알림
-              socket.emit("playerReady", { roomName });
-
-              // 카메라 및 포즈 감지 중지
-              if (cameraRef.current) {
-                cameraRef.current.stop();
-                cameraRef.current = null;
-              }
-            }, 1000); // 1초 유지 시 상태 변경
-          }
-        } else if (timerId) {
-          clearTimeout(timerId);
-          timerId = null;
-        }
-      }
-    });
-
     if (!localReady && !bothReady) {
-      // OkCam을 위한 카메라 시작
-      let camera = cameraRef.current;
+      // Pose 인스턴스 생성
+      const pose = new Pose({
+        locateFile: (file) =>
+          `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+      });
+
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      pose.onResults((results) => {
+        const landmarks = results.poseLandmarks;
+
+        if (landmarks) {
+          if (!okStateRef.current && detectOkPose(landmarks)) {
+            if (!timerId) {
+              timerId = setTimeout(() => {
+                okStateRef.current = true;
+                timerId = null;
+
+                // OK 포즈 감지됨
+                handleOkPoseDetected();
+              }, 1000); // 1초 유지 시 상태 변경
+            }
+          } else if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+          }
+        }
+      });
+
+      poseRef.current = pose; // Pose 인스턴스 저장
+
+      // 카메라 시작
       const videoElement = videoRef.current;
-      if (videoElement && !camera) {
-        camera = new Camera(videoElement, {
+
+      if (videoElement) {
+        const camera = new Camera(videoElement, {
           onFrame: async () => {
-            if (pose) {
-              await pose.send({ image: videoElement });
+            if (poseRef.current) {
+              await poseRef.current.send({ image: videoElement });
             }
           },
           width: 1280,
@@ -117,19 +130,34 @@ const MultiSquatCam = ({ roomName }) => {
     }
 
     return () => {
+      // 정리 작업
+      if (timerId) {
+        clearTimeout(timerId);
+      }
       if (cameraRef.current) {
         cameraRef.current.stop();
         cameraRef.current = null;
       }
-      if (timerId) {
-        clearTimeout(timerId);
+      if (poseRef.current) {
+        poseRef.current.close();
+        poseRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
       }
     };
-  }, [localReady, bothReady, roomName]);
+  }, [localReady, bothReady]);
+
+  // OK 포즈 감지 후 처리
+  const handleOkPoseDetected = () => {
+    setLocalReady(true);
+    socket.emit("playerReady", { roomName });
+  };
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      {bothReady ? (
+      {bothReady && localReady ? (
         <>
           {/* MediaPipe Squat Tracking */}
           <MediapipeSquatTracking
@@ -138,6 +166,7 @@ const MultiSquatCam = ({ roomName }) => {
             onCountUpdate={() => {}}
             roomName={roomName}
           />
+
           {/* WebRTC Video Streams */}
           <div
             style={{
@@ -158,30 +187,33 @@ const MultiSquatCam = ({ roomName }) => {
         // OK 포즈 감지 화면
         <div>
           <p>OK 포즈를 취해주세요...</p>
-          <video
-            ref={videoRef}
-            width="800"
-            height="640"
-            style={{
-              display: "block",
-              width: "50%",
-              height: "50%",
-              objectFit: "cover",
-            }}
-          ></video>
-          <canvas
-            ref={canvasRef}
-            width="800"
-            height="640"
-            style={{
-              display: "block",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "50%",
-              height: "50%",
-            }}
-          ></canvas>
+          <div
+            style={{ position: "relative", width: "800px", height: "640px" }}
+          >
+            <video
+              ref={videoRef}
+              width="800"
+              height="640"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                objectFit: "cover",
+              }}
+              autoPlay
+              muted
+            ></video>
+            <canvas
+              ref={canvasRef}
+              width="800"
+              height="640"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
+            ></canvas>
+          </div>
         </div>
       )}
     </div>

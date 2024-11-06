@@ -125,10 +125,23 @@ export class MultiplayerGateway
 
   // 레디 상태 전환 처리
   @SubscribeMessage('toggleReady')
-  handleToggleReady(client: Socket, roomName: string) {
+  handleToggleReady(
+    client: Socket,
+    payload: {
+      roomName: string;
+      exercise: string;
+      duration: string;
+    },
+  ) {
+    const { roomName, exercise, duration } = payload;
     const username = client.data.username;
 
     if (this.rooms[roomName]) {
+      // 운동 옵션 저장
+      this.rooms[roomName].options.exercise = exercise;
+      this.rooms[roomName].options.duration = duration;
+
+      // 레디 상태 토글
       this.rooms[roomName].readyStates[username] =
         !this.rooms[roomName].readyStates[username];
       this.server
@@ -143,6 +156,14 @@ export class MultiplayerGateway
 
       if (allReady && enoughPlayers) {
         console.log(`Starting game in room ${roomName}`);
+
+        // 운동 정보 클라이언트에게 전송
+        this.server.to(roomName).emit('exerciseInfo', {
+          exercise: this.rooms[roomName].options.exercise,
+          duration: this.rooms[roomName].options.duration,
+        });
+
+        // 게임 시작 이벤트 전송
         this.server.to(roomName).emit('startGame');
       }
     }
@@ -165,8 +186,8 @@ export class MultiplayerGateway
 
       if (allReady) {
         console.log(`All players are ready in room ${roomName}`);
-        // 모든 사용자에게 준비 완료 알림
-        this.server.to(roomName).emit('bothPlayersReady');
+        // 모든 사용자에게 게임 시작 이벤트 전송
+        this.server.to(roomName).emit('startGame');
       }
     }
   }
