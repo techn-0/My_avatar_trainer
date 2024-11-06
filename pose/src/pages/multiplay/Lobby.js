@@ -28,6 +28,7 @@ function Lobby() {
     };
   }, []);
 
+  // 방 생성
   const handleCreateRoom = () => {
     const username = sessionStorage.getItem("userId");
     const roomName = newRoomTitle.trim();
@@ -37,7 +38,8 @@ function Lobby() {
       return;
     }
 
-    socket.emit("createRoom", { roomName, duration, exercise, username });
+    // roomName과 username만 포함하여 방을 생성
+    socket.emit("createRoom", { roomName, username });
     setShowCreateRoomModal(false);
     navigate(`/room/${roomName}`);
   };
@@ -62,7 +64,7 @@ function Lobby() {
             value={newRoomTitle}
             onChange={(e) => setNewRoomTitle(e.target.value)}
           />
-          <select
+          {/* <select
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           >
@@ -75,7 +77,7 @@ function Lobby() {
           >
             <option value="플랭크">플랭크</option>
             <option value="푸시업">푸시업</option>
-          </select>
+          </select> */}
           <button onClick={handleCreateRoom}>생성</button>
         </div>
       )}
@@ -83,7 +85,7 @@ function Lobby() {
       <ul>
         {rooms.map((room, index) => (
           <li key={index}>
-            {room.roomName || "방 이름 없음"} - {room.options?.duration} -{" "}
+            {room.roomName || "방 이름 없음"}
             {room.options?.exercise}
             <button onClick={() => handleJoinRoom(room.roomName)}>
               참여하기

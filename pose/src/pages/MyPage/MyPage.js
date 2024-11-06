@@ -59,7 +59,7 @@ const MyPage = () => {
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
   const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
-  const [commentData, setCommentData] = useState("");
+  const [commentData, setCommentData] = useState([]);
   const [pendingRequest, setPendingRequest] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
@@ -132,7 +132,7 @@ const MyPage = () => {
           }
         );
         const data = await response.json();
-        console.log("your data", data);
+        console.log("your comment", data);
         setCommentData(data);
         setLoading(false);
       } catch (error) {
@@ -472,13 +472,43 @@ const MyPage = () => {
       if (response.ok) {
         alert("코멘트가 작성되었습니다.");
         console.log(response);
-        setComment(response);
+        setComment("");
       } else {
         console.log(data);
         alert("코멘트 작성에 실패했습니다.");
       }
     } catch (error) {
       console.error("Error:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
+  // 방명록 삭제
+  const handleDeleteComment = async (_id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3002/comment/delete/${_id}`, // 친구 삭제 API 엔드포인트
+        {
+          method: "Delete",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(),
+        }
+      );
+      if (response.ok) {
+        // 삭제 성공 시 방명록 목록에서 해당 친구 제거
+        alert("삭제되었습니다.");
+        setCommentData((prevComments) =>
+          prevComments.filter((comment) => comment._id !== _id)
+        );
+      } else {
+        console.log(_id);
+        alert("삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error deleting friend:", error);
       alert("서버 오류가 발생했습니다.");
     }
   };
@@ -717,7 +747,37 @@ const MyPage = () => {
               }}
             >
               <h2>방명록</h2>
-              <div>방명록 리스트가 표시될 자리입니다.</div>
+              <div>
+                {commentData.map((comment) => (
+                  <Card
+                    key={comment._id}
+                    sx={{ margin: "10px 0", position: "relative" }}
+                  >
+                    <CardContent>
+                      <Typography variant="body1" color="textPrimary">
+                        작성자: {comment.userId}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        작성일:{" "}
+                        {new Date(comment.createdAt).toLocaleDateString()}{" "}
+                        {new Date(comment.createdAt).toLocaleTimeString()}
+                      </Typography>
+                      <Typography variant="body1" sx={{ marginTop: "5px" }}>
+                        {comment.comment}
+                      </Typography>
+                      {userId === comment.userId && (
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => handleDeleteComment(comment._id)}
+                          style={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
               <input
                 type="text"
                 placeholder="내용을 입력하세요"

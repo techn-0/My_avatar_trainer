@@ -1,5 +1,5 @@
 // src/components/VideoStream.js
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import useWebRTC from "../hooks/useWebRTC";
 import "./VideoStream.css";
 
@@ -24,12 +24,7 @@ function VideoStream({ roomName }) {
 
   return (
     <div className="video-stream">
-      <video
-        ref={localVideoRef}
-        autoPlay
-        muted
-        className="local-video"
-      />
+      <video ref={localVideoRef} autoPlay muted className="local-video" />
       {Object.entries(remoteStreams).map(([peerId, stream]) => (
         <video
           key={peerId}
