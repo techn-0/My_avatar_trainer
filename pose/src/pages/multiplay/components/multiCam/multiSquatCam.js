@@ -145,7 +145,7 @@ const MultiSquatCam = ({ roomName }) => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "80hv",
+              width: "2000px",
               height: "1850px",
               display: "flex",
               justifyContent: "space-between",
