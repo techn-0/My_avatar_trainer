@@ -20,6 +20,10 @@ import { getToken } from "../../pages/login/AuthContext";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
 
+// 주소전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
 // 오디오 파일 불러오기 (public/sound 경로의 파일 참조)
 const winSound = new Audio(`${process.env.PUBLIC_URL}/sound/wow.mp3`);
 const loseSound = new Audio(
@@ -342,7 +346,7 @@ function ExerciseScene() {
   const handleSelectionComplete = () => {
     if (selectedExercise && selectedDuration) {
       // 서버로 선택한 종목과 시간 전송
-      fetch("http://localhost:3002/workout/start_exercise", {
+      fetch(`${apiUrl}/workout/start_exercise`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -563,7 +567,7 @@ function ExerciseScene() {
     setShowResultModal(true); // 결과 모달 표시
 
     // 서버로 데이터 전송
-    fetch("http://localhost:3002/workout/end_exercise", {
+    fetch(`${apiUrl}/workout/end_exercise`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -575,7 +579,7 @@ function ExerciseScene() {
       .then((data) => {
         console.log("Exercise ended, server response:", data);
         console.log('티어가 업데이트 됩니다!');
-        return fetch("http://localhost:3002/tier/update", {
+        return fetch(`${apiUrl}/tier/update`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
