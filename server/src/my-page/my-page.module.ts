@@ -18,7 +18,7 @@ import { CommentModule } from './comment/comment.module';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Friend.name, schema: FriendSchema },
-      // { name: Message.name, schema: MessageSchema },
+      { name: Message.name, schema: MessageSchema },
     ]),
     FriendModule,
     MessageModule,

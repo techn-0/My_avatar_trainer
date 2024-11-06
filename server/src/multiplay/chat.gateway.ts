@@ -6,6 +6,7 @@ import {
     WebSocketServer,
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
+  import { MessageService} from '../my-page/message/message.service';
   
   interface Room {
     host: string;
@@ -14,6 +15,8 @@ import {
   
   @WebSocketGateway({ cors: true })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    constructor(private readonly messageService:MessageService){}
+
     @WebSocketServer() server: Server;
     private rooms: { [key: string]: Room } = {};
   
@@ -37,10 +40,11 @@ import {
         room.users = room.users.filter((user) => user !== username);
         delete client.data.username;
   
-        if (room.users.length === 0) {
-          delete this.rooms[roomName];
-          console.log(`Room ${roomName} deleted as it's now empty.`);
-        } else {
+        // if (room.users.length === 0) {
+        //   delete this.rooms[roomName];
+        //   console.log(`Room ${roomName} deleted as it's now empty.`);
+        // } 
+        if(room.users.length!==0) {
           // Emit updated user list to remaining users in the room
           console.log(`Emitting updateUsers for room ${roomName}:`, room.users);
           this.server.to(roomName).emit('updateUsers', room.users);
@@ -87,7 +91,7 @@ import {
   }
   
     @SubscribeMessage('joinRoom')
-  handleJoinRoom(
+  async handleJoinRoom(
     client: Socket,
     payload: { roomName: string; username: string },
   ) {
@@ -101,6 +105,9 @@ import {
       }
       client.join(roomName);
       client.data.username = username;
+
+      const messageHistory = await this.messageService.getMessages(roomName);
+      client.emit('messageHistory', messageHistory);
   
       // Emit updated user list to all users in the room
       console.log(
@@ -115,11 +122,11 @@ import {
   }
   
   @SubscribeMessage('sendMessage')
-  handleSendMessage(client: Socket, payload: { roomName: string; message: string;username: string }) {
+  async handleSendMessage(client: Socket, payload: { roomName: string; message: string;username: string }) {
     console.log('handleSendMessage invoked');
 
     const { roomName, message, username } = payload;
-  
+    
     console.log('Message received on backend:', payload);
   
     if (!username) {
@@ -139,6 +146,8 @@ import {
     if (this.rooms[roomName]) {
       console.log(`Broadcasting message from ${username} to room ${roomName}: ${message}`);
       
+      await this.messageService.addMessage(roomName, username, message);
+
       // Broadcast the message to all users in the specified room
       this.server.to(roomName).emit('receiveMessage', { sender: username, content: message });
     } else {
