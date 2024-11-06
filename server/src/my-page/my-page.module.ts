@@ -6,8 +6,7 @@ import { MessageModule } from './message/message.module';
 
 import { UserSchema, User } from '../auth/schemas/user.schema';
 import { FriendSchema, Friend } from './friend/schemas/friend.schema';
-// import { MessageSchema, Message } from './schemas/message.schema';
-import { GuestbookModule } from './guestbook/guestbook.module';
+import { MessageSchema, Message } from './message/schema/message.schema';
 import { CommentModule } from './comment/comment.module';
 
 @Module({
@@ -19,11 +18,10 @@ import { CommentModule } from './comment/comment.module';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Friend.name, schema: FriendSchema },
-      // { name: Message.name, schema: MessageSchema },
+      { name: Message.name, schema: MessageSchema },
     ]),
     FriendModule,
     MessageModule,
-    GuestbookModule,
     CommentModule
   ]
 })

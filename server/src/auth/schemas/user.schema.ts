@@ -21,5 +21,9 @@ export class User extends Document {
 
   @Prop({ default: 5})
   tier: number;
+
+  @Prop()
+  profilepic:string;
 }
+
 export const UserSchema = SchemaFactory.createForClass(User);
