@@ -240,4 +240,15 @@ export class MultiplayerGateway
       .to(payload.to)
       .emit('iceCandidate', { from: client.id, candidate: payload.candidate });
   }
+  @SubscribeMessage('squatCountUpdate')
+  handleSquatCountUpdate(
+    client: Socket,
+    payload: { roomName: string; count: number },
+  ) {
+    const { roomName, count } = payload;
+    const username = client.data.username;
+
+    // 같은 방의 다른 사용자들에게 스쿼트 횟수 업데이트 브로드캐스트
+    client.to(roomName).emit('remoteSquatCountUpdate', { username, count });
+  }
 }

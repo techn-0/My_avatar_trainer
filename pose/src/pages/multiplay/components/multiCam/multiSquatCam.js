@@ -3,9 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
-import VideoStream from "../VideoStream"; // 상대방의 비디오 스트림을 표시하기 위해 임포트
-import MediapipeSquatTracking from "../../../../app/workoutCam/squatCam";
-import socket from "../../services/Socket"; // 소켓 경로를 실제 경로에 맞게 조정하세요
+import VideoStream from "../VideoStream";
+import MediapipeSquatTracking from "./squatCamera";
+import socket from "../../services/Socket";
 
 const MultiSquatCam = ({ roomName }) => {
   const [localReady, setLocalReady] = useState(false);
@@ -17,13 +17,12 @@ const MultiSquatCam = ({ roomName }) => {
   const cameraRef = useRef(null);
   const okStateRef = useRef(false);
 
-  // 두 플레이어의 레디 상태를 서버로부터 수신
+  // 서버로부터 두 플레이어 모두 준비 완료 이벤트 수신
   useEffect(() => {
     if (!socket.connected) {
       socket.connect();
     }
 
-    // 서버로부터 두 플레이어 모두 준비 완료 이벤트 수신
     socket.on("bothPlayersReady", () => {
       setBothReady(true);
     });
@@ -138,13 +137,13 @@ const MultiSquatCam = ({ roomName }) => {
       </div>
 
       {/* 자신의 Mediapipe 캠 */}
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, position: "relative" }}>
         {bothReady ? (
           <MediapipeSquatTracking
             onCanvasUpdate={() => {}}
             active={true}
             onCountUpdate={() => {}}
-            animationRepeatCount={0}
+            roomName={roomName} // roomName을 전달하여 스쿼트 횟수 동기화에 사용
           />
         ) : (
           // OK 포즈 감지 화면
