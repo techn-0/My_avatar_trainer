@@ -94,8 +94,6 @@ const MultiSquatCam = ({ roomName }) => {
           clearTimeout(timerId);
           timerId = null;
         }
-
-        // 캔버스에 그리기 등 필요한 경우 추가 코드 작성
       }
     });
 
@@ -130,52 +128,62 @@ const MultiSquatCam = ({ roomName }) => {
   }, [localReady, bothReady, roomName]);
 
   return (
-    <div style={{ display: "flex", height: "100%" }}>
-      {/* 상대방의 비디오 스트림 */}
-      <div style={{ flex: 1 }}>
-        <VideoStream roomName={roomName} showLocalVideo={false} />
-      </div>
-
-      {/* 자신의 Mediapipe 캠 */}
-      <div style={{ flex: 1, position: "relative" }}>
-        {bothReady ? (
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      {bothReady ? (
+        <>
+          {/* MediaPipe Squat Tracking */}
           <MediapipeSquatTracking
             onCanvasUpdate={() => {}}
             active={true}
             onCountUpdate={() => {}}
-            roomName={roomName} // roomName을 전달하여 스쿼트 횟수 동기화에 사용
+            roomName={roomName}
           />
-        ) : (
-          // OK 포즈 감지 화면
-          <div>
-            <p>OK 포즈를 취해주세요...</p>
-            <video
-              ref={videoRef}
-              width="800"
-              height="640"
-              style={{
-                display: "block",
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            ></video>
-            <canvas
-              ref={canvasRef}
-              width="800"
-              height="640"
-              style={{
-                display: "block",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-              }}
-            ></canvas>
+          {/* WebRTC Video Streams */}
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "800px",
+              height: "600px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <VideoStream roomName={roomName} showLocalVideo={false} />
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        // OK 포즈 감지 화면
+        <div>
+          <p>OK 포즈를 취해주세요...</p>
+          <video
+            ref={videoRef}
+            width="800"
+            height="640"
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          ></video>
+          <canvas
+            ref={canvasRef}
+            width="800"
+            height="640"
+            style={{
+              display: "block",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+            }}
+          ></canvas>
+        </div>
+      )}
     </div>
   );
 };

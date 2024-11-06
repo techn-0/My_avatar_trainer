@@ -234,28 +234,23 @@ function MediapipeSquatTracking({
   }, [active, roomName]);
 
   return (
-    <div>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <video
         ref={videoRef}
-        width="500"
-        height="500"
         style={{
-          display: "block",
-          position: "absolute",
-          top: 100,
-          right: 10,
+          display: "none", // 비디오 요소를 숨깁니다.
         }}
       ></video>
       <canvas
         ref={canvasRef}
-        width="800"
-        height="640"
         style={{
-          display: "block",
           position: "absolute",
-          top: 100,
-          right: 10,
-          borderRadius: "30px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          opacity: 0, // 투명도를 0으로 설정하여 보이지 않게 합니다.
+          width: "800px",
+          height: "640px",
         }}
       ></canvas>
       {/* Squat count display */}
