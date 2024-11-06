@@ -4,6 +4,9 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Modal, Box, Typography, IconButton } from "@mui/material";
 import { getToken } from "../login/AuthContext";
 
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
 const PendingRequests = ({ pendingRequests = [], onRequestUpdate }) => {
   const currentUserId = sessionStorage.getItem("userId");
   const token = getToken();
@@ -15,7 +18,7 @@ const PendingRequests = ({ pendingRequests = [], onRequestUpdate }) => {
     console.log("friend user Id: ", friendUserId);
     const data = { userId, friendUserId };
     try {
-      await fetch(`https://techn0.shop/api/friends/accept`, {
+      await fetch(`${apiUrl}/friends/accept`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -36,7 +39,7 @@ const PendingRequests = ({ pendingRequests = [], onRequestUpdate }) => {
     console.log("friend user Id: ", friendUserId);
     const data = { userId, friendUserId };
     try {
-      await fetch(`https://techn0.shop/api/friends/decline`, {
+      await fetch(`${apiUrl}/friends/decline`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가

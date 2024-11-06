@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+// 주소 전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
 const Social = ({}) => {
   // Add provId and provider as props
   const [username, setUsername] = useState("");
@@ -9,7 +13,7 @@ const Social = ({}) => {
 
     try {
       const response = await fetch(
-        "https://techn0.shop/api/socauth/additional-data",
+        `${apiUrl}/socauth/additional-data`,
         {
           method: "POST",
           headers: {
@@ -24,6 +28,7 @@ const Social = ({}) => {
       const result = await response.json();
       if (response.ok) {
         alert("Username added successfully!");
+        //주소 예외(지우지 마시오)
         window.location.href = "https://techn0.shop"; // Redirect to homepage or desired page
       } else if (response.status === 409) {
         alert(result.message); // Handle duplicate username error

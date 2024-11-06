@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-
+//주소 예외(지우지 마시오)
 const socket = io("https://techn0.shop"); // 서버 URL
 
 function Lobby() {

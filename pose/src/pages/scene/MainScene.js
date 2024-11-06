@@ -14,6 +14,10 @@ import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
 import PendingRequests from "../MyPage/pendingRequests";
 
+// 로컬 ec2 주소 전환용
+const apiUrl = process.env.REACT_APP_API_BASE_URL; //백 요청
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL; // 프론트 리다이렉트
+
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
   const img = new Image();
@@ -42,7 +46,7 @@ function ThreeScene() {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          `https://techn0.shop/api/friends/pendingRequestList`,
+          `${apiUrl}/friends/pendingRequestList`,
           {
             method: "POST",
             headers: {
@@ -75,7 +79,7 @@ function ThreeScene() {
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`https://techn0.shop/api/tier`, {
+        const response = await fetch(`${apiUrl}/tier`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
