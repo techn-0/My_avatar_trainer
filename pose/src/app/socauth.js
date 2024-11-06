@@ -24,7 +24,7 @@ const Social = ({}) => {
           body: JSON.stringify({ username }), // Include provId and provider
         }
       );
-      sessionStorage.setItem("userId", username); // 사용방법 : let userId = sessionStorage.getItem('userId');
+      sessionStorage.setItem("userId", username);
 
       const result = await response.json();
       if (response.ok) {

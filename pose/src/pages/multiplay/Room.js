@@ -5,6 +5,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import socket from "./services/Socket";
 import Chat from "./components/Chat";
 import VideoStream from "./components/VideoStream";
+import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 import RoomButtons from "./components/roomButton";
 import MultiSquatCam from "./components/multiCam/multiSquatCam"; // 컴포넌트 임포트
 
@@ -55,7 +57,9 @@ function Room() {
   };
 
   useEffect(() => {
-    const username = sessionStorage.getItem("userId");
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
 
     if (!socket.connected) {
       socket.connect();

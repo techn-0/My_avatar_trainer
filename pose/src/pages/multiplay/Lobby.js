@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
+import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
 
 const socket = io(`http://localhost:3002`); // 서버 URL
@@ -30,7 +32,9 @@ function Lobby() {
 
   // 방 생성
   const handleCreateRoom = () => {
-    const username = sessionStorage.getItem("userId");
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
     const roomName = newRoomTitle.trim();
 
     if (!roomName) {
@@ -45,7 +49,9 @@ function Lobby() {
   };
 
   const handleJoinRoom = (roomName) => {
-    const username = sessionStorage.getItem("userId");
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
     socket.emit("joinRoom", { roomName, username });
     navigate(`/room/${roomName}`);
   };
