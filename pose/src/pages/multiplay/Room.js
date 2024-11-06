@@ -20,7 +20,7 @@ function Room() {
   const [selectedExercise, setSelectedExercise] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("");
 
-  const exercises = ["플랭크", "푸시업"]; // 운동 종목 리스트
+  const exercises = ["squat", "pushup"]; // 운동 종목 리스트
   const durations = ["60초", "120초"]; // 운동 시간 리스트
 
   // 운동 종목 선택 핸들러
