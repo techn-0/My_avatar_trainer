@@ -1,5 +1,3 @@
-// MyPage.js
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PendingRequests from "./pendingRequests";
@@ -17,6 +15,7 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 import {
   Card,
   CardContent,
@@ -25,6 +24,10 @@ import {
   Button,
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
+
+// 주소 전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
 
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
@@ -51,16 +54,18 @@ const MyPage = () => {
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
-  const [content, setContent] = useState("");
+  const [comment, setComment] = useState("");
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
   const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
-  const [commentData, setCommentData] = useState("");
+  const [commentData, setCommentData] = useState([]);
   const [pendingRequest, setPendingRequest] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
   const friendsPerPage = 4; // 페이지당 친구 수
   const [tier, setTier] = useState("");
+  const [percentile, setPercentile] = useState("");
+
   // 페이지에 표시할 친구 데이터 계산
   const indexOfLastFriend = currentPage * friendsPerPage;
   const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
@@ -79,32 +84,32 @@ const MyPage = () => {
       setCurrentPage(currentPage - 1);
     }
   };
-
-  // sessionStorage에서 로그인된 유저의 ID 가져오기
-  const userId = sessionStorage.getItem("userId");
-
+  const token = getToken();
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
   // 마지막 접속 날짜와 연속 로그인 일수를 위한 상태 추가
   const [lastVisitDays, setLastVisitDays] = useState(null);
   const [consecutiveDays, setConsecutiveDays] = useState(0);
 
   // 운동 기록 데이터를 백엔드에서 가져오기
-  const token = getToken();
+  
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/tier`, {
+        const response = await fetch(`${apiUrl}/tier/${ownerId}`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: ownerId }), // 필요한 데이터가 있다면 body에 포함
+          body: JSON.stringify({ username: ownerId }), // 필요한 데이터가 있다면 body에 포함
         });
         const data = await response.json();
         setTier(data.tier);
-        console.log("your tier: ", data.tier);
+        setPercentile(data.percentile);
+        console.log("your tier for real: ", data.tier);
       } catch (error) {
         console.error("Error fetching tier data:", error);
       }
@@ -116,16 +121,19 @@ const MyPage = () => {
     const fetchComments = async () => {
       try {
         // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(`http://localhost:3002/comment`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: ownerId }),
-        });
+        const response = await fetch(
+          `${apiUrl}/comment/${ownerId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: ownerId }),
+          }
+        );
         const data = await response.json();
-        console.log(data);
+        console.log("your comment", data);
         setCommentData(data);
         setLoading(false);
       } catch (error) {
@@ -136,7 +144,7 @@ const MyPage = () => {
     fetchComments();
     const fetchFriends = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/friends/list`, {
+        const response = await fetch(`${apiUrl}/friends/list`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -158,7 +166,7 @@ const MyPage = () => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3002/friends/pendingRequestList`,
+          `${apiUrl}/friends/pendingRequestList`,
           {
             method: "POST",
             headers: {
@@ -181,7 +189,7 @@ const MyPage = () => {
     //
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/workout`, {
+        const response = await fetch(`${apiUrl}/workout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -189,7 +197,7 @@ const MyPage = () => {
           },
           body: JSON.stringify({
             duration: selectedDuration,
-            userId: ownerId,
+            username: ownerId,
           }),
         });
         const data = await response.json();
@@ -435,26 +443,26 @@ const MyPage = () => {
   };
 
   // 방명록 내용 상태 관리
-  const handleContentChange = (e) => {
-    setContent(e.target.value);
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
   };
 
   // 방명록 제출 핸들러
   const handleSubmit = async () => {
-    if (!content) {
+    if (!comment) {
       alert("내용을 입력해주세요.");
       return;
     }
 
     const data = {
-      date: new Date().toISOString(),
-      authorId: userId,
-      content,
-      ownerId,
+      ownerId: ownerId,
+      userId: userId,
+      comment: comment,
+      profilePic: "",
     };
 
     try {
-      const response = await fetch("http://localhost:3002/myPage/addComment", {
+      const response = await fetch(`${apiUrl}/comment/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -463,13 +471,46 @@ const MyPage = () => {
       });
 
       if (response.ok) {
+        
+        const addedComment = await response.json();
+        setCommentData((prevComments) => [...prevComments, addedComment]);
+        setComment("");
         alert("코멘트가 작성되었습니다.");
-        setContent("");
       } else {
+        console.log(data);
         alert("코멘트 작성에 실패했습니다.");
       }
     } catch (error) {
       console.error("Error:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
+  // 방명록 삭제
+  const handleDeleteComment = async (_id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3002/comment/delete/${_id}`,
+        {
+          method: "Delete",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(),
+        }
+      );
+      if (response.ok) {
+        alert("삭제되었습니다.");
+        setCommentData((prevComments) =>
+          prevComments.filter((comment) => comment._id !== _id)
+        );
+      } else {
+        console.log(_id);
+        alert("삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error deleting friend:", error);
       alert("서버 오류가 발생했습니다.");
     }
   };
@@ -488,7 +529,7 @@ const MyPage = () => {
   const handleDeleteFriend = async (friendUserId) => {
     try {
       const response = await fetch(
-        `http://localhost:3002/friends/delete`, // 친구 삭제 API 엔드포인트
+        `${apiUrl}/friends/delete`, // 친구 삭제 API 엔드포인트
         {
           method: "Delete",
           headers: {
@@ -516,7 +557,7 @@ const MyPage = () => {
   // 유저 검색 함수
   const handleSearchUser = async () => {
     try {
-      const response = await fetch(`http://localhost:3002/friends/findUser`, {
+      const response = await fetch(`${apiUrl}/friends/findUser`, {
         method: "POST", // GET에서 POST로 변경
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -541,7 +582,7 @@ const MyPage = () => {
     navigate(`/user/${friendUserId}`);
   };
 
-  // 방명록 제출 핸들러
+  // 친구 제출 핸들러
   const handleAddFriendSubmit = async () => {
     if (!friendUserId) {
       alert("친구의 ID를 입력해주세요.");
@@ -554,7 +595,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3002/friends/add", {
+      const response = await fetch(`${apiUrl}/friends/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -564,7 +605,6 @@ const MyPage = () => {
 
       if (response.ok) {
         alert("요청을 보냈어요!.");
-        setContent("");
       } else {
         alert("요청을 보내지 못했어요.");
       }
@@ -614,7 +654,7 @@ const MyPage = () => {
               <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
             )}
           </div>
-          <div style={{ margin: "auto" }}>
+          <div style={{ display: "flex", margin: "auto" }}>
             {tier >= 1 && tier <= 5 && (
               <img
                 style={{ width: "200px" }}
@@ -623,7 +663,12 @@ const MyPage = () => {
                 className="tier-image"
               />
             )}
+           <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
+            <div style={{ fontSize: "80px" }}>TIER {tier}</div>
+            <div style={{ fontSize: "30px" }}>상위 {percentile}% 입니다!</div>
           </div>
+          </div>
+          
         </div>
 
         {/* div2 */}
@@ -704,18 +749,47 @@ const MyPage = () => {
               style={{
                 width: "60%",
                 flexGrow: 1,
-                border: "2px solid black",
                 padding: "10px",
               }}
             >
               <h2>방명록</h2>
-              <div>방명록 리스트가 표시될 자리입니다.</div>
+              <div>
+                {commentData.map((comment) => (
+                  <Card
+                    key={comment._id}
+                    sx={{ margin: "10px 0", position: "relative" }}
+                  >
+                    <CardContent>
+                      <Typography variant="body1" color="textPrimary">
+                        작성자: {comment.userId}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        작성일:{" "}
+                        {new Date(comment.createdAt).toISOString().slice(0, 10)}{" "}
+                        {new Date(comment.createdAt).toISOString().slice(11, 16)}
+                      </Typography>
+                      <Typography variant="body1" sx={{ marginTop: "5px" }}>
+                        {comment.comment}
+                      </Typography>
+                      {userId === comment.userId && (
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => handleDeleteComment(comment._id)}
+                          style={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
               <input
                 type="text"
                 placeholder="내용을 입력하세요"
                 style={{ width: "400px", height: "50px" }}
-                value={content}
-                onChange={handleContentChange}
+                value={comment}
+                onChange={handleCommentChange}
               />
               <button
                 className="submitComment"
@@ -735,7 +809,6 @@ const MyPage = () => {
               style={{
                 width: "30%",
                 flexGrow: 1,
-                border: "2px solid black",
                 padding: "10px",
               }}
             >

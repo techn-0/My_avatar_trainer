@@ -22,7 +22,7 @@ export class AuthController {
       httpOnly: false,
       secure: true, // 개발 중에는 false, 배포 시 true로 변경
       sameSite: 'None', // 포트가 다를 경우 'None' 사용
-      maxAge: 6000 * 60 * 12, //1분 : 6000, 
+      maxAge: 60 * 60 * 1000 * 12
     });
     res.send({accessToken});
   }

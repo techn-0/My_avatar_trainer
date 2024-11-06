@@ -1,12 +1,13 @@
 // squatCam.js
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { angleCalc } from "./angleCalc";
-import { useGreenFlashEffect } from "./greenFlashEffect";
-import "./exBL.css";
+import { angleCalc } from "../../../../app/workoutCam/angleCalc";
+import { useGreenFlashEffect } from "../../../../app/workoutCam/greenFlashEffect";
+import "../../../../app/workoutCam/exBL.css";
+import socket from "../../services/Socket";
 
 let poseSingleton = null;
 
@@ -31,12 +32,13 @@ function MediapipeSquatTracking({
   onCanvasUpdate,
   active,
   onCountUpdate,
-  animationRepeatCount,
+  roomName,
 }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const squatCountRef = useRef(0);
+  const [squatCount, setSquatCount] = useState(0);
+  const [remoteSquatCount, setRemoteSquatCount] = useState(0);
   const squatStateRef = useRef("up");
 
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
@@ -48,14 +50,30 @@ function MediapipeSquatTracking({
 
   function onCountIncrease() {
     triggerGreenFlash();
-    triggerGoodBox(); // Trigger the "Good!" box
-    squatCountRef.current += 1;
-    if (onCountUpdate) {
-      onCountUpdate(squatCountRef.current);
-    }
+    triggerGoodBox();
+    setSquatCount((prevCount) => {
+      const newCount = prevCount + 1;
+
+      // 서버에 스쿼트 횟수 업데이트 전송
+      socket.emit("squatCountUpdate", {
+        roomName,
+        count: newCount,
+      });
+
+      if (onCountUpdate) {
+        onCountUpdate(newCount);
+      }
+
+      return newCount;
+    });
   }
 
   useEffect(() => {
+    // 서버로부터 상대방의 스쿼트 횟수 업데이트 수신
+    socket.on("remoteSquatCountUpdate", ({ username, count }) => {
+      setRemoteSquatCount(count);
+    });
+
     if (!poseSingleton) {
       poseSingleton = new Pose({
         locateFile: (file) =>
@@ -135,7 +153,6 @@ function MediapipeSquatTracking({
         const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
         const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
 
-        // Handle null angle values
         if (
           leftKneeAngle === null ||
           rightKneeAngle === null ||
@@ -148,14 +165,6 @@ function MediapipeSquatTracking({
           return;
         }
 
-        // Debug logs
-        // console.log("Left Knee Angle:", leftKneeAngle);
-        // console.log("Right Knee Angle:", rightKneeAngle);
-        // console.log("Left Hip Angle:", leftHipAngle);
-        // console.log("Right Hip Angle:", rightHipAngle);
-        // console.log("Left Torso Angle:", leftTorsoAngle);
-        // console.log("Right Torso Angle:", rightTorsoAngle);
-
         // Squat down condition
         const isSquatDown =
           leftKneeAngle < 100 &&
@@ -167,11 +176,6 @@ function MediapipeSquatTracking({
 
         // Squat up condition
         const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
-        // (leftHipAngle > 140 || rightHipAngle > 140);
-        // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
-
-        // console.log("isSquatDown:", isSquatDown);
-        // console.log("isSquatUp:", isSquatUp);
 
         // Update squat state and count
         if (isSquatDown && squatStateRef.current === "up") {
@@ -225,37 +229,38 @@ function MediapipeSquatTracking({
         cameraRef.current.stop();
         cameraRef.current = null;
       }
+      socket.off("remoteSquatCountUpdate");
     };
-  }, [active]);
+  }, [active, roomName]);
 
   return (
-    <div>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <video
         ref={videoRef}
-        width="500"
-        height="500"
-        style={{ display: "block", position: "absolute", top: 100, right: 10 }}
+        style={{
+          display: "none", // 비디오 요소를 숨깁니다.
+        }}
       ></video>
       <canvas
         ref={canvasRef}
-        width="800"
-        height="640"
         style={{
-          display: "block",
           position: "absolute",
-          top: 100,
-          right: 10,
-          borderRadius: "30px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          opacity: 0, // 투명도를 0으로 설정하여 보이지 않게 합니다.
+          width: "800px",
+          height: "640px",
         }}
       ></canvas>
       {/* Squat count display */}
       <div className="vs_container">
         <div className="vs_element">
-          {/* 플레이어 운동 횟수 */}
-          <h1>{animationRepeatCount}</h1>
+          {/* 로컬 사용자의 스쿼트 횟수 */}
+          <h1>{squatCount}</h1>
           <h1>&nbsp; VS &nbsp;</h1>
-          {/* 아바타 운동 횟수 */}
-          <h1>{squatCountRef.current}</h1>
+          {/* 상대방의 스쿼트 횟수 */}
+          <h1>{remoteSquatCount}</h1>
         </div>
       </div>
     </div>

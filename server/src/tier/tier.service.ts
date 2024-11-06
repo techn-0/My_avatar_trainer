@@ -1,9 +1,10 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Queue } from 'bull';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schemas/user.schema';
 import { WorkOut } from 'src/workout/schemas/workout.schema';
@@ -13,6 +14,7 @@ export class TierService {
   constructor(
     @InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectQueue('tier-update') private tierQueue: Queue,
   ) {}
 
   //티어 배정을 위한 전체 유저 점수 계산
@@ -98,6 +100,11 @@ export class TierService {
       }
   }
   
+  async addUpdateTierWork(): Promise<void>{
+    console.log('티어 업데이트 작업 큐 추가!');
+    await this.tierQueue.add('tier-update-job',{});
+  }
+  
   async updateAllUserTier(): Promise<void> {
     console.log('티어 업데이트 !!!');
     try {
@@ -117,18 +124,19 @@ export class TierService {
       for(let i =0; i < totalUsers; i++){
         const user = finalScores[i];
         const percentile = (( i + 1) / totalUsers) * 100;
-
+        
         const userTier = tierPercentages.find(tierInfo => percentile <= tierInfo.maxPercentile);
         usersWithTiers.push({
           userId: user.userId,
           score: user.score,
-          tier: userTier.tier
+          tier: userTier.tier,
+          percentile: Math.round(percentile),
         });
       }
       const bulkOperations = usersWithTiers.map((user) => ({
         updateOne: {
           filter: { _id: user.userId },
-          update: { $set: { tier: user.tier } },
+          update: { $set: { tier: user.tier, percentile: user.percentile } },
         },
       }));
 
@@ -139,9 +147,9 @@ export class TierService {
     }
   }
 
-  async getSomeoneTier(username: string): Promise<{ tier: number }> {
-    const user = await this.userModel.findOne({ username }).select('tier');
-    return { tier: user.tier };
+  async getSomeoneTier(username: string): Promise<{ tier: number, percentile: number }> {
+    const user = await this.userModel.findOne({ username }).select('tier percentile');
+    return { tier: user.tier, percentile: user.percentile };
   }
 
   async getTier(userId: string): Promise<{ tier: number }> {

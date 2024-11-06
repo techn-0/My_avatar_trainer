@@ -14,10 +14,10 @@ export class WorkoutService {
 
   // userId와 duration에 따른 운동 기록 조회
   async findWorkoutsByUserAndDuration(
-    userId: string,
+    username: string,
     duration: number,
   ): Promise<WorkOut[]> {
-    return this.workoutModel.find({ userId, duration }).exec(); // userId와 duration으로 필터링
+    return this.workoutModel.find({ username, duration }).exec();
   }
 
   async getRecord(

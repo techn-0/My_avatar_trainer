@@ -12,6 +12,12 @@ import MyPage from "../MyPage/MyPage";
 import { setSkyboxBackground } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
+import PendingRequests from "../MyPage/pendingRequests";
+import { jwtDecode } from 'jwt-decode';
+
+// 로컬 ec2 주소 전환용
+const apiUrl = process.env.REACT_APP_API_BASE_URL; //백 요청
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL; // 프론트 리다이렉트
 
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
@@ -34,12 +40,43 @@ function ThreeScene() {
   const mouse = useRef(new THREE.Vector2());
   const token = getToken();
   const [tier, setTier] = useState("");
+  const [pendingRequest, setPendingRequest] = useState([]);
 
   const navigate = useNavigate();
+
   useEffect(() => {
-    // 페이지가 로드될 때 세션 스토리지에서 userId를 가져옴
-    const storedUserId = sessionStorage.getItem("userId");
-    setUserId(storedUserId);
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token); // 토큰을 디코딩하여 userId 추출
+        setUserId(decodedToken.id);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(
+          `${apiUrl}/friends/pendingRequestList`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`, // JWT 토큰 추가
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: userId }),
+          }
+        );
+        const data = await response.json();
+        console.log("pending requests: ", data);
+        setPendingRequest(data); // 전체 요청 배열로 설정
+      } catch (error) {
+        console.error("Error fetching pending requests:", error);
+      }
+    };
+    fetchRequests();
 
     if (getToken()) {
       console.log("token exists");
@@ -51,7 +88,7 @@ function ThreeScene() {
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/tier`, {
+        const response = await fetch(`${apiUrl}/tier`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -68,7 +105,7 @@ function ThreeScene() {
     };
 
     fetchTier();
-  }, [userId]);
+  }, [userId, token]);
 
   useEffect(() => {
     // Three.js scene setup
@@ -161,8 +198,14 @@ function ThreeScene() {
   const closeLoginDialog = () => {
     setOpenLogin(false);
     // 로그인 후 userId 갱신
-    const storedUserId = sessionStorage.getItem("userId");
-    setUserId(storedUserId);
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUserId(decodedToken.userId);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
   };
 
   // Add the click event listener
@@ -195,9 +238,22 @@ function ThreeScene() {
       window.removeEventListener("click", onClick);
     };
   }, []);
+  const handleRequestUpdate = (friendUserId) => {
+    setPendingRequest((prevRequests) =>
+      prevRequests.filter((request) => request.userId !== friendUserId)
+    );
+  };
 
   return (
     <div ref={mountRef} style={{ position: "relative" }}>
+      <div>
+        {userId && pendingRequest.length > 0 && (
+          <PendingRequests
+            pendingRequests={pendingRequest} // Updated here
+            onRequestUpdate={handleRequestUpdate} // 추가된 핸들러
+          />
+        )}
+      </div>
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
       >
@@ -214,14 +270,18 @@ function ThreeScene() {
         {userId && (
           <div className="welcome_text">
             안녕하세요 <br />
-            <span className="name">{userId}</span>님
+            <span className="name">{userId}</span>님<br/>
+            
             {tier >= 1 && tier <= 5 && (
-              <img
-                style={{ width: "50px" }}
-                src={preloadImages[tier - 1].src}
-                // alt={`Tier ${tier}`}
-                className="tier-image"
-              />
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  style={{ width: "50px" }}
+                  src={preloadImages[tier - 1].src}
+                  // alt={`Tier ${tier}`}
+                  className="tier-image"
+                />
+                <div>TIER {tier}</div>
+              </div>
             )}
           </div>
         )}

@@ -20,7 +20,6 @@ import ChatRoom from "./pages/multiplay/ChatRoom"; // 사용자간 채팅 페이
 import BackgroundMusic from "./shared/bgm";
 
 function App() {
-  const ownerId = sessionStorage.getItem("userId");
   return (
     <React.Fragment>
       <CssBaseline />
@@ -36,7 +35,8 @@ function App() {
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/socauth/additional-data" element={<Social />} />
         <Route path="/lobby" element={<Lobby />} />{" "}
-        {/* 멀티플레이 로비 페이지 */}
+        {/* 멀티플레이 */}
+        <Route path="/lobby" element={<Lobby />} />{" "}
         <Route path="/room/:roomName" element={<Room />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chatroom/:roomName" element={<ChatRoom />} />

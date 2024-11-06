@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
+import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
+const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
 
-const socket = io("http://localhost:3002"); // 서버 URL
+const socket = io(`http://localhost:3002`); // 서버 URL
 
 function Lobby() {
   const [rooms, setRooms] = useState([]);
@@ -27,8 +30,11 @@ function Lobby() {
     };
   }, []);
 
+  // 방 생성
   const handleCreateRoom = () => {
-    const username = sessionStorage.getItem("userId");
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
     const roomName = newRoomTitle.trim();
 
     if (!roomName) {
@@ -36,13 +42,16 @@ function Lobby() {
       return;
     }
 
-    socket.emit("createRoom", { roomName, duration, exercise, username });
+    // roomName과 username만 포함하여 방을 생성
+    socket.emit("createRoom", { roomName, username });
     setShowCreateRoomModal(false);
     navigate(`/room/${roomName}`);
   };
 
   const handleJoinRoom = (roomName) => {
-    const username = sessionStorage.getItem("userId");
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
     socket.emit("joinRoom", { roomName, username });
     navigate(`/room/${roomName}`);
   };
@@ -61,7 +70,7 @@ function Lobby() {
             value={newRoomTitle}
             onChange={(e) => setNewRoomTitle(e.target.value)}
           />
-          <select
+          {/* <select
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           >
@@ -74,7 +83,7 @@ function Lobby() {
           >
             <option value="플랭크">플랭크</option>
             <option value="푸시업">푸시업</option>
-          </select>
+          </select> */}
           <button onClick={handleCreateRoom}>생성</button>
         </div>
       )}
@@ -82,7 +91,7 @@ function Lobby() {
       <ul>
         {rooms.map((room, index) => (
           <li key={index}>
-            {room.roomName || "방 이름 없음"} - {room.options?.duration} -{" "}
+            {room.roomName || "방 이름 없음"}
             {room.options?.exercise}
             <button onClick={() => handleJoinRoom(room.roomName)}>
               참여하기

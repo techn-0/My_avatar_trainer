@@ -1,6 +1,12 @@
 import React, { act, useState } from "react";
 import "./Login.css";
 import { saveToken } from "./AuthContext"; // 쿠키에 저장하는 saveToken 사용
+
+// 주소 전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
+
 const LoginToggle = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginData, setLoginData] = useState({ id: "", password: "" });
@@ -13,10 +19,9 @@ const LoginToggle = ({ onClose }) => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     console.log("Login data:", loginData);
-    sessionStorage.setItem("userId", loginData.id); // 사용방법 : let userId = sessionStorage.getItem('userId');
 
     try {
-      const response = await fetch("http://localhost:3002/auth/signin", {
+      const response = await fetch(`${apiUrl}/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -42,7 +47,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("SignUp data:", signUpData);
 
     try {
-      const response = await fetch("http://localhost:3002/auth/signup", {
+      const response = await fetch(`${apiUrl}/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signUpData),
@@ -74,7 +79,7 @@ const LoginToggle = ({ onClose }) => {
 
   // 소셜 로그인 버튼 클릭 핸들러
   const handleSocialLogin = (provider) => {
-    const baseURL = "http://localhost:3002/socauth"; // 소셜 로그인 엔드포인트의 베이스 URL
+    const baseURL = `http://localhost:3002/socauth`; // 소셜 로그인 엔드포인트의 베이스 URL
     window.location.href = `${baseURL}/${provider}`;
   }; // 소셜로그인 jwt
 
@@ -109,12 +114,12 @@ const LoginToggle = ({ onClose }) => {
                   &times;
                 </button>
 
-                <div className="title">Log in</div>
+                <div className="title">나의 아바타 트레이너</div>
                 <form className="flip-card__form" onSubmit={handleLoginSubmit}>
                   <input
                     className="flip-card__input"
                     name="id"
-                    placeholder="Id"
+                    placeholder="아이디"
                     type="text"
                     value={loginData.id}
                     onChange={handleLoginChange}
@@ -122,13 +127,13 @@ const LoginToggle = ({ onClose }) => {
                   <input
                     className="flip-card__input"
                     name="password"
-                    placeholder="Password"
+                    placeholder="비밀번호"
                     type="password"
                     value={loginData.password}
                     onChange={handleLoginChange}
                   />
                   <button className="flip-card__btn" type="submit">
-                    Log in
+                    로그인
                   </button>
                   <div className="socialLoginMessage">
                     <p>혹은 다음으로 로그인</p>
@@ -166,12 +171,12 @@ const LoginToggle = ({ onClose }) => {
                   &times;
                 </button>
 
-                <div className="title">Sign up</div>
+                <div className="title">회원가입</div>
                 <form className="flip-card__form" onSubmit={handleSignUpSubmit}>
                   <input
                     className="flip-card__input"
                     name="id"
-                    placeholder="Id"
+                    placeholder="아이디"
                     type="text"
                     value={signUpData.id}
                     onChange={handleSignUpChange}
@@ -179,7 +184,7 @@ const LoginToggle = ({ onClose }) => {
                   <input
                     className="flip-card__input"
                     name="email"
-                    placeholder="Email"
+                    placeholder="이메일"
                     type="email"
                     value={signUpData.email}
                     onChange={handleSignUpChange}
@@ -187,13 +192,13 @@ const LoginToggle = ({ onClose }) => {
                   <input
                     className="flip-card__input"
                     name="password"
-                    placeholder="Password"
+                    placeholder="비밀번호"
                     type="password"
                     value={signUpData.password}
                     onChange={handleSignUpChange}
                   />
                   <button className="flip-card__btn" type="submit">
-                    Sign up
+                    가입
                   </button>
                 </form>
               </div>

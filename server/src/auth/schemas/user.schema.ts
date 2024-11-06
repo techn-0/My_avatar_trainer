@@ -24,6 +24,9 @@ export class User extends Document {
 
   @Prop()
   profilepic:string;
+
+  @Prop()
+  percentile: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
