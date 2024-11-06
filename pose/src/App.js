@@ -20,7 +20,6 @@ import ChatRoom from "./pages/multiplay/ChatRoom"; // 사용자간 채팅 페이
 import BackgroundMusic from "./shared/bgm";
 
 function App() {
-  const ownerId = sessionStorage.getItem("userId");
   return (
     <React.Fragment>
       <CssBaseline />

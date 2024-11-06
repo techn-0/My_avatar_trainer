@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
+import { jwtDecode } from 'jwt-decode';
 import "./mainButtons.css";
 
 function Buttons({
@@ -10,24 +11,31 @@ function Buttons({
   onResultClick,
   onLogout, // 로그아웃 콜백 추가
 }) {
-  const ownerId = sessionStorage.getItem("userId");
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
-
+  const [ownerId, setOwnerId] = useState(null);
   const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
 
   useEffect(() => {
-    // Check if token exists on initial load
     const token = getToken();
-    setIsLoggedIn(!!token); // Set login state based on whether the token exists
+    if ( token ){
+      setIsLoggedIn(true);
+      try{
+        const decodedToken = jwtDecode(token);
+        setOwnerId(decodedToken.id);
+      } catch (error){
+        console.error("Error decoding token:", error);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
   }, []);
 
   const handleLogoutClick = () => {
     removeToken(); // Remove the token
-    sessionStorage.removeItem("userId"); // 세션 스토리지에서 userId 삭제
     setIsLoggedIn(false); // Update state to reflect that the user is logged out
     onLogout(); // 로그아웃 콜백 호출하여 userId를 null로 설정
-    alert("You have been logged out.");
+    alert('로그아웃 되었습니다!')
   };
 
   const handleLoginPageClick = () => {
@@ -100,22 +108,6 @@ function Buttons({
           className="input"
           type="radio"
           name="btn"
-          id="loginPage"
-          onClick={handleLoginPageClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleLoginPageClick}>
-          {isLoggedIn ? "로그 아웃" : "로그인"}
-          <span className="btn__glitch" aria-hidden="true">
-            {isLoggedIn ? "_로그 아웃_" : "_로그인_"}
-          </span>
-        </div>
-      </div>
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
           id="exercise"
           onClick={handleExerciseClick}
           onMouseEnter={handleMouseEnter}
@@ -173,6 +165,22 @@ function Buttons({
           멀티플레이
           <span className="btn__glitch" aria-hidden="true">
             _멀티플레이_
+          </span>
+        </div>
+      </div>
+      <div className="radio-wrapper">
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="loginPage"
+          onClick={handleLoginPageClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleLoginPageClick}>
+          {isLoggedIn ? "로그 아웃" : "로그인"}
+          <span className="btn__glitch" aria-hidden="true">
+            {isLoggedIn ? "_로그 아웃_" : "_로그인_"}
           </span>
         </div>
       </div>

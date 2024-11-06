@@ -3,15 +3,16 @@ import ClearIcon from "@mui/icons-material/Clear";
 import DoneIcon from "@mui/icons-material/Done";
 import { Modal, Box, Typography, IconButton } from "@mui/material";
 import { getToken } from "../login/AuthContext";
-
+import { jwtDecode } from 'jwt-decode';
 // 주소 전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
 
 const PendingRequests = ({ pendingRequests = [], onRequestUpdate }) => {
-  const currentUserId = sessionStorage.getItem("userId");
+
   const token = getToken();
-  const userId = currentUserId;
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
   const friendUserId = pendingRequests[0].userId;
 
   const handleAccept = async () => {

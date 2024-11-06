@@ -1,7 +1,8 @@
 // src/components/Chat.js
 import React, { useState, useEffect } from "react";
 import socket from "./services/Socket"; // 소켓 인스턴스 가져오기
-
+import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 function Chat({ roomName }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -19,7 +20,9 @@ function Chat({ roomName }) {
   }, []);
 
   const handleSendMessage = () => {
-    const username = sessionStorage.getItem("userId");
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
     if (newMessage.trim()) {
       socket.emit("sendMessage", { roomName, message: newMessage, username });
       setNewMessage("");

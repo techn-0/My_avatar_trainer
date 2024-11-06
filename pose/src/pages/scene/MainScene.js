@@ -13,6 +13,7 @@ import { setSkyboxBackground } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
 import PendingRequests from "../MyPage/pendingRequests";
+import { jwtDecode } from 'jwt-decode';
 
 // 로컬 ec2 주소 전환용
 const apiUrl = process.env.REACT_APP_API_BASE_URL; //백 요청
@@ -42,6 +43,18 @@ function ThreeScene() {
   const [pendingRequest, setPendingRequest] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token); // 토큰을 디코딩하여 userId 추출
+        setUserId(decodedToken.id);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, [token]);
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -64,10 +77,6 @@ function ThreeScene() {
       }
     };
     fetchRequests();
-
-    // 페이지가 로드될 때 세션 스토리지에서 userId를 가져옴
-    const storedUserId = sessionStorage.getItem("userId");
-    setUserId(storedUserId);
 
     if (getToken()) {
       console.log("token exists");
@@ -96,7 +105,7 @@ function ThreeScene() {
     };
 
     fetchTier();
-  }, [userId]);
+  }, [userId, token]);
 
   useEffect(() => {
     // Three.js scene setup
@@ -189,8 +198,14 @@ function ThreeScene() {
   const closeLoginDialog = () => {
     setOpenLogin(false);
     // 로그인 후 userId 갱신
-    const storedUserId = sessionStorage.getItem("userId");
-    setUserId(storedUserId);
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUserId(decodedToken.userId);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
   };
 
   // Add the click event listener

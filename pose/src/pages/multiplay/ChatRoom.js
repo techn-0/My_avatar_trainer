@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import socket from './services/Socket';
+import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 
 function ChatRoom() {
   const { roomName } = useParams();
@@ -11,7 +13,9 @@ function ChatRoom() {
   const [newMessage, setNewMessage] = useState("");
   
   const [message, setMessage] = useState('');
-  const username = sessionStorage.getItem('userId');
+  const token = getToken();
+  const decodedToken = jwtDecode(token);
+  const username = decodedToken.id;
 
   useEffect(() => {
     console.log(`Joining room: ${roomName} as user: ${username}`);
