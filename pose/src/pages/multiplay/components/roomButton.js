@@ -1,23 +1,18 @@
 // roomButton.js
 
 import React from "react";
-// import "./roomButtons.css";
 
 function RoomButtons({
   onLeaveRoomClick,
-  onStartExerciseClick,
   selectedExercise,
   handleExerciseSelect,
   selectedDuration,
   handleDurationSelect,
   exercises,
   durations,
-  isReady, // 준비 상태 추가
-  toggleReady, // 준비 상태 토글 함수 추가
+  isReady,
+  handleReadyClick, // 수정: 함수 이름 변경
 }) {
-  const handleReadyClick = () => {
-    toggleReady(); // 준비 상태 토글 함수 호출
-  };
   return (
     <div className="r_card-container">
       <div className="btn_box">
@@ -72,23 +67,6 @@ function RoomButtons({
             ))}
           </div>
 
-          {/* 운동 시작 버튼 */}
-          <div className="radio-wrapper">
-            <input
-              className="input"
-              type="button"
-              name="btn"
-              id="startExercise"
-              onClick={onStartExerciseClick}
-              disabled={!selectedExercise || !selectedDuration}
-            />
-            <div className="btn">
-              <span aria-hidden="true"></span>운동 시작
-              <span className="btn__glitch" aria-hidden="true">
-                _운동 시작_
-              </span>
-            </div>
-          </div>
           {/* 준비 완료 버튼 */}
           <div className="radio-wrapper">
             <input
