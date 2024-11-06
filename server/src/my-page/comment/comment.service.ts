@@ -18,13 +18,15 @@ export class CommentService {
     }
 
     async deleteComment(commentId){
-        const result = this.commentModel.deleteOne({_id: commentId })
+        const result = await this.commentModel.deleteOne({_id: commentId })
 
         if( (await result).deletedCount ===1){
             console.log('Delete successfully done');
         }else{
             console.log('No comment found for deletion');
         }
+        
+        console.log(result);
 
         return result;
 
