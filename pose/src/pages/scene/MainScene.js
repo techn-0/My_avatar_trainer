@@ -270,14 +270,18 @@ function ThreeScene() {
         {userId && (
           <div className="welcome_text">
             안녕하세요 <br />
-            <span className="name">{userId}</span>님
+            <span className="name">{userId}</span>님<br/>
+            
             {tier >= 1 && tier <= 5 && (
-              <img
-                style={{ width: "50px" }}
-                src={preloadImages[tier - 1].src}
-                // alt={`Tier ${tier}`}
-                className="tier-image"
-              />
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  style={{ width: "50px" }}
+                  src={preloadImages[tier - 1].src}
+                  // alt={`Tier ${tier}`}
+                  className="tier-image"
+                />
+                <div>TIER {tier}</div>
+              </div>
             )}
           </div>
         )}

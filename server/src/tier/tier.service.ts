@@ -124,18 +124,19 @@ export class TierService {
       for(let i =0; i < totalUsers; i++){
         const user = finalScores[i];
         const percentile = (( i + 1) / totalUsers) * 100;
-
+        
         const userTier = tierPercentages.find(tierInfo => percentile <= tierInfo.maxPercentile);
         usersWithTiers.push({
           userId: user.userId,
           score: user.score,
-          tier: userTier.tier
+          tier: userTier.tier,
+          percentile: Math.round(percentile),
         });
       }
       const bulkOperations = usersWithTiers.map((user) => ({
         updateOne: {
           filter: { _id: user.userId },
-          update: { $set: { tier: user.tier } },
+          update: { $set: { tier: user.tier, percentile: user.percentile } },
         },
       }));
 
@@ -146,9 +147,9 @@ export class TierService {
     }
   }
 
-  async getSomeoneTier(username: string): Promise<{ tier: number }> {
-    const user = await this.userModel.findOne({ username }).select('tier');
-    return { tier: user.tier };
+  async getSomeoneTier(username: string): Promise<{ tier: number, percentile: number }> {
+    const user = await this.userModel.findOne({ username }).select('tier percentile');
+    return { tier: user.tier, percentile: user.percentile };
   }
 
   async getTier(userId: string): Promise<{ tier: number }> {

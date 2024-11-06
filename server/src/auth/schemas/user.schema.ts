@@ -21,5 +21,8 @@ export class User extends Document {
 
   @Prop({ default: 5})
   tier: number;
+
+  @Prop()
+  percentile: number;
 }
 export const UserSchema = SchemaFactory.createForClass(User);

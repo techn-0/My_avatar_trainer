@@ -64,6 +64,8 @@ const MyPage = () => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
   const friendsPerPage = 4; // 페이지당 친구 수
   const [tier, setTier] = useState("");
+  const [percentile, setPercentile] = useState("");
+
   // 페이지에 표시할 친구 데이터 계산
   const indexOfLastFriend = currentPage * friendsPerPage;
   const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
@@ -106,6 +108,7 @@ const MyPage = () => {
         });
         const data = await response.json();
         setTier(data.tier);
+        setPercentile(data.percentile);
         console.log("your tier for real: ", data.tier);
       } catch (error) {
         console.error("Error fetching tier data:", error);
@@ -468,9 +471,11 @@ const MyPage = () => {
       });
 
       if (response.ok) {
-        alert("코멘트가 작성되었습니다.");
-        console.log(response);
+        
+        const addedComment = await response.json();
+        setCommentData((prevComments) => [...prevComments, addedComment]);
         setComment("");
+        alert("코멘트가 작성되었습니다.");
       } else {
         console.log(data);
         alert("코멘트 작성에 실패했습니다.");
@@ -649,7 +654,7 @@ const MyPage = () => {
               <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
             )}
           </div>
-          <div style={{ margin: "auto" }}>
+          <div style={{ display: "flex", margin: "auto" }}>
             {tier >= 1 && tier <= 5 && (
               <img
                 style={{ width: "200px" }}
@@ -658,7 +663,12 @@ const MyPage = () => {
                 className="tier-image"
               />
             )}
+           <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
+            <div style={{ fontSize: "80px" }}>TIER {tier}</div>
+            <div style={{ fontSize: "30px" }}>상위 {percentile}% 입니다!</div>
           </div>
+          </div>
+          
         </div>
 
         {/* div2 */}
@@ -739,7 +749,6 @@ const MyPage = () => {
               style={{
                 width: "60%",
                 flexGrow: 1,
-                border: "2px solid black",
                 padding: "10px",
               }}
             >
@@ -756,8 +765,8 @@ const MyPage = () => {
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         작성일:{" "}
-                        {new Date(comment.createdAt).toLocaleDateString()}{" "}
-                        {new Date(comment.createdAt).toLocaleTimeString()}
+                        {new Date(comment.createdAt).toISOString().slice(0, 10)}{" "}
+                        {new Date(comment.createdAt).toISOString().slice(11, 16)}
                       </Typography>
                       <Typography variant="body1" sx={{ marginTop: "5px" }}>
                         {comment.comment}
@@ -800,7 +809,6 @@ const MyPage = () => {
               style={{
                 width: "30%",
                 flexGrow: 1,
-                border: "2px solid black",
                 padding: "10px",
               }}
             >

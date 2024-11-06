@@ -19,7 +19,7 @@ export class TierController {
         }
     
     @Post('/:username')
-        async getSomeoneTier(@Param('username') username: string): Promise< {tier: number}>{
+        async getSomeoneTier(@Param('username') username: string): Promise< {tier: number, percentile: number}>{
             return await this.tierService.getSomeoneTier(username)
         }  
 }
