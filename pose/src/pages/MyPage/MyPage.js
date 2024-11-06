@@ -1,5 +1,3 @@
-// MyPage.js
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PendingRequests from "./pendingRequests";
@@ -17,6 +15,7 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 import {
   Card,
   CardContent,
@@ -83,16 +82,15 @@ const MyPage = () => {
       setCurrentPage(currentPage - 1);
     }
   };
-
-  // sessionStorage에서 로그인된 유저의 ID 가져오기
-  const userId = sessionStorage.getItem("userId");
-
+  const token = getToken();
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
   // 마지막 접속 날짜와 연속 로그인 일수를 위한 상태 추가
   const [lastVisitDays, setLastVisitDays] = useState(null);
   const [consecutiveDays, setConsecutiveDays] = useState(0);
 
   // 운동 기록 데이터를 백엔드에서 가져오기
-  const token = getToken();
+  
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
 
@@ -487,7 +485,7 @@ const MyPage = () => {
   const handleDeleteComment = async (_id) => {
     try {
       const response = await fetch(
-        `http://localhost:3002/comment/delete/${_id}`, // 친구 삭제 API 엔드포인트
+        `http://localhost:3002/comment/delete/${_id}`,
         {
           method: "Delete",
           headers: {
@@ -498,7 +496,6 @@ const MyPage = () => {
         }
       );
       if (response.ok) {
-        // 삭제 성공 시 방명록 목록에서 해당 친구 제거
         alert("삭제되었습니다.");
         setCommentData((prevComments) =>
           prevComments.filter((comment) => comment._id !== _id)

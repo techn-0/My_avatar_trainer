@@ -17,6 +17,7 @@ import LoginModal from "../login/LoginModal";
 import { setSkyboxBackground } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
+import { jwtDecode } from 'jwt-decode';
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
 
@@ -146,8 +147,9 @@ function ExerciseScene() {
     const near = 1;
     const far = 1000;
 
-    const storedUserId = sessionStorage.getItem("userId");
-    setUserId(storedUserId);
+    const token = getToken();
+    const decodedToken = jwtDecode(token);
+    setUserId(decodedToken.id);
 
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     // 애니메이션 루프 외부에서 카메라 설정
