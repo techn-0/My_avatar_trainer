@@ -1,5 +1,0 @@
-db:
-  host: 'localhost'
-  synchronize: true
-jwt:
-  secret: 'My trainer hides his identity'

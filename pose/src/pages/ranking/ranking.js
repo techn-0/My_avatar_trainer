@@ -3,6 +3,10 @@ import RankingCard from "./RankingCard";
 import "./ranking.css";
 import { useNavigate } from "react-router-dom";
 
+// 주소 전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
 function RankingPage() {
   const [rankings, setRankings] = useState([]);
   const [exercise, setExercise] = useState("squat");
@@ -13,7 +17,7 @@ function RankingPage() {
   const fetchRanking = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3002/workout/get_ranking`,
+        `${apiUrl}/workout/get_ranking`,
         {
           method: "POST", // GET에서 POST로 변경
           headers: {

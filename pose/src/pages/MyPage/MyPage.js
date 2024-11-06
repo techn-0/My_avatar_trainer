@@ -26,6 +26,10 @@ import {
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
 
+// 주소 전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
   const img = new Image();
@@ -94,7 +98,7 @@ const MyPage = () => {
 
     const fetchTier = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/tier/${ownerId}`, {
+        const response = await fetch(`${apiUrl}/tier/${ownerId}`, {
           method: "POST", // GET에서 POST로 변경
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -117,7 +121,7 @@ const MyPage = () => {
       try {
         // GET에서 POST로 변경하고, 데이터를 body에 포함
         const response = await fetch(
-          `http://localhost:3002/comment/${ownerId}`,
+          `${apiUrl}/comment/${ownerId}`,
           {
             method: "POST",
             headers: {
@@ -139,7 +143,7 @@ const MyPage = () => {
     fetchComments();
     const fetchFriends = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/friends/list`, {
+        const response = await fetch(`${apiUrl}/friends/list`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -161,7 +165,7 @@ const MyPage = () => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3002/friends/pendingRequestList`,
+          `${apiUrl}/friends/pendingRequestList`,
           {
             method: "POST",
             headers: {
@@ -184,7 +188,7 @@ const MyPage = () => {
     //
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/workout`, {
+        const response = await fetch(`${apiUrl}/workout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -457,7 +461,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3002/comment/add", {
+      const response = await fetch(`${apiUrl}/comment/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -523,7 +527,7 @@ const MyPage = () => {
   const handleDeleteFriend = async (friendUserId) => {
     try {
       const response = await fetch(
-        `http://localhost:3002/friends/delete`, // 친구 삭제 API 엔드포인트
+        `${apiUrl}/friends/delete`, // 친구 삭제 API 엔드포인트
         {
           method: "Delete",
           headers: {
@@ -551,7 +555,7 @@ const MyPage = () => {
   // 유저 검색 함수
   const handleSearchUser = async () => {
     try {
-      const response = await fetch(`http://localhost:3002/friends/findUser`, {
+      const response = await fetch(`${apiUrl}/friends/findUser`, {
         method: "POST", // GET에서 POST로 변경
         headers: {
           Authorization: `Bearer ${token}`, // JWT 토큰 추가
@@ -589,7 +593,7 @@ const MyPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3002/friends/add", {
+      const response = await fetch(`${apiUrl}/friends/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

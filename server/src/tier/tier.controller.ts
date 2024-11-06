@@ -14,8 +14,8 @@ export class TierController {
         }
     
     @Post('/update')
-        async updateAllUserTier(): Promise<void>{
-            await this.tierService.updateAllUserTier()
+        async addUpdateTierWork(): Promise<void>{
+            await this.tierService.addUpdateTierWork()
         }
     
     @Post('/:username')

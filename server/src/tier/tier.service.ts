@@ -1,9 +1,10 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Queue } from 'bull';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schemas/user.schema';
 import { WorkOut } from 'src/workout/schemas/workout.schema';
@@ -13,6 +14,7 @@ export class TierService {
   constructor(
     @InjectModel(WorkOut.name) private workoutModel: Model<WorkOut>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectQueue('tier-update') private tierQueue: Queue,
   ) {}
 
   //티어 배정을 위한 전체 유저 점수 계산
@@ -96,6 +98,11 @@ export class TierService {
       } catch(error){
         throw new Error('티어 배정을 위한 유저 점수를 계산하는데 오류가 발생했습니다!');
       }
+  }
+  
+  async addUpdateTierWork(): Promise<void>{
+    console.log('티어 업데이트 작업 큐 추가!');
+    await this.tierQueue.add('tier-update-job',{});
   }
   
   async updateAllUserTier(): Promise<void> {
