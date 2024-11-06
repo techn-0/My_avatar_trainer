@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 
+// 주소 전환
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
+
 const Social = ({}) => {
   // Add provId and provider as props
   const [username, setUsername] = useState("");
@@ -9,7 +14,7 @@ const Social = ({}) => {
 
     try {
       const response = await fetch(
-        "http://localhost:3002/socauth/additional-data",
+        `${apiUrl}/socauth/additional-data`,
         {
           method: "POST",
           headers: {
@@ -24,7 +29,7 @@ const Social = ({}) => {
       const result = await response.json();
       if (response.ok) {
         alert("Username added successfully!");
-        window.location.href = "http://localhost:3000"; // Redirect to homepage or desired page
+        window.location.href = `http://localhost:3002`; // Redirect to homepage or desired page
       } else if (response.status === 409) {
         alert(result.message); // Handle duplicate username error
       }
