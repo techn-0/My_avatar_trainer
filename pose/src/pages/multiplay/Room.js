@@ -6,9 +6,9 @@ import socket from "./services/Socket";
 import Chat from "./components/Chat";
 import VideoStream from "./components/VideoStream";
 import { getToken } from "../login/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 import RoomButtons from "./components/roomButton";
-import MultiSquatCam from "./components/multiCam/multiSquatCam";
+import MultiSquatCam from "./components/multiCam/multiSquatCam"; // 컴포넌트 임포트
 
 function Room() {
   const { roomName } = useParams();
@@ -18,12 +18,12 @@ function Room() {
   const [isReady, setIsReady] = useState(false);
   const [startMessage, setStartMessage] = useState(false);
 
-  // 운동 선택 상태
+  // roomButton.js에서 사용되는 상태 및 함수 추가
   const [selectedExercise, setSelectedExercise] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("");
 
-  const exercises = ["squat", "pushup"];
-  const durations = [60, 120];
+  const exercises = ["squat", "pushup"]; // 운동 종목 리스트
+  const durations = ["60초", "120초"]; // 운동 시간 리스트
 
   // 운동 종목 선택 핸들러
   const handleExerciseSelect = (exercise) => {
@@ -35,24 +35,25 @@ function Room() {
     setSelectedDuration(duration);
   };
 
-  // 준비 완료 버튼 클릭 핸들러
-  const handleReadyClick = () => {
+  // 운동 시작 버튼 클릭 핸들러
+  const handleStartExerciseClick = () => {
     if (!selectedExercise || !selectedDuration) {
-      alert("운동 종류와 시간을 선택해주세요.");
+      alert("운동 종류와 지속 시간을 선택하세요.");
       return;
     }
-    setIsReady((prev) => !prev);
-    socket.emit("toggleReady", {
+
+    // 선택한 운동 및 시간 정보를 서버에 전송
+    socket.emit("startExercise", {
       roomName,
-      exercise: selectedExercise,
       duration: selectedDuration,
+      exercise: selectedExercise,
     });
   };
 
   // 방 나가기 버튼 클릭 핸들러
   const handleLeaveRoomClick = () => {
     socket.emit("leaveRoom", { roomName });
-    navigate("/lobby");
+    navigate("/lobby"); // 로비 페이지로 이동
   };
 
   useEffect(() => {
@@ -71,6 +72,10 @@ function Room() {
       socket.on("roomState", ({ users, readyStates }) => {
         setUsers(users);
         setReadyStates(readyStates);
+        const allReady = Object.values(readyStates).every(
+          (state) => state === true
+        );
+        setStartMessage(allReady);
       });
     }
 
@@ -81,10 +86,12 @@ function Room() {
 
     socket.on("updateReadyStates", (states) => {
       setReadyStates(states);
+      const allReady = Object.values(states).every((state) => state === true);
+      setStartMessage(allReady);
     });
 
-    // 게임 시작 이벤트 처리
-    socket.on("startGame", () => {
+    // **bothPlayersReady 이벤트 처리 추가**
+    socket.on("bothPlayersReady", () => {
       setStartMessage(true);
     });
 
@@ -92,9 +99,15 @@ function Room() {
       socket.off("roomState");
       socket.off("updateUsers");
       socket.off("updateReadyStates");
-      socket.off("startGame");
+      socket.off("bothPlayersReady"); // 이벤트 리스너 해제
     };
   }, [roomName]);
+
+  // 레디 상태 토글 함수 (사용하지 않는다면 삭제 가능)
+  const toggleReady = () => {
+    setIsReady((prev) => !prev);
+    socket.emit("toggleReady", roomName);
+  };
 
   return (
     <div
@@ -126,7 +139,7 @@ function Room() {
               exercises={exercises}
               durations={durations}
               isReady={isReady}
-              handleReadyClick={handleReadyClick} // 수정: 함수 이름 변경
+              toggleReady={toggleReady}
             />
           </div>
 
@@ -137,7 +150,7 @@ function Room() {
             {/* Chat 컴포넌트 */}
             <Chat roomName={roomName} />
 
-            {/* Ready Status */}
+            {/* Ready Status and Start Message */}
             <div style={{ marginTop: "1rem" }}>
               <h2>Players in Room:</h2>
               {users.map((user, index) => (
