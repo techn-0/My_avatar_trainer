@@ -64,6 +64,8 @@ const MyPage = () => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
   const friendsPerPage = 4; // 페이지당 친구 수
   const [tier, setTier] = useState("");
+  const [percentile, setPercentile] = useState("");
+
   // 페이지에 표시할 친구 데이터 계산
   const indexOfLastFriend = currentPage * friendsPerPage;
   const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
@@ -106,6 +108,7 @@ const MyPage = () => {
         });
         const data = await response.json();
         setTier(data.tier);
+        setPercentile(data.percentile);
         console.log("your tier for real: ", data.tier);
       } catch (error) {
         console.error("Error fetching tier data:", error);
@@ -660,7 +663,10 @@ const MyPage = () => {
                 className="tier-image"
               />
             )}
-            <div style={{ fontSize: "80px"}}>TIER {tier}</div>
+           <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
+            <div style={{ fontSize: "80px" }}>TIER {tier}</div>
+            <div style={{ fontSize: "30px" }}>상위 {percentile}% 입니다!</div>
+          </div>
           </div>
           
         </div>
