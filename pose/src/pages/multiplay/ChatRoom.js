@@ -28,7 +28,16 @@ function ChatRoom() {
     if (username && roomName) {
       socket.emit('joinRoom', { roomName, username });
     }
-  
+    
+    socket.on("messageHistory", (messageHistory)=>{
+      if (messageHistory){
+        console.log("Message History received")
+      }else{
+        console.log("Message History not received");
+      }
+      setMessages(messageHistory);
+    })
+
     // Listen for user updates in the room
     socket.on("updateUsers", (updatedUsers) => {
       console.log("Updated users in room:", updatedUsers);
