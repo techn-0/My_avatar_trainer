@@ -47,7 +47,7 @@ export class AuthService {
 
         if (user && user.password === password) {
           const payload = { id };
-          const accessToken = await this.jwtService.sign(payload);
+          const accessToken = await this.jwtService.sign(payload,{ expiresIn: '12h'});
           return { accessToken };
         } else {
           throw new UnauthorizedException('로그인 실패');
