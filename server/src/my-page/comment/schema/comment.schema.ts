@@ -15,7 +15,7 @@ export class Comment extends Document{
     @Prop({type:String})
     comment:string;
     
-    @Prop({ default:Date.now })
+    @Prop({ default:()=> new Date(Date.now() + 9 * 60 * 60 * 1000 ) })
     createdAt:Date;
 }
 
