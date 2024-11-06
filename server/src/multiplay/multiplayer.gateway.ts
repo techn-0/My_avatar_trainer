@@ -19,7 +19,9 @@ interface Room {
 }
 
 @WebSocketGateway({ cors: true })
-export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class MultiplayerGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
 
   private rooms: { [key: string]: Room } = {};
@@ -56,7 +58,12 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('createRoom')
   handleCreateRoom(
     client: Socket,
-    payload: { roomName: string; duration: string; exercise: string; username: string },
+    payload: {
+      roomName: string;
+      duration: string;
+      exercise: string;
+      username: string;
+    },
   ) {
     const { roomName, duration, exercise, username } = payload;
 
@@ -88,7 +95,10 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
 
   // 방 참여 처리
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, payload: { roomName: string; username: string }) {
+  handleJoinRoom(
+    client: Socket,
+    payload: { roomName: string; username: string },
+  ) {
     const { roomName, username } = payload;
 
     if (this.rooms[roomName]) {
@@ -119,15 +129,44 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
     const username = client.data.username;
 
     if (this.rooms[roomName]) {
-      this.rooms[roomName].readyStates[username] = !this.rooms[roomName].readyStates[username];
-      this.server.to(roomName).emit('updateReadyStates', this.rooms[roomName].readyStates);
+      this.rooms[roomName].readyStates[username] =
+        !this.rooms[roomName].readyStates[username];
+      this.server
+        .to(roomName)
+        .emit('updateReadyStates', this.rooms[roomName].readyStates);
 
-      const allReady = Object.values(this.rooms[roomName].readyStates).every((ready) => ready);
-      const enoughPlayers = Object.keys(this.rooms[roomName].readyStates).length >= 2;
+      const allReady = Object.values(this.rooms[roomName].readyStates).every(
+        (ready) => ready,
+      );
+      const enoughPlayers =
+        Object.keys(this.rooms[roomName].readyStates).length >= 2;
 
       if (allReady && enoughPlayers) {
         console.log(`Starting game in room ${roomName}`);
         this.server.to(roomName).emit('startGame');
+      }
+    }
+  }
+
+  // 플레이어가 OK 포즈로 준비 완료를 알릴 때 처리
+  @SubscribeMessage('playerReady')
+  handlePlayerReady(client: Socket, payload: { roomName: string }) {
+    const { roomName } = payload;
+    const username = client.data.username;
+
+    if (this.rooms[roomName]) {
+      this.rooms[roomName].readyStates[username] = true;
+      console.log(`Player ${username} is ready in room ${roomName}`);
+
+      // 모든 사용자가 준비되었는지 확인
+      const allReady = Object.values(this.rooms[roomName].readyStates).every(
+        (ready) => ready,
+      );
+
+      if (allReady) {
+        console.log(`All players are ready in room ${roomName}`);
+        // 모든 사용자에게 준비 완료 알림
+        this.server.to(roomName).emit('bothPlayersReady');
       }
     }
   }
@@ -183,16 +222,22 @@ export class MultiplayerGateway implements OnGatewayConnection, OnGatewayDisconn
 
   @SubscribeMessage('offer')
   handleOffer(client: Socket, payload: { to: string; offer: any }) {
-    this.server.to(payload.to).emit('offer', { from: client.id, offer: payload.offer });
+    this.server
+      .to(payload.to)
+      .emit('offer', { from: client.id, offer: payload.offer });
   }
 
   @SubscribeMessage('answer')
   handleAnswer(client: Socket, payload: { to: string; answer: any }) {
-    this.server.to(payload.to).emit('answer', { from: client.id, answer: payload.answer });
+    this.server
+      .to(payload.to)
+      .emit('answer', { from: client.id, answer: payload.answer });
   }
 
   @SubscribeMessage('iceCandidate')
   handleIceCandidate(client: Socket, payload: { to: string; candidate: any }) {
-    this.server.to(payload.to).emit('iceCandidate', { from: client.id, candidate: payload.candidate });
+    this.server
+      .to(payload.to)
+      .emit('iceCandidate', { from: client.id, candidate: payload.candidate });
   }
 }
