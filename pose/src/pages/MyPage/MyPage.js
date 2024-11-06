@@ -468,9 +468,11 @@ const MyPage = () => {
       });
 
       if (response.ok) {
-        alert("코멘트가 작성되었습니다.");
-        console.log(response);
+        
+        const addedComment = await response.json();
+        setCommentData((prevComments) => [...prevComments, addedComment]);
         setComment("");
+        alert("코멘트가 작성되었습니다.");
       } else {
         console.log(data);
         alert("코멘트 작성에 실패했습니다.");
@@ -649,7 +651,7 @@ const MyPage = () => {
               <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
             )}
           </div>
-          <div style={{ margin: "auto" }}>
+          <div style={{ display: "flex", margin: "auto" }}>
             {tier >= 1 && tier <= 5 && (
               <img
                 style={{ width: "200px" }}
@@ -658,7 +660,9 @@ const MyPage = () => {
                 className="tier-image"
               />
             )}
+            <div style={{ fontSize: "80px"}}>TIER {tier}</div>
           </div>
+          
         </div>
 
         {/* div2 */}
@@ -739,7 +743,6 @@ const MyPage = () => {
               style={{
                 width: "60%",
                 flexGrow: 1,
-                border: "2px solid black",
                 padding: "10px",
               }}
             >
@@ -756,8 +759,8 @@ const MyPage = () => {
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         작성일:{" "}
-                        {new Date(comment.createdAt).toLocaleDateString()}{" "}
-                        {new Date(comment.createdAt).toLocaleTimeString()}
+                        {new Date(comment.createdAt).toISOString().slice(0, 10)}{" "}
+                        {new Date(comment.createdAt).toISOString().slice(11, 16)}
                       </Typography>
                       <Typography variant="body1" sx={{ marginTop: "5px" }}>
                         {comment.comment}
@@ -800,7 +803,6 @@ const MyPage = () => {
               style={{
                 width: "30%",
                 flexGrow: 1,
-                border: "2px solid black",
                 padding: "10px",
               }}
             >

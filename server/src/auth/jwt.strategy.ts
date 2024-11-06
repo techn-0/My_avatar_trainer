@@ -4,7 +4,6 @@ import { User } from "./schemas/user.schema";
 import { PassportStrategy } from "@nestjs/passport";
 import { Model } from "mongoose";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import axios from 'axios';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy){
@@ -19,7 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     
     async validate(payload){
         const { id } = payload;
-        console.log(id);
         // DB에 해당 User가 존재하는지 확인한다.
         const user: User = await this.userModel.findOne({username : id});
         if(!user){
