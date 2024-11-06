@@ -47,7 +47,7 @@ const LoginToggle = ({ onClose }) => {
     console.log("SignUp data:", signUpData);
 
     try {
-      const response = await fetch(`${apiUrl}/auth/signin`, {
+      const response = await fetch(`${apiUrl}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signUpData),
