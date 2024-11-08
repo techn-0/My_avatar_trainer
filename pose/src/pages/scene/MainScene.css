@@ -28,9 +28,10 @@
 .btn_box_cont {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.623);
-  margin: 0px;
-  width: 1450px;
-  height: 130px;
+  padding-left: 20px;
+  padding-top: 15px;
+  width: 1480px;
+  height: 150px;
   clip-path: polygon(
     60px 0%,
     100% 0%,

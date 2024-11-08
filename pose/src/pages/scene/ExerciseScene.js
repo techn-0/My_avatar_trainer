@@ -72,7 +72,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "situp", "burpee"];
 
   // 운동 시간 리스트
-  const durations = [1, 2, 0.1, 0.4, "챌린지 모드"]; // 듀레이션 디버깅
+  const durations = [1, 2, 0.1, "챌린지 모드"]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);

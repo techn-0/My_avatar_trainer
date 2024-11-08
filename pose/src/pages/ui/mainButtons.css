@@ -12,7 +12,7 @@
   
   display: flex;
   flex-direction: row; /* 수평 정렬 */
-  gap: 30px; /* 수평 간격 */
+  gap:35px; /* 수평 간격 */
 }
 
 .radio-wrapper {
@@ -153,8 +153,9 @@
 .input:hover + .btn {
   --primary: #8b00ff;
   --shadow-primary: #00e572;
-  --font-size: 40px;
   line-height: 70px;
+  transform: scale(1.2); /* 글자 크기 확대 */
+  z-index: 1;
 }
 
 .btn:after,
