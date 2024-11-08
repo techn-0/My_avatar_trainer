@@ -1,12 +1,8 @@
 @font-face {
-  font-family: "GangwonEduPowerExtraBoldA";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
-    format("woff");
+  font-family: 'DungGeunMo';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
   font-weight: normal;
   font-style: normal;
-}
-.font {
-  font-family: "GangwonEduPowerExtraBoldA";
 }
 
 .btn_box {
@@ -23,6 +19,10 @@
     0% 100%,
     0% 60px
   );
+
+  border: 4px solid; /* 테두리 두께와 스타일 설정 */
+  border-color: #4a21ff; /* 초기 색상 */
+  animation: borderGlow 5s infinite; /* 애니메이션 적용 */
 }
 
 .btn_box_cont {
@@ -46,6 +46,9 @@
   top: 20px;
   right: 20px; /* 오른쪽에 딱 붙게 설정 */
   z-index: 1;
+  font-family: "DungGeunMo";
+  width: 250px;
+  padding-left: 35px;
 }
 .welcome_text {
   font-size: 25px;
@@ -74,3 +77,4 @@
     border-color: #4a21ff;
   }
 }
+

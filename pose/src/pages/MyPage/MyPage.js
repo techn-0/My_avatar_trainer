@@ -660,9 +660,9 @@ const MyPage = () => {
             onMouseEnter={handleMouseEnter}
           />
           <div className="btn" onClick={handleMainClick}>
-            <span aria-hidden="true"></span>메인 페이지
+            <span aria-hidden="true"></span>메인페이지
             <span className="btn__glitch" aria-hidden="true">
-              _메인 페이지_
+              메인페이지
             </span>
           </div>
         </div>

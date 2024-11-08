@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "GangwonEduPowerExtraBoldA";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
-    format("woff");
+  font-family: 'DungGeunMo';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
 .button-container {
+  padding-top: 20px;
   display: flex;
   flex-direction: row;
   
@@ -137,12 +137,12 @@
   letter-spacing: 3px;
   position: relative;
   font-weight: 900;
-  width: 120%;
-  height: 120%;
-  line-height: 47px;
+  width: 130%;
+  height: 160%;
+  line-height: 60px;
   text-align: center;
   transition: background 0.2s, 0.3s;
-  font-family: "GangwonEduPowerExtraBoldA";
+  font-family: "DungGeunMo";
 }
 
 /* .input:checked + .btn {
@@ -153,8 +153,8 @@
 .input:hover + .btn {
   --primary: #8b00ff;
   --shadow-primary: #00e572;
-  --font-size: 25px;
-  line-height: 57px;
+  --font-size: 40px;
+  line-height: 70px;
 }
 
 .btn:after,

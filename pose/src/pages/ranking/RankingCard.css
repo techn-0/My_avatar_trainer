@@ -71,7 +71,7 @@
 .ranking_number {
   position: relative;
   color: #ffc64b;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "DungGeunMo";
   font-weight: 700;
   font-size: 80px;
   left: 20px;
@@ -130,7 +130,7 @@
   margin-left: 60px;
   color: #424c50;
   letter-spacing: 6px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "DungGeunMo";
   margin-top: 20px;
   font-weight: 800;
   font-size: 13px;
@@ -139,7 +139,7 @@
 
 .gradesBoxNum {
   position: relative;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "DungGeunMo";
   display: block;
   font-size: 25px;
   font-weight: 800;

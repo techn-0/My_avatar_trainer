@@ -26,11 +26,11 @@ function Buttons({
 
   return (
     <div className="r_card-container">
-      <div className="btn_box">
+      <div className="EX_btn_box">
         <div>
           <div>
             {/* 글리치 버튼 - 메인 페이지 */}
-            <div className="radio-wrapper">
+            <div className="radio-wrapper Ex_btn">
               <input
                 className="input"
                 type="radio"
@@ -39,9 +39,9 @@ function Buttons({
                 onClick={onMainPageClick}
               />
               <div className="btn">
-                <span aria-hidden="true"></span>메인 페이지
+                <span aria-hidden="true"></span>메인페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  _메인 페이지_
+                  메인페이지
                 </span>
               </div>
             </div>
@@ -56,9 +56,9 @@ function Buttons({
                 onClick={onResultClick}
               />
               <div className="btn">
-                마이페이지
+                마이 페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  _마이페이지_
+                  마이_페이지
                 </span>
               </div>
             </div>
@@ -67,11 +67,11 @@ function Buttons({
 
         <div>
           {/* 운동 선택 UI */}
-          <div style={{}}>
+          <div className="exercise-selection-container">
             <h3>운동 종목 선택</h3>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div className="exercise-selection">
               {exercises.map((exercise) => (
-                <label key={exercise} style={{ marginBottom: "8px" }}>
+                <label key={exercise} className="exercise-label">
                   <input
                     type="radio"
                     name="exercise"
@@ -85,9 +85,9 @@ function Buttons({
             </div>
 
             <h3>운동 시간 선택</h3>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div className="duration-selection">
               {durations.map((duration) => (
-                <label key={duration} style={{ marginBottom: "8px" }}>
+                <label key={duration} className="duration-label">
                   <input
                     type="radio"
                     name="duration"

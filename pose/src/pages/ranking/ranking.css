@@ -1,7 +1,6 @@
 @font-face {
-  font-family: "GangwonEduPowerExtraBoldA";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
-    format("woff");
+  font-family: 'DungGeunMo';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
@@ -86,6 +85,6 @@ body {
 .opt {
   margin-bottom: 100px;
   text-align: center;
-  font-family: "GangwonEduPowerExtraBoldA";
+  font-family: "DungGeunMo";
   font-size: 20px;
 }
