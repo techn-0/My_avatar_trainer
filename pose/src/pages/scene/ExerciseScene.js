@@ -734,7 +734,6 @@ function ExerciseScene() {
           color: "black",
         }}
       >
-        <h2>애니메이션 반복 횟수: {animationRepeatCount}</h2>
         {/* 유저와 아바타의 중간 결과 메시지 표시 */}
         {interactionMessage && (
           <div className="inter_message">{interactionMessage}</div>
