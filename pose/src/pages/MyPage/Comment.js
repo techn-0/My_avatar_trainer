@@ -9,7 +9,7 @@ const Comment = ({ ownerId, userId }) => {
 
   const handleSubmit = async () => {
     if (!content) {
-      alert("내용을 입력해주세요.");
+      alert("내용 입력해주세요.");
       return;
     }
 
@@ -47,7 +47,7 @@ const Comment = ({ ownerId, userId }) => {
       <h2>코멘트</h2>
       <input
         type="text"
-        placeholder="내용을 입력하시오"
+        placeholder="내용 입력하시오"
         style={{ width: "400px", height: "50px" }}
         value={content}
         onChange={handleContentChange}

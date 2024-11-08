@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'DungGeunMo';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+  font-family: "DungGeunMo";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -56,13 +57,15 @@
 
 /* 가로 스크롤 */
 .myPage-horizontalScroll {
+  margin-left: 20px;
+  margin-right: 20px;
   justify-content: center; /* 콘텐츠를 수평 중앙 정렬 */
 
   display: flex;
   gap: 30px;
 
-  padding: 20px;
-  height: 75%;
+  padding: 10px;
+  height: 76%;
 
   /* 스크롤바 숨기기 */
   -ms-overflow-style: none; /* IE 및 Edge */
@@ -75,39 +78,52 @@
 
 /* 공통 스타일 */
 .glow-container {
-  padding: 20px;
+  padding-left: 15px;
   min-width: 300px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0px 0px 10px #00ff9f, 0px 0px 20px #00ff9f;
 }
 
-
 .chart-container {
   box-shadow: 5px 5px 10px #afafaf, 5px 5px 10px #afafaf, 5px 5px 10px #afafaf;
   margin-top: 80px;
-  min-height: 350px;
+  min-height: 380px;
+  background-color: rgba(255, 255, 255, 0.548);
 }
 
 /* 차트 */
-.line-chart,
+.line-chart{
+  width: 700px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .radar-chart {
   width: 500px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
-.comment_box{
+
+.comment_box {
   width: 500px;
 }
 
 .line-chart canvas {
-  width: 100% !important; /* 컨테이너의 100% 너비로 설정 */
-  height: 100% !important; /* 컨테이너의 높이에 맞게 설정 */
+  width: 100%; /* 컨테이너의 100% 너비로 설정 */
+  height: 100%; /* 컨테이너의 높이에 맞게 설정 */
 }
 
 .comment-input input {
   width: 80%;
-  padding: 10px;
+  padding: 7px;
   margin-right: 10px;
   margin-top: 10px;
+}
+.friend-management  input{
+  width: 80%;
+  padding: 7px;
+  margin-right: 10px;
 }
 
 .comment-input button {
@@ -140,17 +156,21 @@
   align-items: center; /* 수직 정렬 */
 }
 
-.comment-card{
+.comment-card {
   padding: 10px;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
-  margin: 10px 0;
+  margin: 10px 0 0 0;
   box-shadow: 5px 5px 10px #afafaf;
   color: rgb(0, 0, 0);
-  margin: 5px;
+  margin-left: 5px;
 }
 
-.comment-card button{
+.font_small{
+  font-size: 25px;
+}
+
+.comment-card button {
   padding: 5px 10px;
   background: #00ff9f;
   color: rgb(0, 0, 0);
@@ -175,14 +195,16 @@
   background: #00e6e6;
 }
 
-.pagination button{
+.pagination button {
   margin-left: 10px;
+  margin-top: 20px;
   padding: 5px 10px;
   background: #00ff9f;
   color: rgb(0, 0, 0);
   border: none;
   cursor: pointer;
 }
+
 .pagination button:hover {
   background: #00e6e6;
 }
@@ -191,8 +213,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin-top: 90px;
+  gap: 5px;
 }
 
 .myPage-tierImage img {
@@ -200,7 +221,8 @@
   height: auto; /* 비율 유지 */
   object-fit: contain; /* 이미지 잘리지 않도록 설정 */
   border-radius: 10px; /* 약간의 둥근 모서리 */
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* 발광 효과 */
+  box-shadow: 0 0 40px rgba(255, 230, 41, 0.804); /* 발광 효과 */
+  background-color: rgba(255, 255, 255, 0.626);
 }
 
 /* 스크롤 가능한 박스 */
@@ -209,8 +231,7 @@
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
 }
-.comments-container
-{
+.comments-container {
   max-height: 400px; /* 박스 높이 제한 */
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
@@ -238,4 +259,9 @@
 
 *::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1); /* 트랙 배경색 */
+}
+
+.my_User_name{
+  margin: 10px 10px 10px 0px;
+  font-size: 35px;
 }

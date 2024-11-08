@@ -48,6 +48,8 @@
   /* color: var(--font-color); */
   color: white;
   font-weight: 600;
+  left: -110px;
+  top: -15px;
 }
 
 /* 회원가입 텍스트 스타일 */
@@ -56,11 +58,13 @@
   content: "회원가입";
   left: 70px;
   top: 0;
-  width: 100px;
+  width: 150px;
   text-decoration: none;
   /* color: var(--font-color); */
   color: white;
   font-weight: 600;
+  left: 70px;
+  top: -15px;
 }
 
 /* 토글 스위치 */
@@ -187,7 +191,7 @@
   border: 2px solid var(--main-color);
   background-color: var(--bg-color);
   box-shadow: 4px 4px var(--main-color);
-  font-size: 15px;
+  font-size: 25px;
   font-weight: 600;
   color: var(--font-color);
   padding: 5px 10px;
@@ -221,7 +225,7 @@
   border: 2px solid var(--main-color);
   background-color: var(--bg-color);
   box-shadow: 4px 4px var(--main-color);
-  font-size: 17px;
+  font-size: 28px;
   font-weight: 600;
   color: var(--font-color);
   cursor: pointer;
@@ -260,4 +264,8 @@
   background-image: url("/public/loginButtons/naver.png");
   background-color: #03c75a;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+}
+
+.socialLoginMessage{
+  font-size: 25px;
 }
