@@ -25,6 +25,22 @@
   );
 }
 
+.btn_box_cont {
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.623);
+  margin: 0px;
+  width: 1450px;
+  height: 130px;
+  clip-path: polygon(
+    60px 0%,
+    100% 0%,
+    100% calc(100% - 60px),
+    calc(100% - 60px) 100%,
+    0% 100%,
+    0% 60px
+  );
+}
+
 .welcome {
   position: absolute;
   top: 20px;

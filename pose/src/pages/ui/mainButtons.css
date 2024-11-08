@@ -9,6 +9,10 @@
 .button-container {
   display: flex;
   flex-direction: row;
+  
+  display: flex;
+  flex-direction: row; /* 수평 정렬 */
+  gap: 30px; /* 수평 간격 */
 }
 
 .radio-wrapper {
@@ -16,6 +20,7 @@
   height: 38px;
   width: 180px;
   margin: 10px;
+  
 }
 
 .radio-wrapper .input {
@@ -32,7 +37,7 @@
   --primary: #ff184c;
   --shadow-primary: #04fd00;
   --color: white;
-  --font-size: 20px;
+  --font-size: 30px;
   --shadow-primary-hue: 180;
   --shadow-secondary-hue: 60;
   --shadow-secondary: hsl(var(--shadow-secondary-hue), 90%, 60%);
@@ -132,8 +137,8 @@
   letter-spacing: 3px;
   position: relative;
   font-weight: 900;
-  width: 100%;
-  height: 100%;
+  width: 120%;
+  height: 120%;
   line-height: 47px;
   text-align: center;
   transition: background 0.2s, 0.3s;

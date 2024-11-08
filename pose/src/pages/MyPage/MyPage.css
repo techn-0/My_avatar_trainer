@@ -1,291 +1,254 @@
-/* MyPage.css */
 
-/* 기존 스타일 유지 */
-@font-face {
-  font-family: "GangwonEduPowerExtraBoldA";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
-    format("woff");
-  font-weight: normal;
-  font-style: normal;
-}
-
-.font {
-  font-family: "GangwonEduPowerExtraBoldA";
-}
-
-.div1 {
-  border: 2px, black, solid;
-  border-radius: 30px;
-  align-content: center;
-  padding: 20px;
-}
-.div2 {
-  border: 2px, black, solid;
-  border-radius: 30px;
-  align-content: center;
-  padding: 20px;
-}
-.div3 {
-  border: 2px, black, solid;
-  border-radius: 30px;
-  align-content: center;
-  padding: 20px;
-}
-
-.button-64 {
-  align-items: center;
-  background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
-  border: 0;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: #ffffff;
+/* 전체 컨테이너 */
+.myPage-container {
+  height: 100vh;
+  overflow-x: auto;
   display: flex;
-  font-family: Phantomsans, sans-serif;
+  flex-direction: column;
+  background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
+  color: rgb(0, 0, 0);
+  font-family: "GangwonEduPowerExtraBoldA";
+}
+
+/* 헤더 */
+.myPage-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(111, 149, 162, 0.5);
+  color: rgb(78, 255, 29);
+  z-index: 1;
+  margin: 10px;
+
+  /* 애니메이션 테두리 추가 */
+  border: 3px solid; /* 테두리 두께 설정 */
+  animation: borderGlow 5s infinite linear; /* 애니메이션 적용 */
+
+  clip-path: polygon(
+    60px 0%,
+    100% 0%,
+    100% calc(100% - 60px),
+    calc(100% - 60px) 100%,
+    0% 100%,
+    0% 60px
+  );
+}
+
+.cyberpunk-btn {
   font-size: 20px;
-  justify-content: center;
-  line-height: 1em;
-  max-width: 100%;
-  min-width: 140px;
-  padding: 3px;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  white-space: nowrap;
+  font-family: inherit;
   cursor: pointer;
+  transition: 0.3s;
+  margin-top: 8px;
 }
 
-.button-64:active,
-.button-64:hover {
-  outline: 0;
+.cyberpunk-btn:hover {
+  background: #00ff9f;
+  color: rgb(0, 0, 0);
+  box-shadow: 0px 0px 10px #00ff9f, 0px 0px 20px #00ff9f;
 }
 
-.button-64 span {
-  background-color: rgb(5, 6, 45);
-  padding: 16px 24px;
-  border-radius: 6px;
-  width: 100%;
-  height: 100%;
-  transition: 300ms;
-}
+/* 가로 스크롤 */
+.myPage-horizontalScroll {
+  justify-content: center; /* 콘텐츠를 수평 중앙 정렬 */
 
-.button-64:hover span {
-  background: none;
-}
-
-.Btn {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 40px;
-  height: 40px;
+  gap: 30px;
+
+  padding: 20px;
+  height: 75%;
+
+  /* 스크롤바 숨기기 */
+  -ms-overflow-style: none; /* IE 및 Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.myPage-horizontalScroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* 공통 스타일 */
+.glow-container {
+  padding: 20px;
+  min-width: 300px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 0px 10px #00ff9f, 0px 0px 20px #00ff9f;
+}
+
+
+.chart-container {
+  box-shadow: 5px 5px 10px #afafaf, 5px 5px 10px #afafaf, 5px 5px 10px #afafaf;
+  margin-top: 80px;
+  min-height: 350px;
+}
+
+/* 차트 */
+.line-chart,
+.radar-chart {
+  width: 500px;
+}
+.comment_box{
+  width: 500px;
+}
+
+.line-chart canvas {
+  width: 100% !important; /* 컨테이너의 100% 너비로 설정 */
+  height: 100% !important; /* 컨테이너의 높이에 맞게 설정 */
+}
+
+.comment-input input {
+  width: 80%;
+  padding: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.comment-input button {
+  padding: 10px 20px;
+  background: #00ff9f;
   border: none;
-  border-radius: 50%;
+  color: black;
+  font-weight: bold;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition-duration: 0.3s;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
-  background-color: rgb(255, 65, 65);
 }
 
-/* plus sign */
-.sign {
-  width: 100%;
-  transition-duration: 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.comment-input button:hover {
+  background: #00e6e6;
 }
 
-.sign svg {
-  width: 17px;
+/* 친구 카드 */
+.friend-card {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  margin: 10px 0;
+  box-shadow: 5px 5px 10px #afafaf;
+  color: rgb(0, 0, 0);
+  margin: 5px;
+  height: 60px;
+
+  display: flex; /* 플렉스박스 활성화 */
+  flex-direction: row; /* 가로 방향 배치 */
+  justify-content: space-between; /* 요소 간 최대 간격 배치 */
+  align-items: center; /* 수직 정렬 */
 }
 
-.sign svg path {
-  fill: white;
-}
-
-/* text */
-.text {
-  position: absolute;
-  right: 0%;
-  width: 0%;
-  opacity: 0;
-  color: white;
-  font-size: 1em;
-  font-weight: 500;
-  transition-duration: 0.3s;
-}
-
-/* hover effect on button width */
-.Btn:hover {
-  width: 125px;
-  border-radius: 40px;
-  transition-duration: 0.3s;
-}
-
-.Btn:hover .sign {
-  width: 30%;
-  transition-duration: 0.3s;
-  padding-left: 20px;
-}
-
-/* hover effect button's text */
-.Btn:hover .text {
-  opacity: 1;
-  width: 70%;
-  transition-duration: 0.3s;
-  padding-right: 10px;
-}
-
-/* button click effect */
-.Btn:active {
-  transform: translate(2px, 2px);
-}
-
-.container {
-  width: 100vw; /* 화면 전체 너비 */
-  height: 100vh; /* 화면 전체 높이 */
-  display: flex; /* 컨텐츠를 중앙으로 맞추기 위한 플렉스박스 */
-
-  --s: 194px; /* control the size */
-  --c1: #ffef84;
-  --c2: #71d9ff;
-
-  --_l: #0000 calc(25% / 3), var(--c1) 0 25%, #0000 0;
-  --_g: conic-gradient(from 120deg at 50% 87.5%, var(--c1) 120deg, #0000 0);
-
-  background: var(--_g), var(--_g) 0 calc(var(--s) / 2),
-    conic-gradient(from 180deg at 75%, var(--c2) 60deg, #0000 0),
-    conic-gradient(from 60deg at 75% 75%, var(--c1) 0 60deg, #0000 0),
-    linear-gradient(150deg, var(--_l)) 0 calc(var(--s) / 2),
-    conic-gradient(
-      at 25% 25%,
-      #0000 50%,
-      var(--c2) 0 240deg,
-      var(--c1) 0 300deg,
-      var(--c2) 0
-    ),
-    linear-gradient(-150deg, var(--_l)) #e0fff7 /* third color here */;
-  background-size: calc(0.866 * var(--s)) var(--s);
-  font-family: "GangwonEduPowerExtraBoldA";
-}
-
-.cta {
-  position: relative;
-  margin: auto;
-  padding: 12px 18px;
-  transition: all 0.2s ease;
-  border: none;
-  background: none;
-  cursor: pointer;
-  display: inline-block; /* 라벨을 가로로 배치하기 위해 추가 */
-}
-
-.cta:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  border-radius: 50px;
-  background: #b1dae7;
-  width: 45px;
-  height: 45px;
-  transition: all 0.3s ease;
-}
-
-.cta span {
-  position: relative;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: #234567;
-  margin-left: -7px;
-}
-
-.cta svg {
-  position: relative;
-  top: -5px;
-  margin-left: 15px;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke: #234567;
-  stroke-width: 2;
-  transform: translateX(-5px);
-  transition: all 0.3s ease;
-}
-
-.cta:hover:before {
-  width: 200%;
-  background: #b1dae7;
-}
-
-.cta:hover svg {
-  transform: translateX(0);
-}
-
-.cta:active {
-  transform: scale(0.95);
-}
-
-.cta select {
-  display: none;
+.comment-card{
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  margin: 10px 0;
+  box-shadow: 5px 5px 10px #afafaf;
+  color: rgb(0, 0, 0);
   margin: 5px;
 }
-/* 라벨에 마우스 호버 시 select 표시 */
-.cta:hover select {
-  display: inline-block;
-  margin-right: 10px; /* 시간 선택 셀렉트 사이 간격 추가 */
+
+.comment-card button{
+  padding: 5px 10px;
+  background: #00ff9f;
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
 }
 
-.time-selection {
-  display: flex; /* 시간 선택 셀렉트 요소를 가로로 배치하기 위해 flex 사용 */
-  gap: 10px; /* 시간 선택 셀렉트 사이의 간격 */
+.comment-card button:hover {
+  background: #00e6e6;
 }
 
-/* container와 main div 스타일 */
-.container {
-  width: 100vw;
-  height: 100%;
+.friend-card button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background: #00ff9f;
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
+}
+
+.friend-card button:hover {
+  background: #00e6e6;
+}
+
+.pagination button{
+  margin-left: 10px;
+  padding: 5px 10px;
+  background: #00ff9f;
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
+}
+.pagination button:hover {
+  background: #00e6e6;
+}
+
+.myPage-tierImage {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-
-  /* 배경 스타일 */
-  --s: 194px;
-  --c1: #ffef84;
-  --c2: #71d9ff;
-
-  --_l: #0000 calc(25% / 3), var(--c1) 0 25%, #0000 0;
-  --_g: conic-gradient(from 120deg at 50% 87.5%, var(--c1) 120deg, #0000 0);
-
-  background: var(--_g), var(--_g) 0 calc(var(--s) / 2),
-    conic-gradient(from 180deg at 75%, var(--c2) 60deg, #0000 0),
-    conic-gradient(from 60deg at 75% 75%, var(--c1) 0 60deg, #0000 0),
-    linear-gradient(150deg, var(--_l)) 0 calc(var(--s) / 2),
-    conic-gradient(
-      at 25% 25%,
-      #0000 50%,
-      var(--c2) 0 240deg,
-      var(--c1) 0 300deg,
-      var(--c2) 0
-    ),
-    linear-gradient(-150deg, var(--_l)) #e0fff7;
-  background-size: calc(0.866 * var(--s)) var(--s);
-  font-family: "GangwonEduPowerExtraBoldA";
+  gap: 10px;
+  margin-top: 90px;
 }
 
-.main {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-  background-color: White;
-  border-radius: 8px;
-  display: flex; /* 또는 display: grid; */
-  flex-direction: column; /* 필요에 따라 설정 */
-  gap: 10px;
+.myPage-tierImage img {
+  width: 150px; /* 원하는 이미지 크기 조정 */
+  height: auto; /* 비율 유지 */
+  object-fit: contain; /* 이미지 잘리지 않도록 설정 */
+  border-radius: 10px; /* 약간의 둥근 모서리 */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* 발광 효과 */
+}
+
+/* 스크롤 가능한 박스 */
+.scrollable-box {
+  max-height: 300px; /* 박스 높이 제한 */
+  overflow-y: auto; /* 세로 스크롤 활성화 */
+  padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
+}
+.comments-container
+{
+  max-height: 400px; /* 박스 높이 제한 */
+  overflow-y: auto; /* 세로 스크롤 활성화 */
+  padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
+}
+.scrollable-box2 {
+  max-height: 200px; /* 박스 높이 제한 */
+  overflow-y: auto; /* 세로 스크롤 활성화 */
+  padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
+  margin-top: 10px;
+}
+
+/* 페이지 전체 스크롤바 스타일 (크롬/엣지/사파리) */
+*::-webkit-scrollbar {
+  width: 8px; /* 스크롤바 너비 */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #00ff9f; /* 스크롤바 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #00e6e6; /* 호버 시 색상 */
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* 트랙 배경색 */
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: #4a21ff;
+  }
+  25% {
+    border-color: #ff21e1;
+  }
+  50% {
+    border-color: #21ffa3;
+  }
+  75% {
+    border-color: #ffdd21;
+  }
+  100% {
+    border-color: #4a21ff;
+  }
 }
