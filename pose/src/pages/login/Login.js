@@ -135,8 +135,8 @@ const LoginToggle = ({ onClose }) => {
                   <button className="flip-card__btn" type="submit">
                     로그인
                   </button>
-                  <div className="socialLoginMessage">
-                    <p>혹은 다음으로 로그인</p>
+                  <div>
+                    <p className="socialLoginMessage">혹은 다음으로 로그인</p>
                   </div>
                 </form>
                 <div className="social-login">

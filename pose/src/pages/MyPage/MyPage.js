@@ -667,7 +667,7 @@ const MyPage = () => {
           </div>
         </div>
 
-        <h1>{ownerId} 님의 마이페이지</h1>
+        <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
       </header>
 
       {/* 가로 스크롤 섹션 */}
@@ -675,9 +675,9 @@ const MyPage = () => {
         {/* 티어와 정보 섹션 */}
         <section className="myPage-tierSection glow-container">
           <div className="myPage-tierInfo">
-            <h2>가장 좋아하는 운동: {favoriteExercise()}</h2>
+            <h2>좋아하는 운동: {favoriteExercise()}</h2>
             {lastVisitDays === "오늘" ? (
-              <p>오늘도 운동을 하셨군요!</p>
+              <p>오늘도 꾸준히!</p>
             ) : consecutiveDays > 0 ? (
               <p>연속 접속일: {consecutiveDays}일</p>
             ) : (
@@ -701,7 +701,7 @@ const MyPage = () => {
           </div>
         </section>
 
-        <section className="myPage-bestRecordSection glow-container">
+        <section className="myPage-bestRecordSection glow-container radar-chart">
           <h2>최고 기록</h2>
           <div className="chart-container">
             <Radar data={radarData} options={radarOptions} />
@@ -714,14 +714,14 @@ const MyPage = () => {
           <div className="comments-container scrollable-box">
             {commentData.map((comment) => (
               <div key={comment._id} className="comment-card">
-                <p>
-                  <strong>작성자:</strong> {comment.userId}
+                <p className="font_small">
+                  <strong className="font_small">작성자:</strong> {comment.userId}
                 </p>
-                <p>
-                  <strong>작성일:</strong>{" "}
+                <p className="font_small">
+                  <strong className="font_small">작성일:</strong>{" "}
                   {new Date(comment.createdAt).toLocaleDateString()}
                 </p>
-                <p>{comment.comment}</p>
+                <p className="font_small">{comment.comment}</p>
                 {userId === comment.userId && (
                   <button
                     className="cyberpunk-btn"
@@ -736,7 +736,7 @@ const MyPage = () => {
           <div className="comment-input">
             <input
               type="text"
-              placeholder="내용을 입력하세요"
+              placeholder="내용 입력"
               value={comment}
               onChange={handleCommentChange}
             />
@@ -752,7 +752,7 @@ const MyPage = () => {
             <h2>친구 추가</h2>
             <input
               type="text"
-              placeholder="ID를 입력하세요"
+              placeholder="ID 입력"
               value={friendUserId}
               onChange={handleAddFriendChange}
               className="friend-input"
@@ -764,7 +764,7 @@ const MyPage = () => {
             <h2>유저 검색</h2>
             <input
               type="text"
-              placeholder="ID를 입력하세요"
+              placeholder="ID 입력"
               value={searchUserId}
               onChange={handleSearchUserChange}
               className="friend-input"
