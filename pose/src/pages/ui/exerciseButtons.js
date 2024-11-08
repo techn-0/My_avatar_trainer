@@ -56,9 +56,9 @@ function Buttons({
                 onClick={onResultClick}
               />
               <div className="btn">
-                마이 페이지
+                마이페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  마이_페이지
+                  마이페이지
                 </span>
               </div>
             </div>

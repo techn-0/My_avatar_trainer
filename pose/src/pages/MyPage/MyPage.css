@@ -1,4 +1,9 @@
-
+@font-face {
+  font-family: 'DungGeunMo';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 /* 전체 컨테이너 */
 .myPage-container {
   height: 100vh;
