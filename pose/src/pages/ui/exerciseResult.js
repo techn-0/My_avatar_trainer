@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "./exerciseResult.css";
 
+
 function ExerciseResultModal({ onClose, bestScore, userScore }) {
   // 비교 결과 메시지 생성
   let resultMessage;

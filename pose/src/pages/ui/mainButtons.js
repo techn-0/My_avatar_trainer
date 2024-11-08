@@ -129,7 +129,7 @@ function Buttons({
           onMouseEnter={handleMouseEnter}
         />
         <div className="btn" onClick={handleResultClick}>
-          마이 페이지
+          마이페이지
           <span className="btn__glitch" aria-hidden="true">
             마이페이지
           </span>
