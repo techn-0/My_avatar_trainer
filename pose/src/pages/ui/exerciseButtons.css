@@ -23,7 +23,8 @@
   border-color: #4a21ff; /* 초기 색상 */
   animation: borderGlow 5s infinite; /* 애니메이션 적용 */
   width: 350px;
-  padding-left: 50px;
+  height: 870px;
+  padding-left: 35px;
 }
 
 .r_card-container {
