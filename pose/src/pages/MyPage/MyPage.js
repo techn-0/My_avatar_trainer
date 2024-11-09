@@ -359,6 +359,7 @@ const MyPage = () => {
         fill: true,
         tension: 0.4,
       },
+      
     ],
   };
 
