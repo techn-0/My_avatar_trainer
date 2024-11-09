@@ -14,6 +14,9 @@ function Lobby() {
   const [newRoomTitle, setNewRoomTitle] = useState("");
   const [duration, setDuration] = useState("60초");
   const [exercise, setExercise] = useState("플랭크");
+  const token = getToken();
+  const decodedToken = jwtDecode(token);
+  const username = decodedToken.id;
 
   const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
 
@@ -56,9 +59,6 @@ function Lobby() {
   };
 
   const handleJoinRoom = (roomName) => {
-    const token = getToken();
-    const decodedToken = jwtDecode(token);
-    const username = decodedToken.id;
     socket.emit("joinRoom", { roomName, username });
     navigate(`/room/${roomName}`);
   };
@@ -77,32 +77,15 @@ function Lobby() {
   const handleMainClick = () => {
     navigate("/"); // 메인 페이지로 이동
   };
+  const handleMypageClick = () => {
+    navigate(`/user/${username}`); // 메인 페이지로 이동
+  };
+  const handleRankingClick = () => {
+    navigate("/ranking"); // 메인 페이지로 이동
+  };
 
   return (
     <div className="multi-container">
-      <div className="lobby">
-        {/* 상단 헤더 */}
-        <header className="myPage-header">
-          <div className="radio-wrapper cyberpunk">
-            <input
-              className="input"
-              type="radio"
-              name="btn"
-              id="mainPage"
-              onClick={handleMainClick}
-              onMouseEnter={handleMouseEnter}
-            />
-            <div className="btn" onClick={handleMainClick}>
-              <span aria-hidden="true"></span>메인페이지
-              <span className="btn__glitch" aria-hidden="true">
-                메인페이지
-              </span>
-            </div>
-          </div>
-
-          <h1 className="my_User_name">로비</h1>
-        </header>
-      </div>
       <div className="lobby-body">
         <section className="create-room glow-container">
           <div className="create-room-content">
@@ -119,6 +102,56 @@ function Lobby() {
                 생성하기
               </button>
             </form>
+            <div className="multiBtn">
+              <div className="mainP radio-wrapper cyberpunk">
+                <input
+                  className="input"
+                  type="radio"
+                  name="btn"
+                  id="mainPage"
+                  onClick={handleMainClick}
+                  onMouseEnter={handleMouseEnter}
+                />
+                <div className="btn" onClick={handleMainClick}>
+                  <span aria-hidden="true"></span>메인페이지
+                  <span className="btn__glitch" aria-hidden="true">
+                    메인페이지
+                  </span>
+                </div>
+              </div>
+              <div className="mypageP radio-wrapper cyberpunk">
+                <input
+                  className="input"
+                  type="radio"
+                  name="btn"
+                  id="myPage"
+                  onClick={handleMypageClick}
+                  onMouseEnter={handleMouseEnter}
+                />
+                <div className="btn" onClick={handleMypageClick}>
+                  <span aria-hidden="true"></span>마이페이지
+                  <span className="btn__glitch" aria-hidden="true">
+                    마이페이지
+                  </span>
+                </div>
+              </div>
+              <div className="rankP radio-wrapper cyberpunk">
+                <input
+                  className="input"
+                  type="radio"
+                  name="btn"
+                  id="rankingPage"
+                  onClick={handleRankingClick}
+                  onMouseEnter={handleMouseEnter}
+                />
+                <div className="btn" onClick={handleRankingClick}>
+                  <span aria-hidden="true"></span>랭킹
+                  <span className="btn__glitch" aria-hidden="true">
+                    랭킹
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
         <section className="rooms glow-container">

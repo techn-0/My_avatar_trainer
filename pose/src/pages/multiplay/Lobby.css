@@ -32,11 +32,18 @@
   box-shadow: 0px 0px 10px #00ff9f, 0px 0px 20px #00ff9f;
 }
 
+.lobby {
+  height: 60px;
+  margin: 20px auto;
+  justify-content: center;
+  align-items: center;
+}
+
 /* 로비 바디 스타일 */
 .lobby-body {
   display: flex;
   gap: 20px;
-  padding: 20px;
+  /* padding: 20px; */
   max-width: 3000px;
   margin: auto;
   box-sizing: border-box;
@@ -46,7 +53,7 @@
 /* 방 만들기 섹션 */
 .create-room {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center;
   padding: 40px 20px;
   max-width: 600px;
@@ -184,6 +191,22 @@
 .rooms button:hover {
   background-color: #3ba9e4;
   box-shadow: 0px 4px 10px rgba(56, 193, 255, 0.3);
+}
+
+.mainP {
+  top: 60px;
+}
+
+.mypageP {
+  top: 100px;
+}
+
+.rankP {
+  top: 140px;
+}
+
+.multiBtn {
+  gap: 20px;
 }
 
 /* 반응형 조정 */
