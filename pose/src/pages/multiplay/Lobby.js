@@ -172,6 +172,7 @@ function Lobby() {
           )}
         </section>
       </div>
+      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );
 }
