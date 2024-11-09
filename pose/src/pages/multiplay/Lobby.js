@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import { getToken } from "../login/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import "./Lobby.css";
+import NoRoom from "./components/ui/noRoom";
 const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
 
 const socket = io(`http://localhost:3002`); // 서버 URL
@@ -121,17 +122,21 @@ function Lobby() {
           </div>
         </section>
         <section className="rooms glow-container">
-          <ul>
-            {rooms.map((room, index) => (
-              <li key={index}>
-                {room.roomName || "방 이름 없음"}
-                {room.options?.exercise}
-                <button onClick={() => handleJoinRoom(room.roomName)}>
-                  참여하기
-                </button>
-              </li>
-            ))}
-          </ul>
+          {rooms.length === 0 ? (
+            <NoRoom />
+          ) : (
+            <ul>
+              {rooms.map((room, index) => (
+                <li key={index}>
+                  {room.roomName || "방 이름 없음"}
+                  {room.options?.exercise}
+                  <button onClick={() => handleJoinRoom(room.roomName)}>
+                    참여하기
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </div>
