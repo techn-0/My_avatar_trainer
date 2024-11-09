@@ -437,16 +437,16 @@ const MyPage = () => {
       },
     },
     scales: {
-      r: { // 레이더 차트의 축 설정
+      r: {
+        // 레이더 차트의 축 설정
         ticks: {
           display: false, // 숫자 표시 제거
-          backdropColor: 'transparent', // 숫자 배경 투명화 (필요 시 추가)
+          backdropColor: "transparent", // 숫자 배경 투명화 (필요 시 추가)
         },
 
         pointLabels: {
           font: {
-
-            color: 'white', // 텍스트 색상
+            color: "white", // 텍스트 색상
           },
         },
       },
@@ -666,13 +666,11 @@ const MyPage = () => {
             </span>
           </div>
         </div>
-
         <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
       </header>
 
-      {/* 가로 스크롤 섹션 */}
-      <div className="myPage-horizontalScroll">
-        {/* 티어와 정보 섹션 */}
+      {/* 1층: 상단 블록 (좋아하는 운동, 최근 운동 기록, 최고 기록) */}
+      <div className="myPage-top">
         <section className="myPage-tierSection glow-container">
           <div className="myPage-tierInfo">
             <h2>좋아하는 운동: {favoriteExercise()}</h2>
@@ -693,7 +691,6 @@ const MyPage = () => {
           </div>
         </section>
 
-        {/* 운동 기록 섹션 */}
         <section className="myPage-recentRecordSection glow-container line-chart">
           <h2>최근 운동 기록</h2>
           <div className="chart-container">
@@ -707,15 +704,18 @@ const MyPage = () => {
             <Radar data={radarData} options={radarOptions} />
           </div>
         </section>
+      </div>
 
-        {/* 방명록 섹션 */}
+      {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
+      <div className="myPage-bottom">
         <section className="glow-container comment_box">
           <h2>방명록</h2>
           <div className="comments-container scrollable-box">
             {commentData.map((comment) => (
               <div key={comment._id} className="comment-card">
                 <p className="font_small">
-                  <strong className="font_small">작성자:</strong> {comment.userId}
+                  <strong className="font_small">작성자:</strong>{" "}
+                  {comment.userId}
                 </p>
                 <p className="font_small">
                   <strong className="font_small">작성일:</strong>{" "}
@@ -746,45 +746,42 @@ const MyPage = () => {
           </div>
         </section>
 
-        {/* 친구 관리 섹션 */}
-        <section className="glow-container">
-          <div className="friend-management comment-input">
-            <h2>친구 추가</h2>
-            <input
-              type="text"
-              placeholder="ID 입력"
-              value={friendUserId}
-              onChange={handleAddFriendChange}
-              className="friend-input"
-            />
-            <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
-              추가
-            </button>
+        <section className="glow-container friend-management">
+          <h2>친구 추가</h2>
+          <input
+            type="text"
+            placeholder="ID 입력"
+            value={friendUserId}
+            onChange={handleAddFriendChange}
+            className="friend-input"
+          />
+          <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
+            추가
+          </button>
 
-            <h2>유저 검색</h2>
-            <input
-              type="text"
-              placeholder="ID 입력"
-              value={searchUserId}
-              onChange={handleSearchUserChange}
-              className="friend-input"
-            />
-            <button onClick={handleSearchUser} className="cyberpunk-btn">
-              검색
-            </button>
+          <h2>유저 검색</h2>
+          <input
+            type="text"
+            placeholder="ID 입력"
+            value={searchUserId}
+            onChange={handleSearchUserChange}
+            className="friend-input"
+          />
+          <button onClick={handleSearchUser} className="cyberpunk-btn">
+            검색
+          </button>
 
-            {searchResult && (
-              <div
-                className="search-result"
-                onClick={() => handleFriendClick(searchResult.user.username)}
-              >
-                <p>검색된 유저 ID: {searchResult.user.username}</p>
-              </div>
-            )}
-          </div>
+          {searchResult && (
+            <div
+              className="search-result"
+              onClick={() => handleFriendClick(searchResult.user.username)}
+            >
+              <p>검색된 유저 ID: {searchResult.user.username}</p>
+            </div>
+          )}
 
+          <h2>친구 목록</h2>
           <div className="friend-list scrollable-box2">
-            <h2>친구 목록</h2>
             {currentFriends.map((friend, index) => (
               <div key={index} className="friend-card">
                 <p>{friend}</p>
@@ -799,7 +796,6 @@ const MyPage = () => {
               </div>
             ))}
           </div>
-
           <div className="pagination">
             <button
               onClick={handlePreviousPage}
@@ -820,7 +816,6 @@ const MyPage = () => {
           </div>
         </section>
       </div>
-      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );
 };
