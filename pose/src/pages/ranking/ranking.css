@@ -9,8 +9,7 @@
 html,
 body {
   overflow-y: scroll; /* 세로 스크롤 가능 */
-  -ms-overflow-style: none; /* IE와 Edge */
-  scrollbar-width: none; /* Firefox */
+
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
 }
 
@@ -26,6 +25,10 @@ body {
   align-items: flex-end;
   gap: 20px;
   position: relative;
+  overflow: visible; /* 넘치는 부분 보이게 */
+  height: 500px; /* 고정 높이 */
+
+  margin-top: 200px;
 }
 
 /* 1등, 2등, 3등, 4등, 5등을 피라미드 형식으로 배치 */
@@ -48,7 +51,7 @@ body {
 /* 각 단상의 높이 차이를 구현 */
 .podium {
   width: 100%;
-  height: 10px;
+  height: 100px;
   background-color: #ccc;
   border-radius: 5px 5px 0 0;
 }
@@ -81,7 +84,6 @@ body {
   align-items: center;
 }
 .opt {
-  margin-bottom: 100px;
   text-align: center;
   font-family: "DungGeunMo";
   font-size: 20px;
@@ -112,6 +114,9 @@ body {
   gap: 20px; /* 라벨 사이 간격 */
 
   background-color: rgba(255, 255, 255, 0.396);
+
+  position: relative; /* 필요 시 absolute로 변경 */
+  top: -100px; /* 위로 이동 */
 }
 
 
@@ -121,8 +126,18 @@ body {
 
 .rankin_title h2{
   font-size: 50px;
+  position: relative; /* 필요 시 absolute로 변경 */
+  top: -100px; /* 위로 이동 */
 }
 
 .rankin_main_btn_cnt{
-  padding: 30px;
+  padding-top: 30px;
+}
+
+.rankin_header {
+  display: flex; /* 플렉스 레이아웃 활성화 */
+  justify-content: space-between; /* 좌우 공간 분배 */
+  align-items: center; /* 세로 중앙 정렬 */
+  padding: 20px; /* 적절한 여백 */
+  gap: 20px; /* 버튼과 타이틀 사이 간격 */
 }
