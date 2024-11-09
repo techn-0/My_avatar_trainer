@@ -65,7 +65,7 @@ const ExerciseTimer = React.memo(
 
     // 20초 이하일 때만 글리치 효과를 적용
     const glitchClass =
-      remainingTime <= 20 ? "glitch-container" : "normal-container";
+      remainingTime <= 30 ? "glitch-container" : "normal-container";
 
     return (
       <div
@@ -79,11 +79,9 @@ const ExerciseTimer = React.memo(
         {/* 10초 남았을 때 재생할 경고음 */}
         <audio ref={warningAudioRef} src="/sound/10secCount.mp3" />
 
-        {remainingTime <= 20 ? (
+        {remainingTime <= 30 ? (
           <div className={glitchClass} style={{ color: textColor }}>
             {remainingTime}
-            <span>{remainingTime}</span>
-            <span>{remainingTime}</span>
           </div>
         ) : (
           <div className={glitchClass} style={{ color: textColor }}>
