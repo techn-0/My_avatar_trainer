@@ -21,6 +21,7 @@
   width: 180px;
   margin: 10px;
   
+  z-index: 100; /* 높게 설정하여 다른 요소 위에 표시 */
 }
 
 .radio-wrapper .input {

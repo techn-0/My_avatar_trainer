@@ -50,6 +50,10 @@ function MediapipeSquatTracking({
     triggerGreenFlash();
     triggerGoodBox(); // Trigger the "Good!" box
     squatCountRef.current += 1;
+    // 효과음 재생
+    const audio = new Audio("/sound/good.wav"); // 효과음 파일 경로
+    audio.play();
+
     if (onCountUpdate) {
       onCountUpdate(squatCountRef.current);
     }
