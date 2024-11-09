@@ -817,7 +817,6 @@ const MyPage = () => {
           </div>
         </section>
       </div>
-      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );
 };

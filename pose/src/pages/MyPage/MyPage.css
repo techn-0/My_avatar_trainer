@@ -14,7 +14,7 @@
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
   color: rgb(0, 0, 0);
   font-family: "DungGeunMo";
-  padding: 50px 190px 50px 190px;
+  padding: 50px 250px 50px 250px;
 }
 
 /* 헤더 */
@@ -43,14 +43,9 @@
 }
 
 .cyberpunk-btn {
-  padding: 10px 20px;
-  background: #8c00ff;
-  border: none;
-  color: rgb(255, 255, 255);
-  font-weight: bold;
+  font-size: 18px;
   cursor: pointer;
-  margin-right: 10px;
-  margin-left: 20px;
+  transition: 0.3s;
 }
 
 .cyberpunk-btn:hover {
@@ -124,6 +119,8 @@
   margin-right: 10px;
   margin-top: 25px;
   margin-bottom: 30px;
+  margin-top: 25px;
+  margin-bottom: 30px;
 }
 .friend-management input {
   width: 80%;
@@ -162,8 +159,10 @@
 
 .comment-card {
   padding-left: 15px;
+  padding-left: 15px;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
+  box-shadow: 5px 5px 10px #afafaf;
   color: rgb(0, 0, 0);
 }
 
@@ -231,6 +230,7 @@
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
   border-radius: 20px;
+  border-radius: 20px;
 }
 .comments-container {
   max-height: 400px; /* 박스 높이 제한 */
@@ -243,7 +243,6 @@
   padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
   margin-top: 10px;
   border-radius: 20px;
-  width: 450px;
 }
 
 /* 페이지 전체 스크롤바 스타일 (크롬/엣지/사파리) */
@@ -287,78 +286,20 @@
 /* 블록 크기 커스텀 가능 */
 .myPage-tierSection {
   flex: 1; /* 비율 조정 가능 */
-  /* box-shadow: 0px 0px 10px #ff0000, 0px 0px 20px #ff0000; */
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
 }
 
 .myPage-recentRecordSection {
   flex: 2; /* 비율 조정 가능 */
-  /* box-shadow: 0px 0px 10px #d400ff, 0px 0px 20px #ff00d4; */
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    60px 100%,
-    0% calc(100% - 60px)
-  );
 }
 
 .myPage-bestRecordSection {
-  flex: 0.7; /* 비율 조정 가능 */
-  /* box-shadow: 0px 0px 10px #00ff2f, 0px 0px 20px #40ff00; */
-  clip-path: polygon(
-    0% 0%,
-    calc(100% - 60px) 0%,
-    100% 60px,
-    100% 100%,
-    60px 100%,
-    0% calc(100% - 60px)
-  );
+  flex: 2; /* 비율 조정 가능 */
 }
 
 .comment_box {
   flex: 0.7; /* 비율 조정 가능 */
-  /* box-shadow: 0px 0px 10px #00f2ff, 0px 0px 20px #02ffff; */
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
 }
 
 .friend-management {
   flex: 0.5; /* 비율 조정 가능 */
-  /* box-shadow: 0px 0px 10px #1100ff, 0px 0px 20px #0015ff; */
-  clip-path: polygon(
-    0% 0%,
-    calc(100% - 60px) 0%,
-    100% 60px,
-    100% 100%,
-    60px 100%,
-    0% calc(100% - 60px)
-  );
-  padding-left: 100px;
-}
-
-.friend-input {
-  width: 300px !important;
-}
-
-.chart-container canvas {
-  background-color: #ffffff; /* 캔버스 배경 흰색 */
-}
-
-.myPage-tierInfo p{
-  margin-left: 15%;
 }
