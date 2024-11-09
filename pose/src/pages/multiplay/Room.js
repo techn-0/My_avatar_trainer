@@ -6,7 +6,7 @@ import socket from "./services/Socket";
 import Chat from "./components/Chat";
 import VideoStream from "./components/VideoStream";
 import { getToken } from "../login/AuthContext";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import RoomButtons from "./components/roomButton";
 import MultiSquatCam from "./components/multiCam/multiSquatCam"; // 컴포넌트 임포트
 
@@ -111,7 +111,7 @@ function Room() {
 
   return (
     <div
-      className="rooms"
+      className="roomss"
       style={{ height: "100vh", display: "flex", flexDirection: "column" }}
     >
       <h1 style={{ textAlign: "center" }}>Welcome to Room: {roomName}</h1>
