@@ -8,7 +8,6 @@
 
 html,
 body {
-  overflow-y: scroll; /* 세로 스크롤 가능 */
 
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
 }
