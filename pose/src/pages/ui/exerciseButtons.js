@@ -24,8 +24,6 @@ function Buttons({
 
   if (isComplete) return null; // 선택 완료 시 전체 컨테이너 숨김
 
-  
-
   const handleMouseEnter = () => {
     if (glitchSoundRef.current) {
       glitchSoundRef.current.currentTime = 0;
@@ -120,7 +118,6 @@ function Buttons({
 
             {/* 선택 완료 버튼 */}
             <div className="radio-wrapper" onMouseEnter={handleMouseEnter}>
-              
               <input
                 className="input"
                 type="radio"
