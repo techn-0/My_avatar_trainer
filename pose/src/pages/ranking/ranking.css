@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'DungGeunMo';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+  font-family: "DungGeunMo";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -10,16 +11,13 @@ body {
   overflow-y: scroll; /* 세로 스크롤 가능 */
   -ms-overflow-style: none; /* IE와 Edge */
   scrollbar-width: none; /* Firefox */
+  background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
 }
 
-.background {
-  background-color: beige;
-  min-height: 100vh; /* 화면 전체 높이 설정 */
-}
 .ranking-page {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; */
 }
 
 .pyramid-container {
@@ -87,4 +85,44 @@ body {
   text-align: center;
   font-family: "DungGeunMo";
   font-size: 20px;
+  display: flex;
+  justify-content: center; /* 가로 중앙 정렬 */
+  color: #00ff00;
+
+}
+
+.ranking_subtitle {
+  border: 4px solid; /* 테두리 두께와 스타일 설정 */
+  border-color: #4a21ff; /* 초기 색상 */
+  animation: borderGlow 5s infinite; /* 애니메이션 적용 */
+
+  clip-path: polygon(
+    60px 0%,
+    100% 0%,
+    100% calc(100% - 60px),
+    calc(100% - 60px) 100%,
+    0% 100%,
+    0% 60px
+  );
+  padding: 20px;
+  width: 800px;
+  height: auto; /* 높이 자동 조정 */
+  display: flex;
+  flex-direction: column; /* 위아래 정렬 */
+  gap: 20px; /* 라벨 사이 간격 */
+
+  background-color: rgba(255, 255, 255, 0.396);
+}
+
+
+.ranking_subtitle label{
+  font-size: 40px;
+}
+
+.rankin_title h2{
+  font-size: 50px;
+}
+
+.rankin_main_btn_cnt{
+  padding: 30px;
 }

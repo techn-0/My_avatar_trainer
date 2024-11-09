@@ -54,6 +54,10 @@ function MediapipeSquatTracking({
     setSquatCount((prevCount) => {
       const newCount = prevCount + 1;
 
+      // 효과음 재생
+      const audio = new Audio("/sound/good.wav"); // 효과음 파일 경로
+      audio.play();
+
       // 서버에 스쿼트 횟수 업데이트 전송
       socket.emit("squatCountUpdate", {
         roomName,
