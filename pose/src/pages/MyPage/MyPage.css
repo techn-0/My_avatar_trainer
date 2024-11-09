@@ -273,6 +273,7 @@
   padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
   margin-top: 10px;
   border-radius: 20px;
+  width: 450px;
 }
 
 /* 페이지 전체 스크롤바 스타일 (크롬/엣지/사파리) */
@@ -378,6 +379,7 @@
     60px 100%,
     0% calc(100% - 60px)
   );
+  padding-left: 100px;
 }
 
 .friend-input {
