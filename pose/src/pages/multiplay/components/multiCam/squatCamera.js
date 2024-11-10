@@ -8,6 +8,7 @@ import { angleCalc } from "../../../../app/workoutCam/angleCalc";
 import { useGreenFlashEffect } from "../../../../app/workoutCam/greenFlashEffect";
 import "../../../../app/workoutCam/exBL.css";
 import socket from "../../services/Socket";
+import ExerciseTimer from "../../../../app/exerciseTimer";
 
 let poseSingleton = null;
 
@@ -33,6 +34,7 @@ function MediapipeSquatTracking({
   active,
   onCountUpdate,
   roomName,
+  duration,
 }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -40,6 +42,16 @@ function MediapipeSquatTracking({
   const [squatCount, setSquatCount] = useState(0);
   const [remoteSquatCount, setRemoteSquatCount] = useState(0);
   const squatStateRef = useRef("up");
+  
+  const [showTimer, setShowTimer] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(null); // 남은 시간 관리
+  const timerStartTimeRef = useRef(null);
+
+  const countdownMusicRef = useRef(null);
+  const [currentCountdownIndex, setCurrentCountdownIndex] = useState(0);
+  const countdownImages = ["count3.png", "count2.png", "count1.png", "countStart.png"];
+  
+  
 
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
     useGreenFlashEffect();
@@ -237,6 +249,46 @@ function MediapipeSquatTracking({
     };
   }, [active, roomName]);
 
+
+  const startExerciseTimer = (initialTime) => {
+    setShowTimer(true);
+    timerStartTimeRef.current = Date.now();
+    setRemainingTime(Math.floor(initialTime));
+  };
+
+  const endExercise = () => {
+    setShowTimer(false);
+    console.log("운동 종료");
+    // 운동 종료 시 추가 로직 (ex: 서버에 종료 알림)
+  };
+
+  // 타이머 시작 신호 수신 및 타이머 시작 로직
+  useEffect(() => {
+
+    socket.emit("startExerciseTimer", {
+      roomName,
+      duration: 60, // 예를 들어 5분(300초) 동안 운동 타이머
+    });
+
+    socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
+      const elapsedTime = (Date.now() - startTime) / 1000;
+      const initialRemainingTime = duration - elapsedTime;
+
+      if (initialRemainingTime > 0) {
+        startExerciseTimer(Math.floor(initialRemainingTime));
+      } else {
+        setRemainingTime(0); // 이미 종료된 경우
+      }
+    });
+
+    return () => {
+      socket.off("exerciseTimerStarted");
+    };
+  }, [roomName]);
+
+
+  
+  
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <video
@@ -267,6 +319,14 @@ function MediapipeSquatTracking({
           <h1>{remoteSquatCount}</h1>
         </div>
       </div>
+      {/* 운동 타이머 */}
+      {showTimer && remainingTime !== null && (
+        <ExerciseTimer
+          durationInSeconds={remainingTime}
+          onTimerEnd={endExercise}
+          startTimeRef={timerStartTimeRef}
+        />
+      )}
     </div>
   );
 }

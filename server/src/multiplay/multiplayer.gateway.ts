@@ -251,4 +251,12 @@ export class MultiplayerGateway
     // 같은 방의 다른 사용자들에게 스쿼트 횟수 업데이트 브로드캐스트
     client.to(roomName).emit('remoteSquatCountUpdate', { username, count });
   }
+
+  @SubscribeMessage('startExerciseTimer')
+  handleStartExerciseTimer(client: Socket, payload: { roomName: string, duration: number}) {
+    const { roomName, duration } = payload;
+    const startTime = Date.now();
+
+    this.server.to(roomName).emit('exerciseTimerStarted', {startTime, duration});
+  }
 }
