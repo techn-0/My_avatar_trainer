@@ -12,8 +12,6 @@ const socket = io(`http://localhost:3002`); // 서버 URL
 function Lobby() {
   const [rooms, setRooms] = useState([]);
   const [newRoomTitle, setNewRoomTitle] = useState("");
-  const [duration, setDuration] = useState("60초");
-  const [exercise, setExercise] = useState("플랭크");
   const token = getToken();
   const decodedToken = jwtDecode(token);
   const username = decodedToken.id;
