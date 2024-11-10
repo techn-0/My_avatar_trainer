@@ -1,7 +1,8 @@
 /* src/components/Chat.css */
 
 .ch_card {
-  width: 260px;
+  margin-right: 250px;
+  width: 460px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;

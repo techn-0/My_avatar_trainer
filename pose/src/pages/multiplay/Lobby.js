@@ -133,22 +133,6 @@ function Lobby() {
                   </span>
                 </div>
               </div>
-              <div className="rankP radio-wrapper cyberpunk">
-                <input
-                  className="input"
-                  type="radio"
-                  name="btn"
-                  id="rankingPage"
-                  onClick={handleRankingClick}
-                  onMouseEnter={handleMouseEnter}
-                />
-                <div className="btn" onClick={handleRankingClick}>
-                  <span aria-hidden="true"></span>랭킹
-                  <span className="btn__glitch" aria-hidden="true">
-                    랭킹
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </section>
