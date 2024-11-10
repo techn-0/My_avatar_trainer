@@ -13,11 +13,25 @@ function ChatRoom() {
   const [newMessage, setNewMessage] = useState("");
   
   const [message, setMessage] = useState('');
-  const token = getToken();
-  const decodedToken = jwtDecode(token);
-  const username = decodedToken.id;
+  const [username, setUserName] = useState('');
 
   useEffect(() => {
+    const token = getToken();
+    if(!token|| token.trim()===""){
+      alert('User not logged in');
+      navigate('/');
+      return;
+    }
+    try{
+      const decodedToken = jwtDecode(token);
+      setUserName(decodedToken.id);
+    }catch(error){
+      alert('Invalid token');
+      navigate('/');
+      return;
+    }
+    
+
     console.log(`Joining room: ${roomName} as user: ${username}`);
     
     // Frontend의 코드가 Backend와 연결 돼 있는지 확인하는 코드이다.
