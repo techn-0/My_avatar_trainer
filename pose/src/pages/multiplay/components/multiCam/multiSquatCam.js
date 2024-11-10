@@ -6,6 +6,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import VideoStream from "../VideoStream";
 import MediapipeSquatTracking from "./squatCamera";
 import socket from "../../services/Socket";
+import "./multiSquatCam.css"
 
 const MultiSquatCam = ({ roomName }) => {
   const [localReady, setLocalReady] = useState(false);
@@ -156,16 +157,16 @@ const MultiSquatCam = ({ roomName }) => {
         </>
       ) : (
         // OK 포즈 감지 화면
-        <div>
-          <p>OK 포즈를 취해주세요...</p>
+        <div className="multi_start_cam">
+          <p className="color_white">OK 포즈를 취해주세요...</p>
           <video
             ref={videoRef}
             width="800"
             height="640"
             style={{
               display: "block",
-              width: "50%",
-              height: "50%",
+              width: "40%",
+              height: "40%",
               objectFit: "cover",
             }}
           ></video>

@@ -24,7 +24,7 @@
   justify-content: space-between;
   align-items: center;
   background: rgba(111, 149, 162, 0.5);
-  color: rgb(78, 255, 29);
+  color: #00ff00;
   z-index: 1;
   margin-bottom: 80px;
 
@@ -141,7 +141,8 @@
 }
 
 .comment-input button:hover {
-  background: #00ff1e;
+  background: #00ff00;
+  
 }
 
 /* 친구 카드 */
@@ -180,7 +181,7 @@
 }
 
 .comment-card button:hover {
-  background: #00ff1e;
+  background: #00ff00;
 }
 
 .friend-card button {
@@ -193,7 +194,7 @@
 }
 
 .friend-card button:hover {
-  background: #00ff1e;
+  background: #00ff00;
 }
 
 .pagination button {
@@ -207,7 +208,7 @@
 }
 
 .pagination button:hover {
-  background: #00ff1e;
+  background: #00ff00;
 }
 
 .myPage-tierImage {
@@ -252,7 +253,7 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #00ff37; /* 스크롤바 색상 */
+  background: #00ff00; /* 스크롤바 색상 */
   border-radius: 4px; /* 둥근 모서리 */
 }
 

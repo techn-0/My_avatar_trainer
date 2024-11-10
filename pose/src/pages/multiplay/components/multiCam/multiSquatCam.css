@@ -1,0 +1,10 @@
+.multi_start_cam {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.color_white{
+    color: white;
+}
