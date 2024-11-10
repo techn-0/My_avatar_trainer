@@ -21,6 +21,7 @@ import { jwtDecode } from "jwt-decode";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
 import ExerciseGuide from "../ui/selectExerciseGuide";
+import OkGuide from "../ui/okCamGuide";
 import QuestionMark from "../ui/questionMark";
 
 // 주소전환
@@ -66,7 +67,7 @@ function ExerciseScene() {
   const [userId, setUserId] = useState(null); // userId
   const [showOkCam, setShowOkCam] = useState(false); // OkCam 활성화 상태
   const [showGuide, setShowGuide] = useState(true);
-
+  const [showOkGuide, setShowOkGuide] = useState(false);
   // 운동 종목 및 시간 선택 상태
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
@@ -372,6 +373,7 @@ function ExerciseScene() {
 
           // ExerciseGuide 비활성화
           setShowGuide(false);
+          setShowOkGuide(true);
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
@@ -396,6 +398,7 @@ function ExerciseScene() {
       playAnimation(7, THREE.LoopOnce);
     }
     startCountdown(); // 카운트다운 시작
+    setShowOkGuide(false);
   };
 
   // 카운트다운 시작 함수
@@ -653,6 +656,12 @@ function ExerciseScene() {
         style={{ position: "absolute", top: "15%", left: "60%" }}
       >
         {showGuide && <ExerciseGuide />}
+      </div>
+      <div
+        className="OkguideBoXx"
+        style={{ position: "absolute", top: "12%", right: "55%" }}
+      >
+        {showOkGuide && <OkGuide />}
       </div>
 
       {/* Three.js 씬이 마운트되는 부분 */}
