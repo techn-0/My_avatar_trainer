@@ -17,9 +17,12 @@ import LoginModal from "../login/LoginModal";
 import { setSkyboxBackground } from "../../shared/background";
 import ExerciseTimer from "../../app/exerciseTimer"; // ExerciseTimer 컴포넌트 임포트
 import { getToken } from "../../pages/login/AuthContext";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import ExerciseResultModal from "../ui/exerciseResult"; // 결과 모달 임포트
 import "./ExerciseScene.css";
+import ExerciseGuide from "../ui/selectExerciseGuide";
+import OkGuide from "../ui/okCamGuide";
+import QuestionMark from "../ui/questionMark";
 
 // 주소전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
@@ -63,13 +66,14 @@ function ExerciseScene() {
   const [userScore, SetUserScore] = useState(0);
   const [userId, setUserId] = useState(null); // userId
   const [showOkCam, setShowOkCam] = useState(false); // OkCam 활성화 상태
-
+  const [showGuide, setShowGuide] = useState(true);
+  const [showOkGuide, setShowOkGuide] = useState(false);
   // 운동 종목 및 시간 선택 상태
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
 
   // 운동 종목 리스트
-  const exercises = ["squat", "pushup", "plank", "situp", "burpee"];
+  const exercises = ["squat", "pushup", "plank", "burpee"];
 
   // 운동 시간 리스트
   const durations = [1, 2, 0.1, "챌린지 모드"]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
@@ -366,6 +370,10 @@ function ExerciseScene() {
 
           // OkCam 활성화
           setShowOkCam(true);
+
+          // ExerciseGuide 비활성화
+          setShowGuide(false);
+          setShowOkGuide(true);
         })
         .catch((error) => {
           console.error("Error sending exercise data to server:", error);
@@ -385,14 +393,12 @@ function ExerciseScene() {
     } else if (selectedExercise === "plank") {
       // 플랭크: 애니메이션 번호 16번을 한 번 재생하고 대기
       playAnimation(16, THREE.LoopOnce);
-    } else if (selectedExercise === "situp") {
-      // 윗몸: 애니메이션 번호 17번을 한 번 재생하고 대기
-      playAnimation(17, THREE.LoopOnce);
     } else {
       // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
       playAnimation(7, THREE.LoopOnce);
     }
     startCountdown(); // 카운트다운 시작
+    setShowOkGuide(false);
   };
 
   // 카운트다운 시작 함수
@@ -438,9 +444,6 @@ function ExerciseScene() {
       } else if (selectedExercise === "plank") {
         timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 플랭크 속도 조절 -> 얜 사실 노상관
         animationIndex = 11; // 플랭크 애니메이션 번호
-      } else if (selectedExercise === "situp") {
-        timeScale = normalSitupRepetitionDuration / desiredRepetitionDuration; // 윗몸 일으키기 속도 조절
-        animationIndex = 14; // 윗몸 애니메이션 번호
       } else {
         timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 스쿼트 등 기타 운동 속도 조절
         animationIndex = 15; // 스쿼트 애니메이션 번호
@@ -580,13 +583,13 @@ function ExerciseScene() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Exercise ended, server response:", data);
-        console.log('티어가 업데이트 됩니다!');
+        console.log("티어가 업데이트 됩니다!");
         return fetch(`${apiUrl}/tier/update`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         });
       })
       .catch((error) => {
@@ -619,8 +622,6 @@ function ExerciseScene() {
         return <MediapipePushupTracking {...commonProps} />;
       case "burpee":
         return <MediapipeBurpeeTracking {...commonProps} />;
-      case "situp":
-        return <MediapipeSitupTracking {...commonProps} />;
       case "plank":
         return <MediapipePlankTracking {...commonProps} />;
       default:
@@ -649,6 +650,18 @@ function ExerciseScene() {
           durations={durations}
           onSelectionComplete={handleSelectionComplete}
         />
+      </div>
+      <div
+        className="guideBoXx"
+        style={{ position: "absolute", top: "15%", left: "60%" }}
+      >
+        {showGuide && <ExerciseGuide />}
+      </div>
+      <div
+        className="OkguideBoXx"
+        style={{ position: "absolute", top: "12%", right: "55%" }}
+      >
+        {showOkGuide && <OkGuide />}
       </div>
 
       {/* Three.js 씬이 마운트되는 부분 */}
