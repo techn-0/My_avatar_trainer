@@ -40,7 +40,7 @@ function Chat() {
 
     const decodedToken = jwtDecode(token);
     const username = decodedToken.id;
-    const user2 = 'sw'; 
+    const user2 = 'sw'; // Hardcoded for testing, but needs friend username for actual function implementation.
 
     const roomName = [username, user2].sort().join("&");
 
