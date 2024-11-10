@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'DungGeunMo';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+  font-family: "DungGeunMo";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -9,10 +10,10 @@
   padding-top: 20px;
   display: flex;
   flex-direction: row;
-  
+
   display: flex;
   flex-direction: row; /* 수평 정렬 */
-  gap:35px; /* 수평 간격 */
+  gap: 35px; /* 수평 간격 */
 }
 
 .radio-wrapper {
@@ -20,7 +21,7 @@
   height: 38px;
   width: 180px;
   margin: 10px;
-  
+
   z-index: 100; /* 높게 설정하여 다른 요소 위에 표시 */
 }
 
