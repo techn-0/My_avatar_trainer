@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { MyPageModule } from './my-page/my-page.module';
 import { TierModule } from './tier/tier.module';
 import { GatewayModule } from './multiplay/gateway.module';
-import { GuestbookModule } from './my-page/guestbook/guestbook.module';
 import { CommentModule } from './my-page/comment/comment.module';
 
 @Module({
@@ -22,7 +21,6 @@ import { CommentModule } from './my-page/comment/comment.module';
     MyPageModule,
     TierModule,
     GatewayModule,
-    GuestbookModule,
     CommentModule,
   ],
 })

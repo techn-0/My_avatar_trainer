@@ -7,7 +7,8 @@ import {
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
   import { MessageService} from '../my-page/message/message.service';
-  
+  // import { RoomService} from '../my-page/room/room.service';
+
   interface Room {
     host: string;
     users: string[];
@@ -15,7 +16,9 @@ import {
   
   @WebSocketGateway({ cors: true })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    constructor(private readonly messageService:MessageService){}
+    constructor(private readonly messageService:MessageService,
+                // private readonly roomService:RoomService,
+    ){}
 
     @WebSocketServer() server: Server;
     private rooms: { [key: string]: Room } = {};
@@ -96,7 +99,9 @@ import {
     payload: { roomName: string; username: string },
   ) {
     const { roomName, username } = payload;
-  
+    
+    // const room = await this.roomService.getOrCreateRoom(roomName);
+
     if (this.rooms[roomName]) {
       // Add user to the room if they are not already in it
       if (!this.rooms[roomName].users.includes(username)) {

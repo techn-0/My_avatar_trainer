@@ -6,12 +6,12 @@ export class MessageController {
     constructor( private readonly messageService:MessageService){}
 
     @Post('create')
-    async getOrCreateRoom(@Body()body:{user1:string, user2:string}){
+    async getOrCreateRoomData(@Body()body:{user1:string, user2:string}){
         const {user1, user2} = body;
 
         const roomName = [user1, user2].sort().join('&');
 
-        return await this.messageService.getOrCreateRoom(roomName);
+        return await this.messageService.getOrCreateRoomData(roomName);
 
     }
     
