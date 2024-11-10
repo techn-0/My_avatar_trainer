@@ -147,4 +147,97 @@ export class WorkoutService {
       throw new Error('랭킹을 가져오는데 오류가 발생!');
     }
   }
+  
+  async getDailyWorkoutAvg(userId:string){
+    const dailyWorkOutAvg = await this.workoutModel.aggregate([
+      {
+        $match:{
+          userId: new Types.ObjectId(userId)
+        }
+      },
+
+      {
+        $addFields:{
+          dayOfWeek:{$dayOfWeek:{$dateFromString:{dateString:"$date"}}},
+          isoWeek:{$isoWeek:{$dateFromString:{dateString:"$date"}}}
+        },
+      },
+
+      {
+        $group:{
+          _id:{week:"$isoWeek", dayOfWeek:"$dayOfWeek"},
+          dailyTotalDuration:{$sum:"$duration"},
+        },
+      },
+      
+      {$sort:{"_id.week":-1}}
+      ,
+
+      {
+        $group:{
+          _id:"$_id.dayOfWeek",
+          dailySums:{$push:"$dailyTotalDuration"},
+        },
+      }
+      ,
+
+      {
+        $project:{
+          dayOfWeek:"$_id",
+          dailySums:{$slice:["$dailySums", 4]},
+          avgDuration:{$avg:"$dailySums"},
+          _id:0,
+        }
+      },
+      {$sort:{dayOfWeek:1}}
+
+    ]);
+
+    return dailyWorkOutAvg;
+  }
+
+  async getWorkoutDurationByType(userId:string){
+    const weeklyWorkoutDurationsByType = await this.workoutModel.aggregate([
+      {$match:{userId: new Types.ObjectId(userId)}},
+
+      {
+        $group:{
+          _id:{week:{$isoWeek:{$dateFromString:{dateString:"$date"}}}, exercise:"$exercise"},
+          weeklyTotalDuration:{$sum:"$duration"},
+        },
+      },
+
+      {
+        $group:{
+          _id:"$_id.week",
+          weeklyDurationsByType:{
+            $push:{exercise:"$_id.exercise", weeklyDuration:"$weeklyTotalDuration"}
+          }
+        }
+      },
+      
+      {$limit:4},
+
+      {
+        $project:{
+          week:"$_id",
+          weeklyDurationsByType:{
+            $sortArray:{input:"$weeklyDurationsByType", sortBy:{exercise:1}},
+          },
+          _id:0,
+        },
+      },
+
+      {$sort:{week:1}},
+    ])
+    
+    const reorderedResults = weeklyWorkoutDurationsByType.map(({week, weeklyDurationsByType}) =>({
+      week,
+      weeklyDurationsByType,
+    }))
+
+    return reorderedResults;
+  } 
+
+
 }
