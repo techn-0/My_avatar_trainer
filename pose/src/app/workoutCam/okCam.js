@@ -3,7 +3,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import { Pose } from "@mediapipe/pose";
 import "@mediapipe/pose/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-// import { useGreenFlashEffect } from "./greenFlashEffect"; // 필요한 경우 사용 
+// import { useGreenFlashEffect } from "./greenFlashEffect"; // 필요한 경우 사용
 
 const POSE_CONNECTIONS = [
   [11, 13],
