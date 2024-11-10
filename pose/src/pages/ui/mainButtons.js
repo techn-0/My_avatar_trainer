@@ -135,22 +135,7 @@ function Buttons({
           </span>
         </div>
       </div>
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="ranking"
-          onClick={handleRankingClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleRankingClick}>
-          랭킹
-          <span className="btn__glitch" aria-hidden="true">
-            랭킹
-          </span>
-        </div>
-      </div>
+      
       
       <div className="radio-wrapper">
         <input
