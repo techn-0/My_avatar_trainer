@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards, Req } from '@nestjs/common';
+import { Body, Controller, Param, Get, Post, Query, UseGuards, Req } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -39,4 +39,18 @@ export class WorkoutController {
       throw new Error('랭킹을 가져 오는데 실패!');
     }
   }
+
+  @Post('dailyavgworkout/:userId')
+  @UseGuards(AuthGuard())
+  getDailyWorkoutAvg(@Param('userId') userId:string){
+    return this.workoutService.getDailyWorkoutAvg(userId);
+  }
+
+  @Post('weeklyworkouttime/:userId')
+  getWeeklyWorkoutTime(@Param('userId') userId:string){
+    return this.workoutService.getWorkoutDurationByType(userId);
+  }
+
+
+
 }
