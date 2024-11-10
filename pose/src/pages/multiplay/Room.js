@@ -1,5 +1,3 @@
-// src/pages/Room.js
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import socket from "./services/Socket";
@@ -9,6 +7,7 @@ import { getToken } from "../login/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import RoomButtons from "./components/roomButton";
 import MultiSquatCam from "./components/multiCam/multiSquatCam"; // 컴포넌트 임포트
+import "./Room.css";
 
 function Room() {
   const { roomName } = useParams();
@@ -110,26 +109,16 @@ function Room() {
   };
 
   return (
-    <div
-      className="roomss"
-      style={{ height: "100vh", display: "flex", flexDirection: "column" }}
-    >
-      <h1 style={{ textAlign: "center" }}>Welcome to Room: {roomName}</h1>
+    <div className="roomss">
+      <h1>Welcome to Room: {roomName}</h1>
 
       {startMessage ? (
         // 모든 플레이어가 준비되었을 때 multiSquatCam 렌더링
         <MultiSquatCam roomName={roomName} />
       ) : (
         // 그 외의 경우 기존 컴포넌트 렌더링
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "0 1rem",
-          }}
-        >
-          <div style={{ flex: 1, marginRight: "1rem" }}>
+        <div className="room-content">
+          <div className="room-buttons">
             <RoomButtons
               onLeaveRoomClick={handleLeaveRoomClick}
               selectedExercise={selectedExercise}
@@ -143,21 +132,23 @@ function Room() {
             />
           </div>
 
-          <div style={{ flex: 2 }} className="videoDiv">
+          <div className="videoDiv">
             {/* VideoStream 컴포넌트 */}
             <VideoStream roomName={roomName} />
 
-            {/* Chat 컴포넌트 */}
-            <Chat roomName={roomName} />
+            <div className="multi_bottom_box">
+              {/* Ready Status and Start Message */}
+              <div className="room-players">
+                <h2>Players in Room:</h2>
+                {users.map((user, index) => (
+                  <div key={index}>
+                    {user} - {readyStates[user] ? "Ready" : "Not Ready"}
+                  </div>
+                ))}
+              </div>
 
-            {/* Ready Status and Start Message */}
-            <div style={{ marginTop: "1rem" }}>
-              <h2>Players in Room:</h2>
-              {users.map((user, index) => (
-                <div key={index}>
-                  {user} - {readyStates[user] ? "Ready" : "Not Ready"}
-                </div>
-              ))}
+              {/* Chat 컴포넌트 */}
+              <Chat roomName={roomName} />
             </div>
           </div>
         </div>

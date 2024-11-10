@@ -1,28 +1,54 @@
-/* Room.css 또는 글로벌 스타일 시트 */
-html,
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-sizing: border-box;
-  background-color: #000; /* 필요시 추가 */
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 /* WebRTC 비디오를 화면에 꽉 채우기 위한 스타일 */
 video {
   width: 100%;
   height: 100%;
   object-fit: cover; /* 비율을 유지하며 컨테이너를 꽉 채움 */
+}
+
+/* Room 컴포넌트 전체 스타일 */
+.roomss {
+  margin-top: 30px;
+}
+
+/* 헤더 스타일 */
+.roomss h1 {
+  text-align: center;
+  color: white;
+  font-size: 60px;
+}
+
+/* 메인 컨텐츠 영역 */
+.room-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 300px 0 100px;
+}
+
+/* 좌측 버튼 영역 */
+.room-buttons {
+  flex-grow: 1;
+  margin-right: 300px;
+}
+
+/* 비디오 스트림과 하단 영역 */
+.videoDiv {
+  flex: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 하단 박스 (유저 목록과 채팅) */
+.multi_bottom_box {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: 200px;
+}
+
+/* 유저 목록 영역 */
+.room-players {
+  margin-top: 1rem;
+  color: white;
 }
