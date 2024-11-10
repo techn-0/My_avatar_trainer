@@ -11,7 +11,7 @@ export class MessageService {
                 @InjectModel(User.name) private userModel:Model<User>
             ){}
 
-    async getOrCreateRoom(roomName:string){
+    async getOrCreateRoomData(roomName:string){
 
         const messages = await this.getMessages(roomName);
 
