@@ -118,7 +118,7 @@ export class SocauthController {
       console.log('#2', provider)
       const result = await this.socauthService.updateUsername(providerId, provider, username);
 
-      console.log('Username successfully done');
+      console.log('Username successfully changed');
 
       // Cookie에 담긴 Token 정보를 없애고, username을 id로 담는 Token을 형성한다. 
       const newToken = await this.socauthService.newHandleLogin(username, provider);
@@ -131,7 +131,9 @@ export class SocauthController {
         path: '/',
       });
       
-      return res.redirect('http://localhost:3000/')
+      // return res.redirect('http://localhost:3000/')
+      return res.status(200).json({message:"Username updated successfully!", redirect:true});
+
     }catch(error){
       console.error(error);
       throw new InternalServerErrorException('Failed to update username information');

@@ -99,8 +99,6 @@ import {
     payload: { roomName: string; username: string },
   ) {
     const { roomName, username } = payload;
-    
-    // const room = await this.roomService.getOrCreateRoom(roomName);
 
     if (this.rooms[roomName]) {
       // Add user to the room if they are not already in it
@@ -134,27 +132,20 @@ import {
     
     console.log('Message received on backend:', payload);
   
-    if (!username) {
-      console.error(`Username not set for client: ${client.id}`);
-      return;
-    }else{
-      console.log(`The usename is ${username}`);
-    }
-  
-    if(!message?.trim()){
-      console.error(`Cannot send an empty message from ${username}in room ${roomName}`);
-      return;
-    }else{
-      console.log(`The message is ${message}`);
+    // Check if message is empty or contains only whitespace
+    if (!message || message.trim() === "") {
+      console.error("Cannot send an empty message.");
+      return; // Do not proceed if the message is empty
     }
   
     if (this.rooms[roomName]) {
       console.log(`Broadcasting message from ${username} to room ${roomName}: ${message}`);
-      
-      await this.messageService.addMessage(roomName, username, message);
-
+        
       // Broadcast the message to all users in the specified room
       this.server.to(roomName).emit('receiveMessage', { sender: username, content: message });
+      
+      await this.messageService.addMessage(roomName, username, message);
+    
     } else {
       console.log(`Room ${roomName} does not exist for message broadcasting.`);
     }

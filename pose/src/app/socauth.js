@@ -29,7 +29,7 @@ const Social = ({}) => {
       const result = await response.json();
       if (response.ok) {
         alert("Username added successfully!");
-        window.location.href = `http://localhost:3002`; // Redirect to homepage or desired page
+        window.location.href = `/`; // Redirect to homepage or desired page
       } else if (response.status === 409) {
         alert(result.message); // Handle duplicate username error
       }
@@ -38,10 +38,27 @@ const Social = ({}) => {
     }
   };
 
+  
   return (
     <React.Fragment>
-      <div>
-        <form id="usernameForm" onSubmit={handleSubmit}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <form
+          id="usernameForm"
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            color: "white", // Text color set to white
+          }}
+        >
           <label htmlFor="username">Choose a Username:</label>
           <input
             type="text"
@@ -50,8 +67,24 @@ const Social = ({}) => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            style={{
+              margin: "10px 0",
+              padding: "10px",
+              textAlign: "center",
+            }}
           />
-          <button type="submit">Submit</button>
+          <button
+            type="submit"
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#61dafb",
+              border: "none",
+              color: "#282c34",
+              cursor: "pointer",
+            }}
+          >
+            Submit
+          </button>
         </form>
       </div>
     </React.Fragment>

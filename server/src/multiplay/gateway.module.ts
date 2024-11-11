@@ -6,6 +6,7 @@ import {MongooseModule} from '@nestjs/mongoose';
 import {Message, MessageSchema} from '../my-page/message/schema/message.schema'
 import {User, UserSchema} from '../auth/schemas/user.schema';
 import {MessageService} from '../my-page/message/message.service'
+import { FriendStatusGateway } from './friend-status.gateway';
 
 @Module({
     imports:[
@@ -18,11 +19,13 @@ import {MessageService} from '../my-page/message/message.service'
     providers:[
         ChatGateway,
         MultiplayerGateway,
+        FriendStatusGateway,
         MessageService,
     ],
     exports : [
         ChatGateway,
         MultiplayerGateway,
+        FriendStatusGateway,
     ]
 })
 
