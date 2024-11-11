@@ -1,14 +1,19 @@
 @font-face {
-  font-family: "GangwonEduPowerExtraBoldA";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+  font-family: "DungGeunMo";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
     format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 .button-container {
+  padding-top: 20px;
   display: flex;
   flex-direction: row;
+
+  display: flex;
+  flex-direction: row; /* 수평 정렬 */
+  gap: 35px; /* 수평 간격 */
 }
 
 .radio-wrapper {
@@ -16,6 +21,8 @@
   height: 38px;
   width: 180px;
   margin: 10px;
+
+  z-index: 100; /* 높게 설정하여 다른 요소 위에 표시 */
 }
 
 .radio-wrapper .input {
@@ -32,7 +39,7 @@
   --primary: #ff184c;
   --shadow-primary: #04fd00;
   --color: white;
-  --font-size: 20px;
+  --font-size: 30px;
   --shadow-primary-hue: 180;
   --shadow-secondary-hue: 60;
   --shadow-secondary: hsl(var(--shadow-secondary-hue), 90%, 60%);
@@ -132,12 +139,12 @@
   letter-spacing: 3px;
   position: relative;
   font-weight: 900;
-  width: 100%;
-  height: 100%;
-  line-height: 47px;
+  width: 130%;
+  height: 160%;
+  line-height: 60px;
   text-align: center;
   transition: background 0.2s, 0.3s;
-  font-family: "GangwonEduPowerExtraBoldA";
+  font-family: "DungGeunMo";
 }
 
 /* .input:checked + .btn {
@@ -148,8 +155,9 @@
 .input:hover + .btn {
   --primary: #8b00ff;
   --shadow-primary: #00e572;
-  --font-size: 25px;
-  line-height: 57px;
+  line-height: 70px;
+  transform: scale(1.2); /* 글자 크기 확대 */
+  z-index: 1;
 }
 
 .btn:after,

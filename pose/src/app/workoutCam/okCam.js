@@ -2,7 +2,25 @@ import React, { useEffect, useRef } from "react";
 import { Camera } from "@mediapipe/camera_utils";
 import { Pose } from "@mediapipe/pose";
 import "@mediapipe/pose/pose";
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 // import { useGreenFlashEffect } from "./greenFlashEffect"; // 필요한 경우 사용
+
+const POSE_CONNECTIONS = [
+  [11, 13],
+  [13, 15],
+  [12, 14],
+  [14, 16],
+  [11, 12],
+  [23, 24],
+  [23, 25],
+  [24, 26],
+  [25, 27],
+  [26, 28],
+  [27, 29],
+  [28, 30],
+  [29, 31],
+  [30, 32],
+];
 
 const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
   const videoRef = useRef(null);
@@ -46,10 +64,29 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
     });
 
     pose.onResults((results) => {
-      //   const canvasCtx = canvasRef.current.getContext("2d");
+      const canvasCtx = canvasRef.current.getContext("2d");
       const landmarks = results.poseLandmarks;
 
       if (landmarks) {
+        // 캔버스 초기화
+        canvasCtx.clearRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
+
+        // 노드와 간선 그리기
+        drawLandmarks(canvasCtx, landmarks, {
+          color: "#FF0000", // 노드 색상 설정
+          lineWidth: 2,
+        });
+        drawConnectors(canvasCtx, landmarks, POSE_CONNECTIONS, {
+          color: "#00FF00", // 간선 색상 설정
+          lineWidth: 2,
+        });
+
+        // ok 포즈 감지 상태 확인 및 타이머 설정
         if (!okStateRef.current && detectPose(landmarks)) {
           if (!timerId) {
             timerId = setTimeout(() => {
@@ -67,13 +104,6 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
           clearTimeout(timerId);
           timerId = null;
         }
-
-        // // 효과 그리기 (필요한 경우)
-        // drawEffects(
-        //   canvasCtx,
-        //   canvasRef.current.width,
-        //   canvasRef.current.height
-        // );
 
         // 부모 컴포넌트로 업데이트된 캔버스 전달
         if (onCanvasUpdate) {
@@ -126,9 +156,9 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
           display: "block",
           position: "absolute",
           top: 100,
-          right: 10,
+          right: "100px",
           borderRadius: "30px",
-          border: "5px solid white",
+          // border: "5px solid white",
         }}
       ></video>
       <canvas
@@ -139,7 +169,8 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
           display: "block",
           position: "absolute",
           top: 100,
-          right: 10,
+          right: "100px",
+          // opacity: "0%",
           //   borderRadius: "30px",
           //   border: "5px solid white",
         }}

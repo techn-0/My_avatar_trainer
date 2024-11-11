@@ -13,7 +13,7 @@ import { setSkyboxBackground } from "../../shared/background";
 import { getToken } from "../login/AuthContext";
 import "./MainScene.css";
 import PendingRequests from "../MyPage/pendingRequests";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 // 로컬 ec2 주소 전환용
 const apiUrl = process.env.REACT_APP_API_BASE_URL; //백 요청
@@ -58,17 +58,14 @@ function ThreeScene() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch(
-          `${apiUrl}/friends/pendingRequestList`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`, // JWT 토큰 추가
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: userId }),
-          }
-        );
+        const response = await fetch(`${apiUrl}/friends/pendingRequestList`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: userId }),
+        });
         const data = await response.json();
         console.log("pending requests: ", data);
         setPendingRequest(data); // 전체 요청 배열로 설정
@@ -257,7 +254,7 @@ function ThreeScene() {
       <div
         style={{ position: "absolute", top: "20px", left: "20px", zIndex: 1 }}
       >
-        <div className="btn_box">
+        <div className="btn_box btn_box_cont">
           <Buttons
             onMainPageClick={() => navigate("/")}
             onLoginPageClick={openLoginDialog}
@@ -270,8 +267,7 @@ function ThreeScene() {
         {userId && (
           <div className="welcome_text">
             안녕하세요 <br />
-            <span className="name">{userId}</span>님<br/>
-            
+            <span className="name">{userId}</span>님<br />
             {tier >= 1 && tier <= 5 && (
               <div style={{ display: "flex", alignItems: "center" }}>
                 <img

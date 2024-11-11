@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PendingRequests from "./pendingRequests";
 import {
@@ -15,7 +15,7 @@ import {
 import { Line, Radar } from "react-chartjs-2";
 import "./MyPage.css";
 import { getToken } from "../login/AuthContext";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import {
   Card,
   CardContent,
@@ -49,6 +49,7 @@ ChartJS.register(
 );
 
 const MyPage = () => {
+  const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
   const navigate = useNavigate();
   const { ownerId } = useParams(); // URL에서 ownerId를 가져옵니다.
   const [workoutData, setWorkoutData] = useState([]);
@@ -92,7 +93,7 @@ const MyPage = () => {
   const [consecutiveDays, setConsecutiveDays] = useState(0);
 
   // 운동 기록 데이터를 백엔드에서 가져오기
-  
+
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
 
@@ -121,17 +122,14 @@ const MyPage = () => {
     const fetchComments = async () => {
       try {
         // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(
-          `${apiUrl}/comment/${ownerId}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`, // JWT 토큰 추가
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: ownerId }),
-          }
-        );
+        const response = await fetch(`${apiUrl}/comment/${ownerId}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: ownerId }),
+        });
         const data = await response.json();
         console.log("your comment", data);
         setCommentData(data);
@@ -165,17 +163,14 @@ const MyPage = () => {
     //
     const fetchRequests = async () => {
       try {
-        const response = await fetch(
-          `${apiUrl}/friends/pendingRequestList`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`, // JWT 토큰 추가
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: ownerId }),
-          }
-        );
+        const response = await fetch(`${apiUrl}/friends/pendingRequestList`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: ownerId }),
+        });
         const data = await response.json();
         console.log("pending requests: ", data);
         setPendingRequest(data); // 전체 요청 배열로 설정
@@ -364,6 +359,7 @@ const MyPage = () => {
         fill: true,
         tension: 0.4,
       },
+      
     ],
   };
 
@@ -415,6 +411,7 @@ const MyPage = () => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -432,8 +429,28 @@ const MyPage = () => {
 
   const radarOptions = {
     responsive: true,
-    scale: {
-      ticks: { beginAtZero: true, max: 60 },
+    plugins: {
+      legend: {
+        display: true, // 범례를 유지하고 싶다면 true, 제거하려면 false
+      },
+      tooltip: {
+        enabled: true, // 툴팁 활성화
+      },
+    },
+    scales: {
+      r: {
+        // 레이더 차트의 축 설정
+        ticks: {
+          display: false, // 숫자 표시 제거
+          backdropColor: "transparent", // 숫자 배경 투명화 (필요 시 추가)
+        },
+
+        pointLabels: {
+          font: {
+            color: "white", // 텍스트 색상
+          },
+        },
+      },
     },
   };
 
@@ -471,7 +488,6 @@ const MyPage = () => {
       });
 
       if (response.ok) {
-        
         const addedComment = await response.json();
         setCommentData((prevComments) => [...prevComments, addedComment]);
         setComment("");
@@ -619,338 +635,189 @@ const MyPage = () => {
     );
   };
 
+  const handleMouseEnter = () => {
+    if (glitchSoundRef.current) {
+      glitchSoundRef.current.currentTime = 0;
+      glitchSoundRef.current.play().catch((error) => {
+        // play() failed due to lack of user interaction. We can ignore this error.
+        console.log(
+          "Sound play prevented due to user interaction requirement."
+        );
+      });
+    }
+  };
+
   return (
-    <div className="container">
-      <div
-        className="main"
-        style={{
-          padding: "20px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-          boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)",
-          backgroundColor: "White",
-          borderRadius: "8px",
-        }}
-      >
-        {/* Return 버튼 */}
-        <button className="Btn" onClick={handleMainClick}>
-          <div className="sign">
-            <svg viewBox="0 0 512 512">
-              <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
-            </svg>
+    <div className="myPage-container">
+      {/* 상단 헤더 */}
+      <header className="myPage-header">
+        <div className="radio-wrapper cyberpunk">
+          <input
+            className="input"
+            type="radio"
+            name="btn"
+            id="mainPage"
+            onClick={handleMainClick}
+            onMouseEnter={handleMouseEnter}
+          />
+          <div className="btn" onClick={handleMainClick}>
+            <span aria-hidden="true"></span>메인페이지
+            <span className="btn__glitch" aria-hidden="true">
+              메인페이지
+            </span>
           </div>
-          <div className="text">Return</div>
-        </button>
-        {/* div1 */}
-        <div className="div1" style={{ display: "flex" }}>
-          <div>
-            <h1>{ownerId} 님의 페이지입니다.</h1>
-            <p>가장 좋아하는 운동: {favoriteExercise()}</p>
+        </div>
+        <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
+      </header>
+
+      {/* 1층: 상단 블록 (좋아하는 운동, 최근 운동 기록, 최고 기록) */}
+      <div className="myPage-top">
+        <section className="myPage-tierSection glow-container">
+          <div className="myPage-tierInfo">
+            <h2>좋아하는 운동: {favoriteExercise()}</h2>
             {lastVisitDays === "오늘" ? (
-              <p>오늘도 운동을 하셨군요!</p>
+              <p>오늘도 꾸준히!</p>
             ) : consecutiveDays > 0 ? (
               <p>연속 접속일: {consecutiveDays}일</p>
             ) : (
-              <p>오랜만입니다! {lastVisitDays} 접속하셨습니다.</p>
+              <p>오랜만입니다! {lastVisitDays}만에 접속하셨습니다.</p>
             )}
           </div>
-          <div style={{ display: "flex", margin: "auto" }}>
+          <div className="myPage-tierImage">
             {tier >= 1 && tier <= 5 && (
-              <img
-                style={{ width: "200px" }}
-                src={preloadImages[tier - 1].src}
-                // alt={`Tier ${tier}`}
-                className="tier-image"
-              />
+              <img src={preloadImages[tier - 1].src} alt={`Tier ${tier}`} />
             )}
-           <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
-            <div style={{ fontSize: "80px" }}>TIER {tier}</div>
-            <div style={{ fontSize: "30px" }}>상위 {percentile}% 입니다!</div>
+            <h2>TIER {tier}</h2>
+            <p>상위 {percentile}% 입니다!</p>
           </div>
+        </section>
+
+        <section className="myPage-recentRecordSection glow-container line-chart">
+          <h2>최근 운동 기록</h2>
+          <div className="chart-container">
+            <Line data={lineData} options={options} />
           </div>
-          
-        </div>
+        </section>
 
-        {/* div2 */}
-        <div className="div2">
-          {/* 그래프 블록 */}
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            {/* 꺾은선 그래프 */}
-            <div
-              style={{
-                padding: "20px",
-                width: "600px",
-                background: "#fff",
-                borderRadius: "15px",
-              }}
-            >
-              {/* 운동 시간 선택 */}
-              <label className="cta">
-                <span>⏰</span>
-                <svg width="15px" height="10px" viewBox="0 0 13 10">
-                  <path d="M1,5 L11,5"></path>
-                  <polyline points="8 1 12 5 8 9"></polyline>
-                </svg>
-                <select
-                  value={selectedDuration}
-                  onChange={handleDurationChange}
-                  style={{
-                    position: "absolute",
-                    zIndex: 2,
-                    margin: "3px 5px 10px 10px",
-                  }}
-                >
-                  <option value={1}>1분 기록</option>
-                  <option value={2}>2분 기록</option>
-                </select>
-              </label>
-              <h2
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginBottom: "20px",
-                }}
-              >
-                나의 기록
-              </h2>
-
-              <Line data={lineData} options={options} />
-            </div>
-
-            {/* 레이더 차트 */}
-            <div
-              style={{
-                padding: "20px",
-                width: "400px",
-                background: "#fff",
-                borderRadius: "15px",
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginBottom: "20px",
-                }}
-              >
-                최고 기록
-              </h2>
-              <Radar data={radarData} options={radarOptions} />
-            </div>
+        <section className="myPage-bestRecordSection glow-container radar-chart">
+          <h2>최고 기록</h2>
+          <div className="chart-container">
+            <Radar data={radarData} options={radarOptions} />
           </div>
-        </div>
+        </section>
+      </div>
 
-        {/* div3 */}
-        <div className="div3">
-          <div style={{ display: "flex", gap: "10px" }}>
-            <div
-              style={{
-                width: "60%",
-                flexGrow: 1,
-                padding: "10px",
-              }}
-            >
-              <h2>방명록</h2>
-              <div>
-                {commentData.map((comment) => (
-                  <Card
-                    key={comment._id}
-                    sx={{ margin: "10px 0", position: "relative" }}
+      {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
+      <div className="myPage-bottom">
+        <section className="glow-container comment_box">
+          <h2>방명록</h2>
+          <div className="comments-container scrollable-box">
+            {commentData.map((comment) => (
+              <div key={comment._id} className="comment-card">
+                <p className="font_small">
+                  <strong className="font_small">작성자:</strong>{" "}
+                  {comment.userId}
+                </p>
+                <p className="font_small">
+                  <strong className="font_small">작성일:</strong>{" "}
+                  {new Date(comment.createdAt).toLocaleDateString()}
+                </p>
+                <p className="font_small">{comment.comment}</p>
+                {userId === comment.userId && (
+                  <button
+                    className="cyberpunk-btn"
+                    onClick={() => handleDeleteComment(comment._id)}
                   >
-                    <CardContent>
-                      <Typography variant="body1" color="textPrimary">
-                        작성자: {comment.userId}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        작성일:{" "}
-                        {new Date(comment.createdAt).toISOString().slice(0, 10)}{" "}
-                        {new Date(comment.createdAt).toISOString().slice(11, 16)}
-                      </Typography>
-                      <Typography variant="body1" sx={{ marginTop: "5px" }}>
-                        {comment.comment}
-                      </Typography>
-                      {userId === comment.userId && (
-                        <IconButton
-                          aria-label="delete"
-                          onClick={() => handleDeleteComment(comment._id)}
-                          style={{ position: "absolute", top: 8, right: 8 }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <input
-                type="text"
-                placeholder="내용을 입력하세요"
-                style={{ width: "400px", height: "50px" }}
-                value={comment}
-                onChange={handleCommentChange}
-              />
-              <button
-                className="submitComment"
-                type="submit"
-                style={{ width: "70px", height: "50px", padding: "10px" }}
-                onClick={handleSubmit}
-              >
-                제출
-              </button>
-            </div>
-          </div>
-        </div>
-        {/* div3 */}
-        <div className="div3">
-          <div style={{ display: "flex", gap: "10px" }}>
-            <div
-              style={{
-                width: "30%",
-                flexGrow: 1,
-                padding: "10px",
-              }}
-            >
-              <h2>친구추가 기능</h2>
-              <input
-                type="text"
-                placeholder="ID를 입력하세요"
-                style={{ width: "400px", height: "50px" }}
-                value={friendUserId}
-                onChange={handleAddFriendChange}
-              />
-              <button
-                className="submitAddFriend"
-                type="submit"
-                style={{ width: "70px", height: "50px", padding: "10px" }}
-                onClick={handleAddFriendSubmit}
-              >
-                제출
-              </button>
-              <h2>유저검색 기능</h2>
-              <input
-                type="text"
-                placeholder="ID를 입력하세요"
-                style={{ width: "400px", height: "50px" }}
-                value={searchUserId}
-                onChange={handleSearchUserChange}
-              />
-              <button
-                className="submitSearchUser"
-                type="submit"
-                style={{ width: "70px", height: "50px", padding: "10px" }}
-                onClick={handleSearchUser}
-              >
-                제출
-              </button>
-              {searchResult && (
-                <div
-                  style={{
-                    marginTop: "10px",
-                    color: "green",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleFriendClick(searchResult.user.username)}
-                >
-                  <div
-                    style={{
-                      width: "470px",
-                      height: "50px",
-                      border: "1px solid black",
-                      textAlign: "left",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    검색된 유저 ID: {searchResult.user.username}{" "}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div
-              style={{
-                flexGrow: 1,
-                border: "2px solid black",
-                borderRadius: "30px",
-                padding: "10px",
-              }}
-            >
-              <h2>친구 목록</h2>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                }}
-              >
-                {currentFriends.map((friend, index) => (
-                  <Card
-                    key={`${friend}-${index}`}
-                    sx={{ minWidth: 100, height: "50px" }}
-                  >
-                    <CardContent
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography
-                        variant="body1"
-                        style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => handleFriendClick(friend)}
-                      >
-                        {friend}
-                      </Typography>
-                      {userId === ownerId && (
-                        <IconButton
-                          onClick={() => handleDeleteFriend(friend)}
-                          color="secondary"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              {/* 페이지 네비게이션 버튼 */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: "10px",
-                }}
-              >
-                <Button
-                  onClick={handlePreviousPage}
-                  disabled={currentPage === 1}
-                >
-                  이전
-                </Button>
-                <Button
-                  onClick={handleNextPage}
-                  disabled={
-                    currentPage >= Math.ceil(friendData.length / friendsPerPage)
-                  }
-                >
-                  다음
-                </Button>
-              </div>
-
-              <div>
-                {userId === ownerId && pendingRequest.length > 0 && (
-                  <PendingRequests
-                    pendingRequests={pendingRequest} // Updated here
-                    onRequestUpdate={handleRequestUpdate} // 추가된 핸들러
-                  />
+                    삭제
+                  </button>
                 )}
               </div>
-            </div>
+            ))}
           </div>
-        </div>
+          <div className="comment-input">
+            <input
+              type="text"
+              placeholder="내용 입력"
+              value={comment}
+              onChange={handleCommentChange}
+            />
+            <button className="cyberpunk-btn" onClick={handleSubmit}>
+              제출
+            </button>
+          </div>
+        </section>
+
+        <section className="glow-container friend-management">
+          <h2>친구 추가</h2>
+          <input
+            type="text"
+            placeholder="ID 입력"
+            value={friendUserId}
+            onChange={handleAddFriendChange}
+            className="friend-input"
+          />
+          <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
+            추가
+          </button>
+
+          <h2>유저 검색</h2>
+          <input
+            type="text"
+            placeholder="ID 입력"
+            value={searchUserId}
+            onChange={handleSearchUserChange}
+            className="friend-input"
+          />
+          <button onClick={handleSearchUser} className="cyberpunk-btn">
+            검색
+          </button>
+
+          {searchResult && (
+            <div
+              className="search-result"
+              onClick={() => handleFriendClick(searchResult.user.username)}
+            >
+              <p>검색된 유저 ID: {searchResult.user.username}</p>
+            </div>
+          )}
+
+          <h2>친구 목록</h2>
+          <div className="friend-list scrollable-box2">
+            {currentFriends.map((friend, index) => (
+              <div key={index} className="friend-card">
+                <p>{friend}</p>
+                {userId === ownerId && (
+                  <button
+                    onClick={() => handleDeleteFriend(friend)}
+                    className="cyberpunk-btn"
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="pagination">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className="cyberpunk-btn"
+            >
+              이전
+            </button>
+            <button
+              onClick={handleNextPage}
+              disabled={
+                currentPage >= Math.ceil(friendData.length / friendsPerPage)
+              }
+              className="cyberpunk-btn"
+            >
+              다음
+            </button>
+          </div>
+        </section>
       </div>
+      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );
 };

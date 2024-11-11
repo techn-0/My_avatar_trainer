@@ -6,9 +6,10 @@ import socket from "./services/Socket";
 import Chat from "./components/Chat";
 import VideoStream from "./components/VideoStream";
 import { getToken } from "../login/AuthContext";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import RoomButtons from "./components/roomButton";
 import MultiSquatCam from "./components/multiCam/multiSquatCam"; // 컴포넌트 임포트
+import "./Room.css";
 
 function Room() {
   const { roomName } = useParams();
@@ -111,10 +112,12 @@ function Room() {
 
   return (
     <div
-      className="rooms"
+      className="roomss"
       style={{ height: "100vh", display: "flex", flexDirection: "column" }}
     >
-      <h1 style={{ textAlign: "center" }}>Welcome to Room: {roomName}</h1>
+      <h1 className="white" style={{ textAlign: "center" }}>
+        Welcome to Room: {roomName}
+      </h1>
 
       {startMessage ? (
         // 모든 플레이어가 준비되었을 때 multiSquatCam 렌더링
@@ -147,17 +150,18 @@ function Room() {
             {/* VideoStream 컴포넌트 */}
             <VideoStream roomName={roomName} />
 
-            {/* Chat 컴포넌트 */}
-            <Chat roomName={roomName} />
-
-            {/* Ready Status and Start Message */}
-            <div style={{ marginTop: "1rem" }}>
-              <h2>Players in Room:</h2>
-              {users.map((user, index) => (
-                <div key={index}>
-                  {user} - {readyStates[user] ? "Ready" : "Not Ready"}
-                </div>
-              ))}
+            <div className="romm_bottom_box">
+              {/* Ready Status and Start Message */}
+              <div style={{ marginTop: "1rem" }}>
+                <h2 className="green">Players in Room:</h2>
+                {users.map((user, index) => (
+                  <div className="white" key={index}>
+                    {user} - {readyStates[user] ? "Ready" : "Not Ready"}
+                  </div>
+                ))}
+              </div>
+              {/* Chat 컴포넌트 */}
+              <Chat roomName={roomName} />
             </div>
           </div>
         </div>

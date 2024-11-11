@@ -97,9 +97,9 @@ function Buttons({
           onMouseEnter={handleMouseEnter}
         />
         <div className="btn" onClick={onMainPageClick}>
-          <span aria-hidden="true"></span>메인 페이지
+          <span aria-hidden="true"></span>메인페이지
           <span className="btn__glitch" aria-hidden="true">
-            _메인 페이지_
+            메인페이지
           </span>
         </div>
       </div>
@@ -115,7 +115,7 @@ function Buttons({
         <div className="btn" onClick={handleExerciseClick}>
           운동하기
           <span className="btn__glitch" aria-hidden="true">
-            _운동하기_
+            운동하기
           </span>
         </div>
       </div>
@@ -131,26 +131,11 @@ function Buttons({
         <div className="btn" onClick={handleResultClick}>
           마이페이지
           <span className="btn__glitch" aria-hidden="true">
-            _마이페이지_
+            마이페이지
           </span>
         </div>
       </div>
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="ranking"
-          onClick={handleRankingClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleRankingClick}>
-          랭킹
-          <span className="btn__glitch" aria-hidden="true">
-            _랭킹_
-          </span>
-        </div>
-      </div>
+      
       
       <div className="radio-wrapper">
         <input
@@ -164,7 +149,7 @@ function Buttons({
         <div className="btn" onClick={handleMultiplayerClick}>
           멀티플레이
           <span className="btn__glitch" aria-hidden="true">
-            _멀티플레이_
+            멀티플레이
           </span>
         </div>
       </div>
@@ -178,9 +163,9 @@ function Buttons({
           onMouseEnter={handleMouseEnter}
         />
         <div className="btn" onClick={handleLoginPageClick}>
-          {isLoggedIn ? "로그 아웃" : "로그인"}
+          {isLoggedIn ? "로그아웃" : "로그인"}
           <span className="btn__glitch" aria-hidden="true">
-            {isLoggedIn ? "_로그 아웃_" : "_로그인_"}
+            {isLoggedIn ? "로그아웃" : "로그인"}
           </span>
         </div>
       </div>

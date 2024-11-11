@@ -6,14 +6,20 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
-  border: 2px solid black;
+  border: 4px solid rgb(0, 255, 174);
   border-radius: 30px;
   background: white;
   display: flex;
   flex-direction: row; /* 가로 배치 */
   place-content: center; /* 가로와 세로 모두 중앙 정렬 */
+  background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
 }
 .vs_element {
   display: inline-flex; /* 요소를 가로 정렬에 적합하게 조정 */
   align-items: center; /* 요소 내부 중앙 정렬 */
+}
+
+.vs_element h1 {
+  font-size: 45px;
+  color: rgb(255, 0, 247);
 }

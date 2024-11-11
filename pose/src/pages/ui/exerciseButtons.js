@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
 import "./mainButtons.css";
@@ -16,7 +16,7 @@ function Buttons({
   onSelectionComplete,
 }) {
   const [isComplete, setIsComplete] = useState(false); // 선택 완료 여부 상태 추가
-
+  const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
   const handleSelectionClick = () => {
     setIsComplete(true); // 선택 완료 클릭 시 버튼 숨기기
     onSelectionComplete(); // 외부에서 정의된 onSelectionComplete 함수 호출
@@ -24,24 +24,37 @@ function Buttons({
 
   if (isComplete) return null; // 선택 완료 시 전체 컨테이너 숨김
 
+  const handleMouseEnter = () => {
+    if (glitchSoundRef.current) {
+      glitchSoundRef.current.currentTime = 0;
+      glitchSoundRef.current.play().catch((error) => {
+        // play() failed due to lack of user interaction. We can ignore this error.
+        console.log(
+          "Sound play prevented due to user interaction requirement."
+        );
+      });
+    }
+  };
+
   return (
     <div className="r_card-container">
-      <div className="btn_box">
+      <div className="EX_btn_box">
         <div>
           <div>
             {/* 글리치 버튼 - 메인 페이지 */}
-            <div className="radio-wrapper">
+            <div className="radio-wrapper Ex_btn">
               <input
                 className="input"
                 type="radio"
                 name="btn"
                 id="mainPage"
                 onClick={onMainPageClick}
+                onMouseEnter={handleMouseEnter}
               />
               <div className="btn">
-                <span aria-hidden="true"></span>메인 페이지
+                <span aria-hidden="true"></span>메인페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  _메인 페이지_
+                  메인페이지
                 </span>
               </div>
             </div>
@@ -54,11 +67,12 @@ function Buttons({
                 name="btn"
                 id="user"
                 onClick={onResultClick}
+                onMouseEnter={handleMouseEnter}
               />
               <div className="btn">
                 마이페이지
                 <span className="btn__glitch" aria-hidden="true">
-                  _마이페이지_
+                  마이페이지
                 </span>
               </div>
             </div>
@@ -67,11 +81,11 @@ function Buttons({
 
         <div>
           {/* 운동 선택 UI */}
-          <div style={{}}>
+          <div className="exercise-selection-container">
             <h3>운동 종목 선택</h3>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div className="exercise-selection">
               {exercises.map((exercise) => (
-                <label key={exercise} style={{ marginBottom: "8px" }}>
+                <label key={exercise} className="exercise-label">
                   <input
                     type="radio"
                     name="exercise"
@@ -85,9 +99,9 @@ function Buttons({
             </div>
 
             <h3>운동 시간 선택</h3>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div className="duration-selection">
               {durations.map((duration) => (
-                <label key={duration} style={{ marginBottom: "8px" }}>
+                <label key={duration} className="duration-label">
                   <input
                     type="radio"
                     name="duration"
@@ -103,7 +117,7 @@ function Buttons({
             </div>
 
             {/* 선택 완료 버튼 */}
-            <div className="radio-wrapper">
+            <div className="radio-wrapper" onMouseEnter={handleMouseEnter}>
               <input
                 className="input"
                 type="radio"
@@ -115,13 +129,14 @@ function Buttons({
               <div className="btn">
                 <span aria-hidden="true"></span>선택 완료
                 <span className="btn__glitch" aria-hidden="true">
-                  _선택 완료_
+                  선택 완료
                 </span>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );
 }

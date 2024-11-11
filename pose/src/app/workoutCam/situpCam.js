@@ -51,6 +51,11 @@ function MediapipeSitupTracking({
     triggerGreenFlash();
     triggerGoodBox(); // "Good!" 박스 표시
     situpCountRef.current += 1;
+
+    // 효과음 재생
+    const audio = new Audio("/sound/good.wav"); // 효과음 파일 경로
+    audio.play();
+
     if (onCountUpdate) {
       onCountUpdate(situpCountRef.current);
     }
