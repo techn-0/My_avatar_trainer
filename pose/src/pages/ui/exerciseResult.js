@@ -2,31 +2,45 @@ import React, { useEffect } from "react";
 import "./exerciseResult.css";
 
 
-function ExerciseResultModal({ onClose, bestScore, userScore }) {
+function ExerciseResultModal({ onClose, bestScore, userScore, opponentScore}) {
   // 비교 결과 메시지 생성
   let resultMessage;
   let soundEffect;
 
-  if (bestScore === null || bestScore === undefined || bestScore === 0) {
-    // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
-    if (userScore > 0) {
-      resultMessage = "첫 운동 기록입니다!";
+  if(opponentScore !== undefined && opponentScore !== null){
+    if (userScore > opponentScore) {
+      resultMessage = '승리!';
       soundEffect = "/sound/victory.mp3";
-    } else {
-      resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
+    } else if (userScore < opponentScore) {
+      resultMessage = '패배!';
       soundEffect = "/sound/fail.mp3";
-    }
-  } else if (userScore > bestScore) {
-    resultMessage = "승리!";
-    soundEffect = "/sound/victory.mp3";
-  } else if (userScore < bestScore) {
-    resultMessage = "패배...";
-    soundEffect = "/sound/fail.mp3";
-  } else {
-    resultMessage = "무승부";
-    soundEffect = "/sound/fail2.mp3";
+    } else {
+      resultMessage = '무승부!';
+      soundEffect = "/sound/fail2.mp3";
+    }  
   }
-
+  else {
+    if (bestScore === null || bestScore === undefined || bestScore === 0) {
+      // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
+      if (userScore > 0) {
+        resultMessage = "첫 운동 기록입니다!";
+        soundEffect = "/sound/victory.mp3";
+      } else {
+        resultMessage = "운동하세요!"; // 이전 기록도 없고, 현재도 0인 경우 무승부
+        soundEffect = "/sound/fail.mp3";
+      }
+    } else if (userScore > bestScore) {
+      resultMessage = "승리!";
+      soundEffect = "/sound/victory.mp3";
+    } else if (userScore < bestScore) {
+      resultMessage = "패배...";
+      soundEffect = "/sound/fail.mp3";
+    } else {
+      resultMessage = "무승부";
+      soundEffect = "/sound/fail2.mp3";
+    }
+  }
+  
   useEffect(() => {
     // 오디오가 초기화되지 않고 딱 한 번만 재생되도록 설정
     const audio = new Audio(soundEffect);
@@ -57,10 +71,22 @@ function ExerciseResultModal({ onClose, bestScore, userScore }) {
             </div>
             <div className="text">닫기</div>
           </button>
+          {opponentScore !== undefined && opponentScore !== null ? (
+            <>
+            <h1>승부 결과</h1>
+            <h2>나: {userScore}</h2>
+            <h2>상대: {opponentScore}</h2>
+            <h2>결과: {resultMessage}</h2>
+            </>
+            
+          ) : (
+          <>
           <h1>운동 결과</h1>
           <h2>아바타: {bestScore}</h2>
           <h2>나: {userScore}</h2>
           <h2>결과: {resultMessage}</h2>
+          </>
+        )}
         </div>
       </div>
     </div>
