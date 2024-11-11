@@ -77,14 +77,18 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
         );
 
         // 노드와 간선 그리기
-        drawLandmarks(canvasCtx, landmarks, {
-          color: "#FF0000", // 노드 색상 설정
-          lineWidth: 2,
+        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+          color: "white",
+          lineWidth: 4,
         });
-        drawConnectors(canvasCtx, landmarks, POSE_CONNECTIONS, {
-          color: "#00FF00", // 간선 색상 설정
-          lineWidth: 2,
-        });
+        drawLandmarks(
+          canvasCtx,
+          results.poseLandmarks.filter((_, index) => index > 10),
+          {
+            color: "blue",
+            lineWidth: 2,
+          }
+        );
 
         // ok 포즈 감지 상태 확인 및 타이머 설정
         if (!okStateRef.current && detectPose(landmarks)) {
