@@ -1,8 +1,8 @@
 @font-face {
-  font-family: "DungGeunMo";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
-    format("woff");
-  font-weight: normal;
+  font-family: "MonoplexKR-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_Monoplex-kr@1.0/MonoplexKR-Regular.woff2")
+    format("woff2");
+  font-weight: 400;
   font-style: normal;
 }
 
@@ -144,7 +144,7 @@
   line-height: 60px;
   text-align: center;
   transition: background 0.2s, 0.3s;
-  font-family: "DungGeunMo";
+  font-family: "MonoplexKR-Regular";
 }
 
 /* .input:checked + .btn {
