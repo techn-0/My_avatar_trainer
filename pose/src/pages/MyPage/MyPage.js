@@ -655,18 +655,33 @@ const MyPage = () => {
         {/* 상단 헤더 */}
         <header className="myPage-header">
           <p
-            className="EX_btn"
+            className="My_MAIN_btn"
             onClick={handleMainClick}
             onMouseEnter={handleMouseEnter}
           >
             메인페이지
           </p>
-          <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
+          <div className="welcome btn_box">
+            {tier >= 1 && tier <= 5 && (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  style={{ width: "100px" }}
+                  src={preloadImages[tier - 1].src}
+                  className="tier-image"
+                />
+              </div>
+            )}
+            {userId && (
+              <div className="welcome_text">
+                <span className="name">{userId}</span>
+              </div>
+            )}
+          </div>
         </header>
 
         {/* 1층: 상단 블록 (좋아하는 운동, 최근 운동 기록, 최고 기록) */}
         <div className="myPage-top">
-          <section className="myPage-tierSection glow-container">
+          <section className="myPage-tierSection my_glow-container">
             <div className="myPage-tierInfo">
               <h2>좋아하는 운동: {favoriteExercise()}</h2>
               {lastVisitDays === "오늘" ? (
@@ -686,14 +701,14 @@ const MyPage = () => {
             </div>
           </section>
 
-          <section className="myPage-recentRecordSection glow-container line-chart">
+          <section className="myPage-recentRecordSection my_glow-container line-chart">
             <h2>최근 운동 기록</h2>
             <div className="chart-container">
               <Line data={lineData} options={options} />
             </div>
           </section>
 
-          <section className="myPage-bestRecordSection glow-container radar-chart">
+          <section className="myPage-bestRecordSection my_glow-container radar-chart">
             <h2>최고 기록</h2>
             <div className="chart-container">
               <Radar data={radarData} options={radarOptions} />
@@ -703,7 +718,7 @@ const MyPage = () => {
 
         {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
         <div className="myPage-bottom">
-          <section className="glow-container friend-management">
+          <section className="my_glow-container friend-management">
             <div>
               <h2 className="friendAdd">유저 검색</h2>
               <input
@@ -739,8 +754,29 @@ const MyPage = () => {
               </button>
             </div>
           </section>
-          <section className="glow-container friend-management">
-            <h2 className="friendAdd">친구 목록</h2>
+          <section className="my_glow-container friend-management">
+            <div className="friend_list_header">
+              <h2 className="friendAdd">친구 목록</h2>
+              <div className="pagination">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className="cyberpunk-btn"
+                >
+                  이전
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={
+                    currentPage >= Math.ceil(friendData.length / friendsPerPage)
+                  }
+                  className="cyberpunk-btn"
+                >
+                  다음
+                </button>
+              </div>
+            </div>
+
             <div className="friend-list scrollable-box2">
               {friendData.map((friend, index) => (
                 <div
@@ -794,25 +830,6 @@ const MyPage = () => {
                   )}
                 </div>
               ))}
-            </div>
-
-            <div className="pagination">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-                className="cyberpunk-btn"
-              >
-                이전
-              </button>
-              <button
-                onClick={handleNextPage}
-                disabled={
-                  currentPage >= Math.ceil(friendData.length / friendsPerPage)
-                }
-                className="cyberpunk-btn"
-              >
-                다음
-              </button>
             </div>
           </section>
         </div>
