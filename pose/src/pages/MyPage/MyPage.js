@@ -641,34 +641,38 @@ const MyPage = () => {
   };
 
   return (
-    <>
-      <style>
-        {`
-        @keyframes flash {
-          0% { opacity: 1; }
-          50% { opacity: 0.5; }
-          100% { opacity: 1; }
-        }
-      `}
-      </style>
-      <div className="myPage-container">
-        {/* 상단 헤더 */}
-        <header className="myPage-header">
-          <div className="radio-wrapper cyberpunk">
-            <input
-              className="input"
-              type="radio"
-              name="btn"
-              id="mainPage"
-              onClick={handleMainClick}
-              onMouseEnter={handleMouseEnter}
-            />
-            <div className="btn" onClick={handleMainClick}>
-              <span aria-hidden="true"></span>메인페이지
-              <span className="btn__glitch" aria-hidden="true">
-                메인페이지
-              </span>
-            </div>
+    <div className="myPage-container">
+      {/* 상단 헤더 */}
+      <header className="myPage-header">
+        <p
+          className="EX_btn"
+          onClick={handleMainClick}
+          onMouseEnter={handleMouseEnter}
+        >
+          메인페이지
+        </p>
+        <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
+      </header>
+
+      {/* 1층: 상단 블록 (좋아하는 운동, 최근 운동 기록, 최고 기록) */}
+      <div className="myPage-top">
+        <section className="myPage-tierSection glow-container">
+          <div className="myPage-tierInfo">
+            <h2>좋아하는 운동: {favoriteExercise()}</h2>
+            {lastVisitDays === "오늘" ? (
+              <p>오늘도 꾸준히!</p>
+            ) : consecutiveDays > 0 ? (
+              <p>연속 접속일: {consecutiveDays}일</p>
+            ) : (
+              <p>오랜만입니다! {lastVisitDays}만에 접속하셨습니다.</p>
+            )}
+          </div>
+          <div className="myPage-tierImage">
+            {tier >= 1 && tier <= 5 && (
+              <img src={preloadImages[tier - 1].src} alt={`Tier ${tier}`} />
+            )}
+            <h2>TIER {tier}</h2>
+            <p>상위 {percentile}% 입니다!</p>
           </div>
           <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
         </header>

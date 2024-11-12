@@ -87,89 +87,42 @@ function Buttons({
   };
 
   return (
-    <div className="button-container r_card-container">
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="mainPage"
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={onMainPageClick}>
-          <span aria-hidden="true"></span>메인페이지
-          <span className="btn__glitch" aria-hidden="true">
-            메인페이지
-          </span>
-        </div>
-      </div>
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="exercise"
-          onClick={handleExerciseClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleExerciseClick}>
-          싱글플레이
-          <span className="btn__glitch" aria-hidden="true">
-            싱글플레이
-          </span>
-        </div>
-      </div>
-
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="multiplayer"
-          onClick={handleMultiplayerClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleMultiplayerClick}>
-          멀티플레이
-          <span className="btn__glitch" aria-hidden="true">
-            멀티플레이
-          </span>
-        </div>
-      </div>
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="user"
-          onClick={handleResultClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleResultClick}>
-          마이페이지
-          <span className="btn__glitch" aria-hidden="true">
-            마이페이지
-          </span>
-        </div>
-      </div>
-
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="loginPage"
-          onClick={handleLoginPageClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleLoginPageClick}>
-          {isLoggedIn ? "로그아웃" : "로그인"}
-          <span className="btn__glitch" aria-hidden="true">
-            {isLoggedIn ? "로그아웃" : "로그인"}
-          </span>
-        </div>
-      </div>
-      {/* Hidden audio element for glitch sound */}
+    <div>
+      {/* <p
+        className="main_btn"
+        onClick={onMainPageClick}
+        onMouseEnter={handleMouseEnter}
+      >
+        메인페이지
+      </p> */}
+      <p
+        className="main_btn"
+        onClick={handleExerciseClick}
+        onMouseEnter={handleMouseEnter}
+      >
+        싱글플레이
+      </p>
+      <p
+        className="main_btn"
+        onClick={handleMultiplayerClick}
+        onMouseEnter={handleMouseEnter}
+      >
+        멀티플레이
+      </p>
+      <p
+        className="main_btn"
+        onClick={handleResultClick}
+        onMouseEnter={handleMouseEnter}
+      >
+        마이페이지
+      </p>
+      <p
+        className="main_btn"
+        onClick={handleLoginPageClick}
+        onMouseEnter={handleMouseEnter}
+      >
+        {isLoggedIn ? "로그아웃" : "로그인"}
+      </p>
       <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
   );

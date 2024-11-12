@@ -41,41 +41,21 @@ function Buttons({
       <div className="EX_btn_box">
         <div>
           <div>
-            {/* 글리치 버튼 - 메인 페이지 */}
-            <div className="radio-wrapper Ex_btn">
-              <input
-                className="input"
-                type="radio"
-                name="btn"
-                id="mainPage"
-                onClick={onMainPageClick}
-                onMouseEnter={handleMouseEnter}
-              />
-              <div className="btn">
-                <span aria-hidden="true"></span>메인페이지
-                <span className="btn__glitch" aria-hidden="true">
-                  메인페이지
-                </span>
-              </div>
-            </div>
+            <p
+              className="EX_btn"
+              onClick={onMainPageClick}
+              onMouseEnter={handleMouseEnter}
+            >
+              메인페이지
+            </p>
 
-            {/* 글리치 버튼 - 마이페이지 보기 */}
-            <div className="radio-wrapper">
-              <input
-                className="input"
-                type="radio"
-                name="btn"
-                id="user"
-                onClick={onResultClick}
-                onMouseEnter={handleMouseEnter}
-              />
-              <div className="btn">
-                마이페이지
-                <span className="btn__glitch" aria-hidden="true">
-                  마이페이지
-                </span>
-              </div>
-            </div>
+            <p
+              className="EX_btn"
+              onClick={onResultClick}
+              onMouseEnter={handleMouseEnter}
+            >
+              마이페이지
+            </p>
           </div>
         </div>
 
@@ -117,22 +97,15 @@ function Buttons({
             </div>
 
             {/* 선택 완료 버튼 */}
-            <div className="radio-wrapper" onMouseEnter={handleMouseEnter}>
-              <input
-                className="input"
-                type="radio"
-                name="btn"
-                id="mainPage"
-                onClick={handleSelectionClick}
-                disabled={!selectedExercise || !selectedDuration}
-              />
-              <div className="btn">
-                <span aria-hidden="true"></span>선택 완료
-                <span className="btn__glitch" aria-hidden="true">
-                  선택 완료
-                </span>
-              </div>
-            </div>
+            <button
+              className={`EX_btn ${
+                !selectedExercise || !selectedDuration ? "disabled" : ""
+              }`}
+              onClick={handleSelectionClick}
+              disabled={!selectedExercise || !selectedDuration}
+            >
+              선택 완료
+            </button>
           </div>
         </div>
       </div>

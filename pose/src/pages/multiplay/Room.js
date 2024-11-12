@@ -115,7 +115,7 @@ function Room() {
       className="roomss"
       style={{ height: "100vh", display: "flex", flexDirection: "column" }}
     >
-      <h1 className="white" style={{ textAlign: "center" }}>
+      <h1 className="Players_in_room" style={{ textAlign: "center" }}>
         Welcome to Room: {roomName}
       </h1>
 
@@ -147,24 +147,18 @@ function Room() {
           </div>
 
           <div style={{ flex: 2 }} className="videoDiv">
-            <div className="videoAndChat">
-              {/* VideoStream 컴포넌트 */}
-              <VideoStream roomName={roomName} />
+            {/* VideoStream 컴포넌트 */}
+            <VideoStream roomName={roomName} />
 
-              <div className="romm_bottom_box">
-                {/* Ready Status and Start Message */}
-                <div className="users" style={{ marginTop: "1rem" }}>
-                  <h2 className="green">Players in Room:</h2>
-                  {users.map((user, index) => (
-                    <div className="white" key={index}>
-                      {user} - {readyStates[user] ? "Ready" : "Not Ready"}
-                    </div>
-                  ))}
-                </div>
-                {/* Chat 컴포넌트 */}
-                <div className="chatBox">
-                  <Chat roomName={roomName} />
-                </div>
+            <div className="romm_bottom_box">
+              {/* Ready Status and Start Message */}
+              <div style={{ marginTop: "1rem" }}>
+                <h2 className="green">Players in Room:</h2>
+                {users.map((user, index) => (
+                  <div className="Players_in_room" key={index}>
+                    {user} - {readyStates[user] ? "Ready" : "Not Ready"}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

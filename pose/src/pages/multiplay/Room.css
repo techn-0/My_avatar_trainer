@@ -1,18 +1,14 @@
 .green {
-  color: #00ff1e;
+  color: rgb(255, 141, 20);
 }
 
-.white {
-  color: white;
+.Players_in_room {
+  font-style: italic;
+  color: #003b52
 }
 .romm_bottom_box {
   display: flex; /* 플렉스박스 사용 */
   flex-direction: row; /* 가로 방향으로 나열 */
   justify-content: space-between; /* 자식 원소들 사이의 여백 */
   align-items: center; /* 세로 방향으로 중앙 정렬 */
-}
-
-.chatBox {
-  display: "flex";
-  justify-content: flex-end;
 }
