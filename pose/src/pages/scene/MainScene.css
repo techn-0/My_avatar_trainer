@@ -7,7 +7,7 @@
 
 .btn_box {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.623);
+  background-color: rgba(221, 221, 221, 0.623);
   margin: 0px;
   width: auto;
   height: auto;
@@ -27,7 +27,7 @@
 
 .btn_box_cont {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.623);
+  background-color: rgba(221, 221, 221, 0.623);
   margin-left: 10px;
   padding-left: 20px;
   padding-top: 15px;
@@ -54,7 +54,7 @@
 }
 .welcome_text {
   font-size: 25px;
-  margin: 20px;
+  margin: 20px 20px 20px 10px;
   white-space: pre-wrap;
   white-space: pre-line;
 }
