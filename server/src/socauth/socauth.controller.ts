@@ -44,16 +44,13 @@ export class SocauthController {
       });
 
       // 소셜 미디어로 로그인 후 최초로 회원 가입 시, 이용자의 정보를 가져오기 위해 req에 담긴 accessToken을 쿠키에 저장한다.
-      const accessToken = req.user?.accessToken;
+      // const accessToken = req.user?.accessToken;
 
       // 소셜 로그인 정보로 로그인한 적이 없다면, 해당 정보로 회원 가입한다.
         try{
-          const response = await axios.get(
-            `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
-          );
-  
-          const user = response.data;
-  
+          // Request에 담긴 정보를 이용해서 socUserDto를 형성한다.
+          const user = req.user;
+
           // 소셜 미디어 종류를 google로 지정한다.
           const socUserCredentialDto = {
             providerId: user.id, 
@@ -63,7 +60,6 @@ export class SocauthController {
   
           // 소셜 로그인 데이터를 이용해서 회원 가입한다.
           await this.socauthService.signUp(socUserCredentialDto);
-  
           
           return res.redirect('http://localhost:3000/socauth/additional-data');
 
@@ -79,13 +75,17 @@ export class SocauthController {
     const username = userRecord.username;
     const result = await this.socauthService.newHandleLogin(username, req.user);
 
+    // req.session.userId = username;
+    // console.log('userRecord', userRecord);
+    // console.log('sessiondata', req.session.userId);
+
     res.cookie('token', result.token, {
       maxAge: 3600 * 1000, // 1시간 (밀리초 단위)
       secure: false, // HTTPS에서만 작동
       sameSite: 'Lax', // SameSite 설정
       path: '/',
     });
-
+    
     // Redirect to localhost:3000 after successful login
     return res.redirect('http://localhost:3000');
   }
@@ -118,7 +118,7 @@ export class SocauthController {
       console.log('#2', provider)
       const result = await this.socauthService.updateUsername(providerId, provider, username);
 
-      console.log('Username successfully done');
+      console.log('Username successfully changed');
 
       // Cookie에 담긴 Token 정보를 없애고, username을 id로 담는 Token을 형성한다. 
       const newToken = await this.socauthService.newHandleLogin(username, provider);
@@ -131,7 +131,9 @@ export class SocauthController {
         path: '/',
       });
       
-      return res.redirect('http://localhost:3000/')
+      // return res.redirect('http://localhost:3000/')
+      return res.status(200).json({message:"Username updated successfully!", redirect:true});
+
     }catch(error){
       console.error(error);
       throw new InternalServerErrorException('Failed to update username information');
@@ -287,7 +289,7 @@ export class SocauthController {
     
     return res.redirect('http://localhost:3000');
   }
-
+  
 }
 
 

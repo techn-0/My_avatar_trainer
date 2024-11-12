@@ -24,7 +24,7 @@ function Room() {
   const [selectedDuration, setSelectedDuration] = useState("");
 
   const exercises = ["squat", "pushup"]; // 운동 종목 리스트
-  const durations = ["60초", "120초"]; // 운동 시간 리스트
+  const durations = ["30초", "60초"]; // 운동 시간 리스트
 
   // 운동 종목 선택 핸들러
   const handleExerciseSelect = (exercise) => {
@@ -160,8 +160,6 @@ function Room() {
                   </div>
                 ))}
               </div>
-              {/* Chat 컴포넌트 */}
-              <Chat roomName={roomName} />
             </div>
           </div>
         </div>

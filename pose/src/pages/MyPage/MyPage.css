@@ -29,6 +29,7 @@
   color: rgb(78, 255, 29);
   z-index: 1;
   margin-bottom: 80px;
+  margin-bottom: 80px;
 
   border: 4px solid; /* 테두리 두께와 스타일 설정 */
   border-color: #4a21ff; /* 초기 색상 */
@@ -51,10 +52,11 @@
   font-weight: bold;
   cursor: pointer;
   margin-right: 10px;
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 
 .cyberpunk-btn:hover {
+  background: #00ff1e;
   background: #00ff1e;
   box-shadow: 0px 0px 10px #00ff9f, 0px 0px 20px #00ff9f;
 }
@@ -63,6 +65,7 @@
 .myPage-horizontalScroll {
   margin-left: 20px;
   margin-right: 20px;
+  justify-content: center;
   justify-content: center;
 
   display: flex;
@@ -96,15 +99,18 @@
 
 .chart-container {
   margin-top: 70px;
+  margin-top: 70px;
 }
 
 /* 차트 */
 .line-chart {
   width: 700px;
   padding: 0 30px 30px 30px;
+  padding: 0 30px 30px 30px;
 }
 
 .radar-chart {
+  padding: 0 30px 30px 30px;
   padding: 0 30px 30px 30px;
 }
 
@@ -124,6 +130,8 @@
   margin-right: 10px;
   margin-top: 25px;
   margin-bottom: 30px;
+  margin-top: 25px;
+  margin-bottom: 30px;
 }
 .friend-management input {
   width: 80%;
@@ -141,6 +149,7 @@
 }
 
 .comment-input button:hover {
+  background: #00ff1e;
   background: #00ff1e;
 }
 
@@ -162,6 +171,7 @@
 
 .comment-card {
   padding-left: 15px;
+  padding-left: 15px;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   color: rgb(0, 0, 0);
@@ -174,12 +184,14 @@
 .comment-card button {
   padding: 5px 10px;
   background: #8c00ff;
+  background: #8c00ff;
   color: rgb(0, 0, 0);
   border: none;
   cursor: pointer;
 }
 
 .comment-card button:hover {
+  background: #00ff1e;
   background: #00ff1e;
 }
 
@@ -188,11 +200,14 @@
   padding: 5px 10px;
   background: #8c00ff;
   color: rgb(255, 255, 255);
+  background: #8c00ff;
+  color: rgb(255, 255, 255);
   border: none;
   cursor: pointer;
 }
 
 .friend-card button:hover {
+  background: #00ff1e;
   background: #00ff1e;
 }
 
@@ -202,11 +217,14 @@
   padding: 5px 10px;
   background: #8c00ff;
   color: #ffffff;
+  background: #8c00ff;
+  color: #ffffff;
   border: none;
   cursor: pointer;
 }
 
 .pagination button:hover {
+  background: #00ff1e;
   background: #00ff1e;
 }
 
@@ -231,6 +249,7 @@
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-right: 10px; /* 스크롤바와 콘텐츠 간격 */
   border-radius: 20px;
+  border-radius: 20px;
 }
 .comments-container {
   max-height: 400px; /* 박스 높이 제한 */
@@ -252,6 +271,7 @@
 }
 
 *::-webkit-scrollbar-thumb {
+  background: #00ff37; /* 스크롤바 색상 */
   background: #00ff37; /* 스크롤바 색상 */
   border-radius: 4px; /* 둥근 모서리 */
 }
@@ -315,7 +335,10 @@
   /* box-shadow: 0px 0px 10px #1100ff, 0px 0px 20px #0015ff; */
   border-radius: 20px;
 
-  padding-left: 100px;
+  padding-left: 50px;
+}
+.friendAdd {
+  /* background-color: ; */
 }
 
 .friend-input {

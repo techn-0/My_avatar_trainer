@@ -95,18 +95,18 @@ function MediapipeSquatTracking({
       );
 
       if (results.poseLandmarks) {
-        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-          color: "white",
-          lineWidth: 4,
-        });
-        drawLandmarks(
-          canvasCtx,
-          results.poseLandmarks.filter((_, index) => index > 10),
-          {
-            color: "blue",
-            lineWidth: 2,
-          }
-        );
+        // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+        //   color: "white",
+        //   lineWidth: 4,
+        // });
+        // drawLandmarks(
+        //   canvasCtx,
+        //   results.poseLandmarks.filter((_, index) => index > 10),
+        //   {
+        //     color: "blue",
+        //     lineWidth: 2,
+        //   }
+        // );
 
         const landmarks = results.poseLandmarks;
 
@@ -162,15 +162,15 @@ function MediapipeSquatTracking({
 
         // Squat down condition
         const isSquatDown =
-          leftKneeAngle < 100 &&
-          rightKneeAngle < 100 &&
-          leftHipAngle < 100 &&
-          rightHipAngle < 100 &&
+          leftKneeAngle < 70 &&
+          rightKneeAngle < 70 &&
+          leftHipAngle < 70 &&
+          rightHipAngle < 70 &&
           leftTorsoAngle > 30 &&
           rightTorsoAngle > 30;
 
         // Squat up condition
-        const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
+        const isSquatUp = leftKneeAngle > 150 || rightKneeAngle > 150;
         // (leftHipAngle > 140 || rightHipAngle > 140);
         // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
 

@@ -24,10 +24,13 @@ import {
   Button,
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
+import { io } from "socket.io-client";
 
 // 주소 전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
+const socket = io(apiUrl);
 
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
@@ -55,11 +58,9 @@ const MyPage = () => {
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(0.5); // 1분 또는 2분 선택
-  const [comment, setComment] = useState("");
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
   const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
-  const [commentData, setCommentData] = useState([]);
   const [pendingRequest, setPendingRequest] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
@@ -96,6 +97,18 @@ const MyPage = () => {
 
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
+    // Confirm socket connection
+
+    socket.emit("userOnline", userId);
+
+    socket.on("statusUpdate", ({ userId, isOnline }) => {
+      setFriendData((prevFriends) =>
+        prevFriends.map((friend) =>
+          friend.userId === userId ? { ...friend, isOnline } : friend
+        )
+      );
+    });
+    console.log("Friend Data", friendData.isOnline);
 
     const fetchTier = async () => {
       try {
@@ -119,27 +132,6 @@ const MyPage = () => {
     fetchTier();
 
     console.log("게시판 주인: ", ownerId, ", 로그인된 유저: ", userId);
-    const fetchComments = async () => {
-      try {
-        // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(`${apiUrl}/comment/${ownerId}`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: ownerId }),
-        });
-        const data = await response.json();
-        console.log("your comment", data);
-        setCommentData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setLoading(false);
-      }
-    };
-    fetchComments();
     const fetchFriends = async () => {
       try {
         const response = await fetch(`${apiUrl}/friends/list`, {
@@ -152,7 +144,12 @@ const MyPage = () => {
         });
         const data = await response.json();
         console.log("friend list: ", data);
-        setFriendData(data);
+
+        const friendsWithStatus = data.map((friendId) => ({
+          userId: friendId,
+          isOnline: false, // Default to offline until we get status updates
+        }));
+        setFriendData(friendsWithStatus);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching friend list:", error);
@@ -209,6 +206,10 @@ const MyPage = () => {
     };
 
     fetchWorkouts();
+
+    return () => {
+      socket.off("statusUpdate"); // Clean up status update listener
+    };
   }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
   // 마지막 접속 날짜와 연속 로그인 일수 계산 함수
@@ -458,78 +459,6 @@ const MyPage = () => {
     navigate("/"); // 메인 페이지로 이동
   };
 
-  // 방명록 내용 상태 관리
-  const handleCommentChange = (e) => {
-    setComment(e.target.value);
-  };
-
-  // 방명록 제출 핸들러
-  const handleSubmit = async () => {
-    if (!comment) {
-      alert("내용을 입력해주세요.");
-      return;
-    }
-
-    const data = {
-      ownerId: ownerId,
-      userId: userId,
-      comment: comment,
-      profilePic: "",
-    };
-
-    try {
-      const response = await fetch(`${apiUrl}/comment/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const addedComment = await response.json();
-        setCommentData((prevComments) => [...prevComments, addedComment]);
-        setComment("");
-        alert("코멘트가 작성되었습니다.");
-      } else {
-        console.log(data);
-        alert("코멘트 작성에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("서버 오류가 발생했습니다.");
-    }
-  };
-
-  // 방명록 삭제
-  const handleDeleteComment = async (_id) => {
-    try {
-      const response = await fetch(
-        `http://localhost:3002/comment/delete/${_id}`,
-        {
-          method: "Delete",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(),
-        }
-      );
-      if (response.ok) {
-        alert("삭제되었습니다.");
-        setCommentData((prevComments) =>
-          prevComments.filter((comment) => comment._id !== _id)
-        );
-      } else {
-        console.log(_id);
-        alert("삭제에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error deleting friend:", error);
-      alert("서버 오류가 발생했습니다.");
-    }
-  };
-
   // Friend function
   // 친구 ID 내용 상태 관리
   const handleAddFriendChange = (e) => {
@@ -538,6 +467,71 @@ const MyPage = () => {
   // Find User 내용 상태 관리
   const handleSearchUserChange = (e) => {
     setSearchUserId(e.target.value);
+  };
+
+  // 친구와 대화하는 함수
+  const handleChat = async (friendUserId) => {
+    const token = getToken();
+    if (!token || typeof token !== "string" || token.trim() === "") {
+      alert("User not logged in");
+      return;
+    }
+
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
+
+    const roomName = [username, friendUserId].sort().join("&");
+
+    if (!roomName) {
+      alert("Please enter a valid friend ID");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/room/checkRoom/${roomName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Room doesn't exist");
+      }
+
+      const data = await response.json();
+      const roomExists = !!data.exists;
+      console.log(roomExists);
+      if (roomExists) {
+        // 방이 존재한다면, 형성된 방에 들어간다.
+        console.log(`Joined existing Room ${roomName} successfully`);
+        socket.emit("createRoom", { roomName, username });
+      } else {
+        // 방이 존재하지 않는다면 DB에 해당 정보를 저장하고, 방을 형성한다.
+        const createRoomResponse = await fetch(`${apiUrl}/room/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            roomName,
+            userIdList: [username, friendUserId],
+          }),
+        });
+
+        if (!createRoomResponse.ok) {
+          throw new Error("Failed to create Room data");
+        }
+
+        console.log(`Room ${roomName} created successfully`);
+
+        socket.emit("createRoom", { roomName, username });
+      }
+
+      navigate(`/chatroom/${roomName}`);
+    } catch (error) {
+      alert("Failed to create or find room");
+    }
   };
 
   // 친구 삭제 함수
@@ -680,135 +674,164 @@ const MyPage = () => {
             <h2>TIER {tier}</h2>
             <p>상위 {percentile}% 입니다!</p>
           </div>
-        </section>
+          <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
+        </header>
 
-        <section className="myPage-recentRecordSection glow-container line-chart">
-          <h2>최근 운동 기록</h2>
-          <div className="chart-container">
-            <Line data={lineData} options={options} />
-          </div>
-        </section>
-
-        <section className="myPage-bestRecordSection glow-container radar-chart">
-          <h2>최고 기록</h2>
-          <div className="chart-container">
-            <Radar data={radarData} options={radarOptions} />
-          </div>
-        </section>
-      </div>
-
-      {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
-      <div className="myPage-bottom">
-        <section className="glow-container comment_box">
-          <h2>방명록</h2>
-          <div className="comments-container scrollable-box">
-            {commentData.map((comment) => (
-              <div key={comment._id} className="comment-card">
-                <p className="font_small">
-                  <strong className="font_small">작성자:</strong>{" "}
-                  {comment.userId}
-                </p>
-                <p className="font_small">
-                  <strong className="font_small">작성일:</strong>{" "}
-                  {new Date(comment.createdAt).toLocaleDateString()}
-                </p>
-                <p className="font_small">{comment.comment}</p>
-                {userId === comment.userId && (
-                  <button
-                    className="cyberpunk-btn"
-                    onClick={() => handleDeleteComment(comment._id)}
-                  >
-                    삭제
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="comment-input">
-            <input
-              type="text"
-              placeholder="내용 입력"
-              value={comment}
-              onChange={handleCommentChange}
-            />
-            <button className="cyberpunk-btn" onClick={handleSubmit}>
-              제출
-            </button>
-          </div>
-        </section>
-
-        <section className="glow-container friend-management">
-          <h2>친구 추가</h2>
-          <input
-            type="text"
-            placeholder="ID 입력"
-            value={friendUserId}
-            onChange={handleAddFriendChange}
-            className="friend-input"
-          />
-          <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
-            추가
-          </button>
-
-          <h2>유저 검색</h2>
-          <input
-            type="text"
-            placeholder="ID 입력"
-            value={searchUserId}
-            onChange={handleSearchUserChange}
-            className="friend-input"
-          />
-          <button onClick={handleSearchUser} className="cyberpunk-btn">
-            검색
-          </button>
-
-          {searchResult && (
-            <div
-              className="search-result"
-              onClick={() => handleFriendClick(searchResult.user.username)}
-            >
-              <p>검색된 유저 ID: {searchResult.user.username}</p>
+        {/* 1층: 상단 블록 (좋아하는 운동, 최근 운동 기록, 최고 기록) */}
+        <div className="myPage-top">
+          <section className="myPage-tierSection glow-container">
+            <div className="myPage-tierInfo">
+              <h2>좋아하는 운동: {favoriteExercise()}</h2>
+              {lastVisitDays === "오늘" ? (
+                <p>오늘도 꾸준히!</p>
+              ) : consecutiveDays > 0 ? (
+                <p>연속 접속일: {consecutiveDays}일</p>
+              ) : (
+                <p>오랜만입니다! {lastVisitDays}만에 접속하셨습니다.</p>
+              )}
             </div>
-          )}
+            <div className="myPage-tierImage">
+              {tier >= 1 && tier <= 5 && (
+                <img src={preloadImages[tier - 1].src} alt={`Tier ${tier}`} />
+              )}
+              <h2>TIER {tier}</h2>
+              <p>상위 {percentile}% 입니다!</p>
+            </div>
+          </section>
 
-          <h2>친구 목록</h2>
-          <div className="friend-list scrollable-box2">
-            {currentFriends.map((friend, index) => (
-              <div key={index} className="friend-card">
-                <p>{friend}</p>
-                {userId === ownerId && (
-                  <button
-                    onClick={() => handleDeleteFriend(friend)}
-                    className="cyberpunk-btn"
-                  >
-                    삭제
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="pagination">
-            <button
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-              className="cyberpunk-btn"
-            >
-              이전
-            </button>
-            <button
-              onClick={handleNextPage}
-              disabled={
-                currentPage >= Math.ceil(friendData.length / friendsPerPage)
-              }
-              className="cyberpunk-btn"
-            >
-              다음
-            </button>
-          </div>
-        </section>
+          <section className="myPage-recentRecordSection glow-container line-chart">
+            <h2>최근 운동 기록</h2>
+            <div className="chart-container">
+              <Line data={lineData} options={options} />
+            </div>
+          </section>
+
+          <section className="myPage-bestRecordSection glow-container radar-chart">
+            <h2>최고 기록</h2>
+            <div className="chart-container">
+              <Radar data={radarData} options={radarOptions} />
+            </div>
+          </section>
+        </div>
+
+        {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
+        <div className="myPage-bottom">
+          <section className="glow-container friend-management">
+            <div>
+              <h2 className="friendAdd">유저 검색</h2>
+              <input
+                type="text"
+                placeholder="ID 입력"
+                value={searchUserId}
+                onChange={handleSearchUserChange}
+                className="friend-input"
+              />
+              <button onClick={handleSearchUser} className="cyberpunk-btn">
+                검색
+              </button>
+
+              {searchResult && (
+                <div
+                  className="search-result"
+                  onClick={() => handleFriendClick(searchResult.user.username)}
+                >
+                  <p>검색된 유저 ID: {searchResult.user.username}</p>
+                </div>
+              )}
+
+              <h2 className="friendAdd">친구 추가</h2>
+              <input
+                type="text"
+                placeholder="ID 입력"
+                value={friendUserId}
+                onChange={handleAddFriendChange}
+                className="friend-input"
+              />
+              <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
+                추가
+              </button>
+            </div>
+          </section>
+          <section className="glow-container friend-management">
+            <h2 className="friendAdd">친구 목록</h2>
+            <div className="friend-list scrollable-box2">
+              {friendData.map((friend, index) => (
+                <div
+                  key={index}
+                  className="friend-card"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p>{friend.userId}</p>
+                  {userId === ownerId && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "3px",
+                      }}
+                    >
+                      <button
+                        onClick={() => handleChat(friend.userId)}
+                        className="cyberpunk-btn"
+                      >
+                        대화
+                      </button>
+                      <button
+                        onClick={() => handleDeleteFriend(friend.userId)}
+                        className="cyberpunk-btn"
+                      >
+                        삭제
+                      </button>
+                      <div
+                        className="status-circle"
+                        style={{
+                          width: "25px",
+                          height: "25px",
+                          borderRadius: "50%",
+                          backgroundColor: friend.isOnline ? "lime" : "grey",
+                          border: friend.isOnline
+                            ? "none"
+                            : "2px solid darkgrey",
+                          animation: friend.isOnline
+                            ? "flash 1s infinite"
+                            : "none",
+                          marginLeft: "auto", // Moves the circle to the far right
+                        }}
+                      ></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="pagination">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className="cyberpunk-btn"
+              >
+                이전
+              </button>
+              <button
+                onClick={handleNextPage}
+                disabled={
+                  currentPage >= Math.ceil(friendData.length / friendsPerPage)
+                }
+                className="cyberpunk-btn"
+              >
+                다음
+              </button>
+            </div>
+          </section>
+        </div>
+        <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
       </div>
-      <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
-    </div>
+    </>
   );
 };
 
