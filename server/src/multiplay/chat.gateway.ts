@@ -6,7 +6,9 @@ import {
     WebSocketServer,
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
-  
+  import { MessageService} from '../my-page/message/message.service';
+  // import { RoomService} from '../my-page/room/room.service';
+
   interface Room {
     host: string;
     users: string[];
@@ -14,6 +16,10 @@ import {
   
   @WebSocketGateway({ cors: true })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    constructor(private readonly messageService:MessageService,
+                // private readonly roomService:RoomService,
+    ){}
+
     @WebSocketServer() server: Server;
     private rooms: { [key: string]: Room } = {};
   
@@ -37,10 +43,11 @@ import {
         room.users = room.users.filter((user) => user !== username);
         delete client.data.username;
   
-        if (room.users.length === 0) {
-          delete this.rooms[roomName];
-          console.log(`Room ${roomName} deleted as it's now empty.`);
-        } else {
+        // if (room.users.length === 0) {
+        //   delete this.rooms[roomName];
+        //   console.log(`Room ${roomName} deleted as it's now empty.`);
+        // } 
+        if(room.users.length!==0) {
           // Emit updated user list to remaining users in the room
           console.log(`Emitting updateUsers for room ${roomName}:`, room.users);
           this.server.to(roomName).emit('updateUsers', room.users);
@@ -87,12 +94,12 @@ import {
   }
   
     @SubscribeMessage('joinRoom')
-  handleJoinRoom(
+  async handleJoinRoom(
     client: Socket,
     payload: { roomName: string; username: string },
   ) {
     const { roomName, username } = payload;
-  
+
     if (this.rooms[roomName]) {
       // Add user to the room if they are not already in it
       if (!this.rooms[roomName].users.includes(username)) {
@@ -101,6 +108,9 @@ import {
       }
       client.join(roomName);
       client.data.username = username;
+
+      const messageHistory = await this.messageService.getMessages(roomName);
+      client.emit('messageHistory', messageHistory);
   
       // Emit updated user list to all users in the room
       console.log(
@@ -115,32 +125,27 @@ import {
   }
   
   @SubscribeMessage('sendMessage')
-  handleSendMessage(client: Socket, payload: { roomName: string; message: string;username: string }) {
+  async handleSendMessage(client: Socket, payload: { roomName: string; message: string;username: string }) {
     console.log('handleSendMessage invoked');
 
     const { roomName, message, username } = payload;
-  
+    
     console.log('Message received on backend:', payload);
   
-    if (!username) {
-      console.error(`Username not set for client: ${client.id}`);
-      return;
-    }else{
-      console.log(`The usename is ${username}`);
-    }
-  
-    if(!message?.trim()){
-      console.error(`Cannot send an empty message from ${username}in room ${roomName}`);
-      return;
-    }else{
-      console.log(`The message is ${message}`);
+    // Check if message is empty or contains only whitespace
+    if (!message || message.trim() === "") {
+      console.error("Cannot send an empty message.");
+      return; // Do not proceed if the message is empty
     }
   
     if (this.rooms[roomName]) {
       console.log(`Broadcasting message from ${username} to room ${roomName}: ${message}`);
-      
+        
       // Broadcast the message to all users in the specified room
       this.server.to(roomName).emit('receiveMessage', { sender: username, content: message });
+      
+      await this.messageService.addMessage(roomName, username, message);
+    
     } else {
       console.log(`Room ${roomName} does not exist for message broadcasting.`);
     }

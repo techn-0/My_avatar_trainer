@@ -24,10 +24,13 @@ import {
   Button,
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
+import {io} from "socket.io-client";
 
 // 주소 전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
+
+const socket = io(apiUrl);
 
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
@@ -96,6 +99,18 @@ const MyPage = () => {
 
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
+     // Confirm socket connection
+
+    socket.emit("userOnline", userId);
+
+    socket.on("statusUpdate", ({ userId, isOnline }) => {
+      setFriendData((prevFriends) =>
+        prevFriends.map((friend) =>
+          friend.userId === userId ? { ...friend, isOnline } : friend
+        )
+      );
+    });
+    console.log('Friend Data',friendData.isOnline);
 
     const fetchTier = async () => {
       try {
@@ -152,7 +167,12 @@ const MyPage = () => {
         });
         const data = await response.json();
         console.log("friend list: ", data);
-        setFriendData(data);
+
+        const friendsWithStatus = data.map(friendId => ({
+          userId: friendId,
+          isOnline: false // Default to offline until we get status updates
+        }));
+        setFriendData(friendsWithStatus);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching friend list:", error);
@@ -209,6 +229,10 @@ const MyPage = () => {
     };
 
     fetchWorkouts();
+
+    return () => {
+      socket.off("statusUpdate"); // Clean up status update listener
+    };
   }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
   // 마지막 접속 날짜와 연속 로그인 일수 계산 함수
@@ -541,6 +565,75 @@ const MyPage = () => {
     setSearchUserId(e.target.value);
   };
 
+  // 친구와 대화하는 함수
+  const handleChat = async(friendUserId) =>{
+    const token = getToken();
+    if (!token || typeof token !== "string" || token.trim() === "") {
+      alert("User not logged in");
+      return;
+    }
+
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.id;
+
+    const roomName = [username, friendUserId].sort().join('&');
+  
+    if(!roomName){
+      alert("Please enter a valid friend ID");
+      return;
+    }
+
+    try{
+      const response = await fetch(`${apiUrl}/room/checkRoom/${roomName}`,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+        },
+      });
+
+      if(!response.ok){
+        throw new Error("Room doesn't exist");
+      }
+
+      const data = await response.json();
+      const roomExists = !!data.exists;
+      console.log(roomExists);
+      if(roomExists){
+        // 방이 존재한다면, 형성된 방에 들어간다.
+        console.log(`Joined existing Room ${roomName} successfully`);
+        socket.emit("createRoom", {roomName, username}); 
+
+      }else{
+        // 방이 존재하지 않는다면 DB에 해당 정보를 저장하고, 방을 형성한다. 
+        const createRoomResponse = await fetch(`${apiUrl}/room/create`,{
+          method:'POST',
+          headers:{
+            "Content-Type":"application/json",
+          },
+          body: JSON.stringify({
+            roomName, 
+            userIdList:[username, friendUserId],
+          }),
+        })
+
+        if(!createRoomResponse.ok){
+          throw new Error("Failed to create Room data");
+        }
+
+        console.log(`Room ${roomName} created successfully`);
+
+        socket.emit("createRoom", {roomName, username});
+      }
+
+      navigate(`/chatroom/${roomName}`);
+
+    }catch(error){
+        alert("Failed to create or find room");
+    }
+    
+
+  }
+
   // 친구 삭제 함수
   const handleDeleteFriend = async (friendUserId) => {
     try {
@@ -648,6 +741,16 @@ const MyPage = () => {
   };
 
   return (
+    <>
+    <style>
+      {`
+        @keyframes flash {
+          0% { opacity: 1; }
+          50% { opacity: 0.5; }
+          100% { opacity: 1; }
+        }
+      `}
+    </style>
     <div className="myPage-container">
       {/* 상단 헤더 */}
       <header className="myPage-header">
@@ -748,18 +851,6 @@ const MyPage = () => {
         </section>
 
         <section className="glow-container friend-management">
-          <h2>친구 추가</h2>
-          <input
-            type="text"
-            placeholder="ID 입력"
-            value={friendUserId}
-            onChange={handleAddFriendChange}
-            className="friend-input"
-          />
-          <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
-            추가
-          </button>
-
           <h2>유저 검색</h2>
           <input
             type="text"
@@ -781,22 +872,56 @@ const MyPage = () => {
             </div>
           )}
 
+          <h2>친구 추가</h2>
+          <input
+            type="text"
+            placeholder="ID 입력"
+            value={friendUserId}
+            onChange={handleAddFriendChange}
+            className="friend-input"
+          />
+          <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
+            추가
+          </button>
+
           <h2>친구 목록</h2>
           <div className="friend-list scrollable-box2">
-            {currentFriends.map((friend, index) => (
-              <div key={index} className="friend-card">
-                <p>{friend}</p>
+            {friendData.map((friend, index) => (
+              <div key={index} className="friend-card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <p>{friend.userId}</p>
                 {userId === ownerId && (
+                    <div style={{ display: "flex",  alignItems: "center", justifyContent: "center", gap: "3px", }}>
                   <button
-                    onClick={() => handleDeleteFriend(friend)}
+                    onClick={() => handleChat(friend.userId)}
+                    className="cyberpunk-btn"
+                  >
+                    대화
+                  </button>
+                  <button
+                    onClick={() => handleDeleteFriend(friend.userId)}
                     className="cyberpunk-btn"
                   >
                     삭제
                   </button>
+                  <div
+                    className="status-circle"
+                    style={{
+                      width: "25px",
+                      height: "25px",
+                      borderRadius: "50%",
+                      backgroundColor: friend.isOnline ? "lime" : "grey",
+                      border: friend.isOnline ? "none" : "2px solid darkgrey",
+                      animation: friend.isOnline ? "flash 1s infinite" : "none",
+                      marginLeft: "auto" // Moves the circle to the far right
+                    }}
+                  ></div>
+
+                  </div>
                 )}
               </div>
             ))}
           </div>
+          
           <div className="pagination">
             <button
               onClick={handlePreviousPage}
@@ -819,6 +944,7 @@ const MyPage = () => {
       </div>
       <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
     </div>
+    </>
   );
 };
 

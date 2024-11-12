@@ -27,10 +27,15 @@ const getToken = () => {
     const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
     if (tokenCookie) {
       return tokenCookie.split("=")[1]; // 토큰 값만 리턴
-    } else {
-      sessionStorage.removeItem("userId"); // 토큰이 없으면 userId 삭제
+    }
+    else{
+      console.warn('Invalid token: token is empty or not a valid string')
       return null;
     }
+    // else {
+    //   sessionStorage.removeItem("userId"); // 토큰이 없으면 userId 삭제
+    //   return null;
+    // }
   } catch (error) {
     console.error("Error getting token from cookie", error);
     return null;

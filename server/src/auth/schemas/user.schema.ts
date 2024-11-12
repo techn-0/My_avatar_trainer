@@ -23,6 +23,10 @@ export class User extends Document {
   tier: number;
 
   @Prop()
+  profilepic:string;
+
+  @Prop()
   percentile: number;
 }
+
 export const UserSchema = SchemaFactory.createForClass(User);
