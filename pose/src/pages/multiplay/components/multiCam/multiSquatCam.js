@@ -35,7 +35,7 @@ const MultiSquatCam = ({ roomName }) => {
       socket.off("bothPlayersReady");
     };
   }, []);
-  
+
   useEffect(() => {
     if (bothReady && countdownMusicRef.current) {
       countdownMusicRef.current.currentTime = 0;
@@ -140,39 +140,39 @@ const MultiSquatCam = ({ roomName }) => {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-    {bothReady ? (
-      <>
-        {!countdownFinished ? (
-          <>
-            <CountDown onCountdownEnd={() => setCountdownFinished(true)} />
-            <audio ref={countdownMusicRef} src="/sound/3secCount.mp3" />
-          </>
-        ) : (
-          <>
-            {/* MediaPipe Squat Tracking */}
-            <MediapipeSquatTracking
-              onCanvasUpdate={() => {}}
-              onCountUpdate={() => {}}
-              roomName={roomName}
-            />
-            {/* WebRTC Video Streams */}
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: "2000px",
-                height: "900px",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <VideoStream roomName={roomName} showLocalVideo={false} />
-            </div>
-          </>
-        )}
-      </>
+      {bothReady ? (
+        <>
+          {!countdownFinished ? (
+            <>
+              <CountDown onCountdownEnd={() => setCountdownFinished(true)} />
+              <audio ref={countdownMusicRef} src="/sound/3secCount.mp3" />
+            </>
+          ) : (
+            <>
+              {/* MediaPipe Squat Tracking */}
+              <MediapipeSquatTracking
+                onCanvasUpdate={() => {}}
+                onCountUpdate={() => {}}
+                roomName={roomName}
+              />
+              {/* WebRTC Video Streams */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "2000px",
+                  height: "900px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <VideoStream roomName={roomName} showLocalVideo={false} />
+              </div>
+            </>
+          )}
+        </>
       ) : (
         // OK 포즈 감지 화면
         <div>
@@ -180,30 +180,49 @@ const MultiSquatCam = ({ roomName }) => {
           <div
             style={{ display: "flex", gap: "100px", justifyContent: "center" }}
           >
-            <video
-              ref={videoRef}
-              width="800"
-              height="640"
-              style={{
-                display: "block",
-                width: "50%",
-                height: "50%",
-                objectFit: "cover",
-              }}
-            ></video>
-            <canvas
-              ref={canvasRef}
-              width="800"
-              height="640"
-              style={{
-                display: "block",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "50%",
-                height: "50%",
-              }}
-            ></canvas>
+            <div
+              style={{ position: "relative", width: "800px", height: "640px" }}
+            >
+              <video
+                ref={videoRef}
+                width="800"
+                height="640"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "800px",
+                  height: "640px",
+                  objectFit: "cover",
+                }}
+              ></video>
+              <canvas
+                ref={canvasRef}
+                width="800"
+                height="640"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "800px",
+                  height: "640px",
+                }}
+              ></canvas>
+              <img
+                src="/ok.png"
+                alt="Guideline"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "20%",
+                  width: "500px",
+                  height: "640px",
+                  opacity: 0.5,
+                  pointerEvents: "none",
+                }}
+              />
+            </div>
+
             <div>
               <OkGuide />
             </div>
