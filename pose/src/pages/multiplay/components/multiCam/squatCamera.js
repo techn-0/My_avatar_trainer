@@ -42,7 +42,7 @@ function MediapipeSquatTracking({
   const [squatCount, setSquatCount] = useState(0);
   const [remoteSquatCount, setRemoteSquatCount] = useState(0);
   const squatStateRef = useRef("up");
-  
+
   const [showTimer, setShowTimer] = useState(false);
   const [remainingTime, setRemainingTime] = useState(null); // 남은 시간 관리
   const timerStartTimeRef = useRef(null);
@@ -81,26 +81,25 @@ function MediapipeSquatTracking({
     });
   }
 
-  
   //컴포넌트 마운트 시 카운트다운 시작
   useEffect(() => {
     // 운동 타이머 시작
-      socket.emit("startExerciseTimer", {
-        roomName,
-        duration: 60, // 예를 들어 5분(300초) 동안 운동 타이머
-      });
-  
-      socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
-        const elapsedTime = (Date.now() - startTime) / 1000;
-        const initialRemainingTime = duration - elapsedTime;
-  
-        if (initialRemainingTime > 0) {
-          startExerciseTimer(Math.floor(initialRemainingTime));
-        } else {
-          setRemainingTime(0); // 이미 종료된 경우
-        }
-      });
-  
+    socket.emit("startExerciseTimer", {
+      roomName,
+      duration: 60, // 예를 들어 5분(300초) 동안 운동 타이머
+    });
+
+    socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
+      const elapsedTime = (Date.now() - startTime) / 1000;
+      const initialRemainingTime = duration - elapsedTime;
+
+      if (initialRemainingTime > 0) {
+        startExerciseTimer(Math.floor(initialRemainingTime));
+      } else {
+        setRemainingTime(0); // 이미 종료된 경우
+      }
+    });
+
     return () => {
       socket.off("exerciseTimerStarted");
     };
@@ -156,118 +155,120 @@ function MediapipeSquatTracking({
     };
   }, [mediapipeActive]);
 
-  const onResults = React.useCallback((results) => {
-    if (!canvasRef.current) return;
+  const onResults = React.useCallback(
+    (results) => {
+      if (!canvasRef.current) return;
 
-    const canvasCtx = canvasRef.current.getContext("2d");
-    canvasCtx.clearRect(
-      0,
-      0,
-      canvasRef.current.width,
-      canvasRef.current.height
-    );
-    canvasCtx.drawImage(
-      results.image,
-      0,
-      0,
-      canvasRef.current.width,
-      canvasRef.current.height
-    );
-
-    if (results.poseLandmarks) {
-      drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-        color: "white",
-        lineWidth: 4,
-      });
-      drawLandmarks(
-        canvasCtx,
-        results.poseLandmarks.filter((_, index) => index > 10),
-        {
-          color: "blue",
-          lineWidth: 2,
-        }
+      const canvasCtx = canvasRef.current.getContext("2d");
+      canvasCtx.clearRect(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
       );
-
-      const landmarks = results.poseLandmarks;
-
-      // Required landmark indices
-      const requiredLandmarkIndices = [
-        11, 12, 23, 24, 25, 26, 27, 28, 29, 30,
-      ];
-      const allLandmarksPresent = requiredLandmarkIndices.every(
-        (index) => landmarks[index]
-      );
-
-      if (!allLandmarksPresent) {
-        console.warn("Some landmarks are missing");
-        return;
-      }
-
-      // 각도 계산 및 스쿼트 상태 업데이트 로직
-      // Left knee angle (left_hip, left_knee, left_ankle)
-      const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
-
-      // Right knee angle (right_hip, right_knee, right_ankle)
-      const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
-
-      // Left hip angle (left_shoulder, left_hip, left_knee)
-      const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
-
-      // Right hip angle (right_shoulder, right_hip, right_knee)
-      const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
-
-      // Torso angle (nose, left_shoulder, left_hip)
-      const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
-      const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
-
-      if (
-        leftKneeAngle === null ||
-        rightKneeAngle === null ||
-        leftHipAngle === null ||
-        rightHipAngle === null ||
-        leftTorsoAngle === null ||
-        rightTorsoAngle === null
-      ) {
-        console.warn("Angle calculation returned null");
-        return;
-      }
-
-      // Squat down condition
-      const isSquatDown =
-        leftKneeAngle < 100 &&
-        rightKneeAngle < 100 &&
-        leftHipAngle < 100 &&
-        rightHipAngle < 100 &&
-        leftTorsoAngle > 30 &&
-        rightTorsoAngle > 30;
-
-      // Squat up condition
-      const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
-
-      // Update squat state and count
-      if (isSquatDown && squatStateRef.current === "up") {
-        squatStateRef.current = "down";
-        onPreMovement();
-      }
-
-      if (isSquatUp && squatStateRef.current === "down") {
-        squatStateRef.current = "up";
-        onCountIncrease();
-      }
-
-      // Draw effects (green flash and "Good!" box)
-      drawEffects(
-        canvasCtx,
+      canvasCtx.drawImage(
+        results.image,
+        0,
+        0,
         canvasRef.current.width,
         canvasRef.current.height
       );
 
-      if (onCanvasUpdate) {
-        onCanvasUpdate(canvasRef.current);
+      if (results.poseLandmarks) {
+        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+          color: "white",
+          lineWidth: 4,
+        });
+        drawLandmarks(
+          canvasCtx,
+          results.poseLandmarks.filter((_, index) => index > 10),
+          {
+            color: "blue",
+            lineWidth: 2,
+          }
+        );
+
+        const landmarks = results.poseLandmarks;
+
+        // Required landmark indices
+        const requiredLandmarkIndices = [
+          11, 12, 23, 24, 25, 26, 27, 28, 29, 30,
+        ];
+        const allLandmarksPresent = requiredLandmarkIndices.every(
+          (index) => landmarks[index]
+        );
+
+        if (!allLandmarksPresent) {
+          console.warn("Some landmarks are missing");
+          return;
+        }
+
+        // 각도 계산 및 스쿼트 상태 업데이트 로직
+        // Left knee angle (left_hip, left_knee, left_ankle)
+        const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
+
+        // Right knee angle (right_hip, right_knee, right_ankle)
+        const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
+
+        // Left hip angle (left_shoulder, left_hip, left_knee)
+        const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
+
+        // Right hip angle (right_shoulder, right_hip, right_knee)
+        const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
+
+        // Torso angle (nose, left_shoulder, left_hip)
+        const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
+        const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
+
+        if (
+          leftKneeAngle === null ||
+          rightKneeAngle === null ||
+          leftHipAngle === null ||
+          rightHipAngle === null ||
+          leftTorsoAngle === null ||
+          rightTorsoAngle === null
+        ) {
+          console.warn("Angle calculation returned null");
+          return;
+        }
+
+        // Squat down condition
+        const isSquatDown =
+          leftKneeAngle < 70 &&
+          rightKneeAngle < 70 &&
+          leftHipAngle < 70 &&
+          rightHipAngle < 70 &&
+          leftTorsoAngle > 30 &&
+          rightTorsoAngle > 30;
+
+        // Squat up condition
+        const isSquatUp = leftKneeAngle > 150 || rightKneeAngle > 150;
+
+        // Update squat state and count
+        if (isSquatDown && squatStateRef.current === "up") {
+          squatStateRef.current = "down";
+          onPreMovement();
+        }
+
+        if (isSquatUp && squatStateRef.current === "down") {
+          squatStateRef.current = "up";
+          onCountIncrease();
+        }
+
+        // Draw effects (green flash and "Good!" box)
+        drawEffects(
+          canvasCtx,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
+
+        if (onCanvasUpdate) {
+          onCanvasUpdate(canvasRef.current);
+        }
       }
-    }
-  }, [onCanvasUpdate, drawEffects]);
-  
+    },
+    [onCanvasUpdate, drawEffects]
+  );
 
   useEffect(() => {
     // 서버로부터 상대방의 스쿼트 횟수 업데이트 수신
@@ -280,7 +281,6 @@ function MediapipeSquatTracking({
     };
   }, [roomName]);
 
-  
   const startExerciseTimer = (initialTime) => {
     setShowTimer(true);
     timerStartTimeRef.current = Date.now();
@@ -314,10 +314,10 @@ function MediapipeSquatTracking({
               width: "800px",
               height: "640px",
             }}
-      ></canvas>
-      </>
+          ></canvas>
+        </>
       )}
-      
+
       {/* 스쿼트 카운트 표시 */}
       <div className="vs_container">
         <div className="vs_element">
