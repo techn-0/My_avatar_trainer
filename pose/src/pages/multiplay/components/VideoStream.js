@@ -23,7 +23,10 @@ function VideoStream({ roomName }) {
   }, [remoteStreams]);
 
   return (
-    <div className="video-stream">    <video ref={localVideoRef} autoPlay muted className="local-video" />   {Object.entries(remoteStreams).map(([peerId, stream]) => (
+    <div className="video-stream">
+      {" "}
+      <video ref={localVideoRef} autoPlay muted className="local-video" />{" "}
+      {Object.entries(remoteStreams).map(([peerId, stream]) => (
         <video
           key={peerId}
           ref={(ref) => (remoteVideoRefs.current[peerId] = ref)}

@@ -38,7 +38,7 @@ function ExerciseResultModal({ onClose, bestScore, userScore, opponentScore }) {
       soundEffect = "/sound/fail2.mp3";
     }
   }
-
+  
   useEffect(() => {
     // 오디오가 초기화되지 않고 딱 한 번만 재생되도록 설정
     const audio = new Audio(soundEffect);

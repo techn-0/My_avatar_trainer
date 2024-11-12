@@ -95,18 +95,18 @@ function MediapipeSquatTracking({
       );
 
       if (results.poseLandmarks) {
-        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-          color: "white",
-          lineWidth: 4,
-        });
-        drawLandmarks(
-          canvasCtx,
-          results.poseLandmarks.filter((_, index) => index > 10),
-          {
-            color: "blue",
-            lineWidth: 2,
-          }
-        );
+        // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+        //   color: "white",
+        //   lineWidth: 4,
+        // });
+        // drawLandmarks(
+        //   canvasCtx,
+        //   results.poseLandmarks.filter((_, index) => index > 10),
+        //   {
+        //     color: "blue",
+        //     lineWidth: 2,
+        //   }
+        // );
 
         const landmarks = results.poseLandmarks;
 

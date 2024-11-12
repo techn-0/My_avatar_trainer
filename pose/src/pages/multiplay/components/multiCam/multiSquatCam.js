@@ -6,6 +6,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import VideoStream from "../VideoStream";
 import MediapipeSquatTracking from "./squatCamera";
 import socket from "../../services/Socket";
+import OkGuide from "../../../ui/okCamGuide";
 
 const MultiSquatCam = ({ roomName }) => {
   const [localReady, setLocalReady] = useState(false);
@@ -232,31 +233,38 @@ const MultiSquatCam = ({ roomName }) => {
       ) : (
         // OK 포즈 감지 화면
         <div>
-          <p>OK 포즈를 취해주세요...</p>
-          <video
-            ref={videoRef}
-            width="800"
-            height="640"
-            style={{
-              display: "block",
-              width: "50%",
-              height: "50%",
-              objectFit: "cover",
-            }}
-          ></video>
-          <canvas
-            ref={canvasRef}
-            width="800"
-            height="640"
-            style={{
-              display: "block",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "50%",
-              height: "50%",
-            }}
-          ></canvas>
+          <p style={{ color: "white" }}>OK 포즈를 취해주세요...</p>
+          <div
+            style={{ display: "flex", gap: "100px", justifyContent: "center" }}
+          >
+            <video
+              ref={videoRef}
+              width="800"
+              height="640"
+              style={{
+                display: "block",
+                width: "50%",
+                height: "50%",
+                objectFit: "cover",
+              }}
+            ></video>
+            <canvas
+              ref={canvasRef}
+              width="800"
+              height="640"
+              style={{
+                display: "block",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "50%",
+                height: "50%",
+              }}
+            ></canvas>
+            <div>
+              <OkGuide />
+            </div>
+          </div>
         </div>
       )}
     </div>
