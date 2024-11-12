@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
-import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { angleCalc } from "./angleCalc";
 import { useGreenFlashEffect } from "./greenFlashEffect";
 import "./exBL.css";
@@ -48,7 +47,7 @@ function MediapipeSquatTracking({
 
   function onCountIncrease() {
     triggerGreenFlash();
-    triggerGoodBox(); // Trigger the "Good!" box
+    triggerGoodBox(); // "Good!" 박스 표시
     squatCountRef.current += 1;
     // 효과음 재생
     const audio = new Audio("/sound/good.wav"); // 효과음 파일 경로
@@ -95,51 +94,42 @@ function MediapipeSquatTracking({
       );
 
       if (results.poseLandmarks) {
-        // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-        //   color: "white",
-        //   lineWidth: 4,
-        // });
-        // drawLandmarks(
-        //   canvasCtx,
-        //   results.poseLandmarks.filter((_, index) => index > 10),
-        //   {
-        //     color: "blue",
-        //     lineWidth: 2,
-        //   }
-        // );
-
         const landmarks = results.poseLandmarks;
 
-        // Required landmark indices
+        // 필수 랜드마크 인덱스 업데이트
         const requiredLandmarkIndices = [
-          11, 12, 23, 24, 25, 26, 27, 28, 29, 30,
+          11,
+          12, // 어깨
+          23,
+          24, // 골반
+          25,
+          26, // 무릎
+          27,
+          28, // 발목
+          29,
+          30, // 뒤꿈치
+          31,
+          32, // 발끝
         ];
+
         const allLandmarksPresent = requiredLandmarkIndices.every(
           (index) => landmarks[index]
         );
 
         if (!allLandmarksPresent) {
-          console.warn("Some landmarks are missing");
+          console.warn("Some required landmarks are missing");
           return;
         }
 
-        // Left knee angle (left_hip, left_knee, left_ankle)
+        // 각도 계산
         const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
-
-        // Right knee angle (right_hip, right_knee, right_ankle)
         const rightKneeAngle = angleCalc(landmarks, 24, 26, 28);
-
-        // Left hip angle (left_shoulder, left_hip, left_knee)
         const leftHipAngle = angleCalc(landmarks, 11, 23, 25);
-
-        // Right hip angle (right_shoulder, right_hip, right_knee)
         const rightHipAngle = angleCalc(landmarks, 12, 24, 26);
-
-        // Torso angle (nose, left_shoulder, left_hip)
         const leftTorsoAngle = angleCalc(landmarks, 0, 11, 23);
         const rightTorsoAngle = angleCalc(landmarks, 0, 12, 24);
 
-        // Handle null angle values
+        // 각도 값이 유효한지 확인
         if (
           leftKneeAngle === null ||
           rightKneeAngle === null ||
@@ -152,15 +142,7 @@ function MediapipeSquatTracking({
           return;
         }
 
-        // Debug logs
-        // console.log("Left Knee Angle:", leftKneeAngle);
-        // console.log("Right Knee Angle:", rightKneeAngle);
-        // console.log("Left Hip Angle:", leftHipAngle);
-        // console.log("Right Hip Angle:", rightHipAngle);
-        // console.log("Left Torso Angle:", leftTorsoAngle);
-        // console.log("Right Torso Angle:", rightTorsoAngle);
-
-        // Squat down condition
+        // 스쿼트 다운 조건
         const isSquatDown =
           leftKneeAngle < 70 &&
           rightKneeAngle < 70 &&
@@ -169,26 +151,33 @@ function MediapipeSquatTracking({
           leftTorsoAngle > 30 &&
           rightTorsoAngle > 30;
 
-        // Squat up condition
-        const isSquatUp = leftKneeAngle > 150 || rightKneeAngle > 150;
-        // (leftHipAngle > 140 || rightHipAngle > 140);
-        // (leftTorsoAngle < 20 || rightTorsoAngle < 20);
+        // 스쿼트 업 조건
+        const isSquatUp = leftKneeAngle > 140 && rightKneeAngle > 140;
 
-        // console.log("isSquatDown:", isSquatDown);
-        // console.log("isSquatUp:", isSquatUp);
-
-        // Update squat state and count
+        // 상태 전환 및 카운트 업데이트
         if (isSquatDown && squatStateRef.current === "up") {
           squatStateRef.current = "down";
           onPreMovement();
         }
 
         if (isSquatUp && squatStateRef.current === "down") {
+          // 카운트 증가 전에 모든 랜드마크가 존재하는지 다시 확인
+          const allLandmarksPresentForCount = requiredLandmarkIndices.every(
+            (index) => landmarks[index]
+          );
+
+          if (!allLandmarksPresentForCount) {
+            console.warn(
+              "Cannot count due to missing landmarks during movement"
+            );
+            return;
+          }
+
           squatStateRef.current = "up";
           onCountIncrease();
         }
 
-        // Draw effects (green flash and "Good!" box)
+        // 효과 그리기
         drawEffects(
           canvasCtx,
           canvasRef.current.width,
@@ -252,13 +241,13 @@ function MediapipeSquatTracking({
           borderRadius: "30px",
         }}
       ></canvas>
-      {/* Squat count display */}
+      {/* 스쿼트 카운트 출력 */}
       <div className="vs_container">
         <div className="vs_element">
-          {/* 플레이어 운동 횟수 */}
+          {/* 아바타 운동 횟수 */}
           <h1>{animationRepeatCount}</h1>
           <h1>&nbsp; VS &nbsp;</h1>
-          {/* 아바타 운동 횟수 */}
+          {/* 플레이어 운동 횟수 */}
           <h1>{squatCountRef.current}</h1>
         </div>
       </div>
