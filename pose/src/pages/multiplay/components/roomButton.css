@@ -4,7 +4,7 @@
   margin-left: 20px;
   width: 320px;
   height: 650px;
-  padding-left: 30px;
+
   padding-top: 30px;
   border-radius: 20px;
 
@@ -15,11 +15,10 @@
   box-shadow: 0 0 5px rgb(0, 115, 255), 0 0 10px rgb(0, 115, 255),
     0 0 5px rgb(0, 115, 255);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
-  padding-left: 3%;
+  padding-left: 4%;
 }
 
 .room_tx_box {
-  margin-top: 50px;
   font-style: italic;
   color: rgb(95, 223, 252);
 }
