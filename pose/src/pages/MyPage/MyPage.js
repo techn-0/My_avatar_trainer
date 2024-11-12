@@ -55,11 +55,9 @@ const MyPage = () => {
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDuration, setSelectedDuration] = useState(0.5); // 1분 또는 2분 선택
-  const [comment, setComment] = useState("");
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
   const [friendData, setFriendData] = useState([]); // 빈 배열로 초기화
-  const [commentData, setCommentData] = useState([]);
   const [pendingRequest, setPendingRequest] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
@@ -119,27 +117,6 @@ const MyPage = () => {
     fetchTier();
 
     console.log("게시판 주인: ", ownerId, ", 로그인된 유저: ", userId);
-    const fetchComments = async () => {
-      try {
-        // GET에서 POST로 변경하고, 데이터를 body에 포함
-        const response = await fetch(`${apiUrl}/comment/${ownerId}`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: ownerId }),
-        });
-        const data = await response.json();
-        console.log("your comment", data);
-        setCommentData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setLoading(false);
-      }
-    };
-    fetchComments();
     const fetchFriends = async () => {
       try {
         const response = await fetch(`${apiUrl}/friends/list`, {
@@ -359,7 +336,6 @@ const MyPage = () => {
         fill: true,
         tension: 0.4,
       },
-      
     ],
   };
 
@@ -457,78 +433,6 @@ const MyPage = () => {
   // 페이지 이동
   const handleMainClick = () => {
     navigate("/"); // 메인 페이지로 이동
-  };
-
-  // 방명록 내용 상태 관리
-  const handleCommentChange = (e) => {
-    setComment(e.target.value);
-  };
-
-  // 방명록 제출 핸들러
-  const handleSubmit = async () => {
-    if (!comment) {
-      alert("내용을 입력해주세요.");
-      return;
-    }
-
-    const data = {
-      ownerId: ownerId,
-      userId: userId,
-      comment: comment,
-      profilePic: "",
-    };
-
-    try {
-      const response = await fetch(`${apiUrl}/comment/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const addedComment = await response.json();
-        setCommentData((prevComments) => [...prevComments, addedComment]);
-        setComment("");
-        alert("코멘트가 작성되었습니다.");
-      } else {
-        console.log(data);
-        alert("코멘트 작성에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("서버 오류가 발생했습니다.");
-    }
-  };
-
-  // 방명록 삭제
-  const handleDeleteComment = async (_id) => {
-    try {
-      const response = await fetch(
-        `http://localhost:3002/comment/delete/${_id}`,
-        {
-          method: "Delete",
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 토큰 추가
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(),
-        }
-      );
-      if (response.ok) {
-        alert("삭제되었습니다.");
-        setCommentData((prevComments) =>
-          prevComments.filter((comment) => comment._id !== _id)
-        );
-      } else {
-        console.log(_id);
-        alert("삭제에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error deleting friend:", error);
-      alert("서버 오류가 발생했습니다.");
-    }
   };
 
   // Friend function
@@ -709,44 +613,6 @@ const MyPage = () => {
 
       {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
       <div className="myPage-bottom">
-        <section className="glow-container comment_box">
-          <h2>방명록</h2>
-          <div className="comments-container scrollable-box">
-            {commentData.map((comment) => (
-              <div key={comment._id} className="comment-card">
-                <p className="font_small">
-                  <strong className="font_small">작성자:</strong>{" "}
-                  {comment.userId}
-                </p>
-                <p className="font_small">
-                  <strong className="font_small">작성일:</strong>{" "}
-                  {new Date(comment.createdAt).toLocaleDateString()}
-                </p>
-                <p className="font_small">{comment.comment}</p>
-                {userId === comment.userId && (
-                  <button
-                    className="cyberpunk-btn"
-                    onClick={() => handleDeleteComment(comment._id)}
-                  >
-                    삭제
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="comment-input">
-            <input
-              type="text"
-              placeholder="내용 입력"
-              value={comment}
-              onChange={handleCommentChange}
-            />
-            <button className="cyberpunk-btn" onClick={handleSubmit}>
-              제출
-            </button>
-          </div>
-        </section>
-
         <section className="glow-container friend-management">
           <h2>친구 추가</h2>
           <input
@@ -780,7 +646,8 @@ const MyPage = () => {
               <p>검색된 유저 ID: {searchResult.user.username}</p>
             </div>
           )}
-
+        </section>
+        <section className="glow-container friend-management">
           <h2>친구 목록</h2>
           <div className="friend-list scrollable-box2">
             {currentFriends.map((friend, index) => (
