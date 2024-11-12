@@ -1,13 +1,13 @@
 @font-face {
-  font-family: 'DungGeunMo';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'establishRetrosansOTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 .btn_box {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.623);
+  background-color: rgba(221, 221, 221, 0.623);
   margin: 0px;
   width: auto;
   height: auto;
@@ -27,11 +27,12 @@
 
 .btn_box_cont {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.623);
+  background-color: rgba(221, 221, 221, 0.623);
+  margin-left: 10px;
   padding-left: 20px;
   padding-top: 15px;
-  width: 1250px;
-  height: 150px;
+  width: 300px;
+  height: 600px;
   clip-path: polygon(
     60px 0%,
     100% 0%,
@@ -47,13 +48,13 @@
   top: 20px;
   right: 20px; /* 오른쪽에 딱 붙게 설정 */
   z-index: 1;
-  font-family: "DungGeunMo";
+  font-family: "establishRetrosansOTF";
   width: 250px;
   padding-left: 35px;
 }
 .welcome_text {
   font-size: 25px;
-  margin: 20px;
+  margin: 20px 20px 20px 10px;
   white-space: pre-wrap;
   white-space: pre-line;
 }
@@ -78,4 +79,3 @@
     border-color: #4a21ff;
   }
 }
-

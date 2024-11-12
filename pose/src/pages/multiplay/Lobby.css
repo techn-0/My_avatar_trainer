@@ -1,9 +1,8 @@
 @font-face {
-  font-family: "DungGeunMo";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
-    format("woff");
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'establishRetrosansOTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 /* 전체 컨테이너 */
@@ -14,7 +13,7 @@
   flex-direction: column;
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
   color: rgb(0, 0, 0);
-  font-family: "DungGeunMo";
+  font-family: "establishRetrosansOTF";
   justify-content: space-between;
 }
 
@@ -179,7 +178,7 @@
   box-shadow: 0px 4px 10px rgba(56, 193, 255, 0.3);
 }
 
-.mainP {
+/* .mainP {
   top: 60px;
 }
 
@@ -189,10 +188,15 @@
 
 .rankP {
   top: 140px;
-}
+} */
 
 .multiBtn {
-  gap: 20px;
+  height: 30vh;
+  display: grid;
+  gap: 20px; /* 버튼 사이의 간격 */
+  /* justify-content: center; */
+  align-items: center;
+  margin: 20px auto;
 }
 
 /* 반응형 조정 */

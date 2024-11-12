@@ -9,6 +9,7 @@ import { useGreenFlashEffect } from "../../../../app/workoutCam/greenFlashEffect
 import "../../../../app/workoutCam/exBL.css";
 import socket from "../../services/Socket";
 import ExerciseTimer from "../../../../app/exerciseTimer";
+import ExerciseResultModal from "../../../ui/exerciseResult";
 
 let poseSingleton = null;
 
@@ -31,7 +32,6 @@ const POSE_CONNECTIONS = [
 
 function MediapipeSquatTracking({
   onCanvasUpdate,
-  active,
   onCountUpdate,
   roomName,
   duration,
@@ -42,16 +42,13 @@ function MediapipeSquatTracking({
   const [squatCount, setSquatCount] = useState(0);
   const [remoteSquatCount, setRemoteSquatCount] = useState(0);
   const squatStateRef = useRef("up");
-  
+
   const [showTimer, setShowTimer] = useState(false);
   const [remainingTime, setRemainingTime] = useState(null); // 남은 시간 관리
   const timerStartTimeRef = useRef(null);
 
-  const countdownMusicRef = useRef(null);
-  const [currentCountdownIndex, setCurrentCountdownIndex] = useState(0);
-  const countdownImages = ["count3.png", "count2.png", "count1.png", "countStart.png"];
-  
-  
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [mediapipeActive, setMediapipeActive] = useState(true);
 
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
     useGreenFlashEffect();
@@ -84,29 +81,82 @@ function MediapipeSquatTracking({
     });
   }
 
+  //컴포넌트 마운트 시 카운트다운 시작
   useEffect(() => {
-    // 서버로부터 상대방의 스쿼트 횟수 업데이트 수신
-    socket.on("remoteSquatCountUpdate", ({ username, count }) => {
-      setRemoteSquatCount(count);
-    });
-
-    if (!poseSingleton) {
-      poseSingleton = new Pose({
-        locateFile: (file) =>
-          `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+    // 운동 타이머 시작
+      socket.emit("startExerciseTimer", {
+        roomName,
+        duration: 30, // 예를 들어 5분(300초) 동안 운동 타이머
       });
-
-      poseSingleton.setOptions({
-        modelComplexity: 1,
-        smoothLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
+  
+      socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
+        const elapsedTime = (Date.now() - startTime) / 1000;
+        const initialRemainingTime = duration - elapsedTime;
+  
+        if (initialRemainingTime > 0) {
+          startExerciseTimer(Math.floor(initialRemainingTime));
+        } else {
+          setRemainingTime(0); // 이미 종료된 경우
+        }
       });
+  
+    return () => {
+      socket.off("exerciseTimerStarted");
+    };
+  }, [roomName]);
 
-      poseSingleton.onResults(onResults);
+  useEffect(() => {
+    // Mediapipe 초기화 및 카메라 제어
+    if (mediapipeActive) {
+      // poseSingleton 초기화
+      if (!poseSingleton) {
+        poseSingleton = new Pose({
+          locateFile: (file) =>
+            `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+        });
+
+        poseSingleton.setOptions({
+          modelComplexity: 1,
+          smoothLandmarks: true,
+          minDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+        });
+
+        poseSingleton.onResults(onResults);
+      }
+
+      let camera = cameraRef.current;
+      const videoElement = videoRef.current;
+      if (videoElement && !camera) {
+        camera = new Camera(videoElement, {
+          onFrame: async () => {
+            if (poseSingleton) {
+              await poseSingleton.send({ image: videoElement });
+            }
+          },
+          width: 0,
+          height: 0,
+        });
+        camera.start();
+        cameraRef.current = camera;
+      }
+    } else {
+      if (cameraRef.current) {
+        cameraRef.current.stop();
+        cameraRef.current = null;
+      }
     }
 
-    async function onResults(results) {
+    return () => {
+      if (cameraRef.current) {
+        cameraRef.current.stop();
+        cameraRef.current = null;
+      }
+    };
+  }, [mediapipeActive]);
+
+  const onResults = React.useCallback(
+    (results) => {
       if (!canvasRef.current) return;
 
       const canvasCtx = canvasRef.current.getContext("2d");
@@ -153,6 +203,7 @@ function MediapipeSquatTracking({
           return;
         }
 
+        // 각도 계산 및 스쿼트 상태 업데이트 로직
         // Left knee angle (left_hip, left_knee, left_ankle)
         const leftKneeAngle = angleCalc(landmarks, 23, 25, 27);
 
@@ -183,15 +234,15 @@ function MediapipeSquatTracking({
 
         // Squat down condition
         const isSquatDown =
-          leftKneeAngle < 100 &&
-          rightKneeAngle < 100 &&
-          leftHipAngle < 100 &&
-          rightHipAngle < 100 &&
+          leftKneeAngle < 70 &&
+          rightKneeAngle < 70 &&
+          leftHipAngle < 70 &&
+          rightHipAngle < 70 &&
           leftTorsoAngle > 30 &&
           rightTorsoAngle > 30;
 
         // Squat up condition
-        const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
+        const isSquatUp = leftKneeAngle > 150 || rightKneeAngle > 150;
 
         // Update squat state and count
         if (isSquatDown && squatStateRef.current === "up") {
@@ -215,40 +266,20 @@ function MediapipeSquatTracking({
           onCanvasUpdate(canvasRef.current);
         }
       }
-    }
+    },
+    [onCanvasUpdate, drawEffects]
+  );
 
-    if (active) {
-      let camera = cameraRef.current;
-      const videoElement = videoRef.current;
-      if (videoElement && !camera) {
-        camera = new Camera(videoElement, {
-          onFrame: async () => {
-            if (poseSingleton) {
-              await poseSingleton.send({ image: videoElement });
-            }
-          },
-          width: 0,
-          height: 0,
-        });
-        camera.start();
-        cameraRef.current = camera;
-      }
-    } else {
-      if (cameraRef.current) {
-        cameraRef.current.stop();
-        cameraRef.current = null;
-      }
-    }
+  useEffect(() => {
+    // 서버로부터 상대방의 스쿼트 횟수 업데이트 수신
+    socket.on("remoteSquatCountUpdate", ({ username, count }) => {
+      setRemoteSquatCount(count);
+    });
 
     return () => {
-      if (cameraRef.current) {
-        cameraRef.current.stop();
-        cameraRef.current = null;
-      }
       socket.off("remoteSquatCountUpdate");
     };
-  }, [active, roomName]);
-
+  }, [roomName]);
 
   const startExerciseTimer = (initialTime) => {
     setShowTimer(true);
@@ -258,58 +289,36 @@ function MediapipeSquatTracking({
 
   const endExercise = () => {
     setShowTimer(false);
-    console.log("운동 종료");
-    // 운동 종료 시 추가 로직 (ex: 서버에 종료 알림)
+    setShowResultModal(true);
+    setMediapipeActive(false);
   };
 
-  // 타이머 시작 신호 수신 및 타이머 시작 로직
-  useEffect(() => {
-
-    socket.emit("startExerciseTimer", {
-      roomName,
-      duration: 60, // 예를 들어 5분(300초) 동안 운동 타이머
-    });
-
-    socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
-      const elapsedTime = (Date.now() - startTime) / 1000;
-      const initialRemainingTime = duration - elapsedTime;
-
-      if (initialRemainingTime > 0) {
-        startExerciseTimer(Math.floor(initialRemainingTime));
-      } else {
-        setRemainingTime(0); // 이미 종료된 경우
-      }
-    });
-
-    return () => {
-      socket.off("exerciseTimerStarted");
-    };
-  }, [roomName]);
-
-
-  
-  
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <video
-        ref={videoRef}
-        style={{
-          display: "none", // 비디오 요소를 숨깁니다.
-        }}
-      ></video>
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          opacity: 0, // 투명도를 0으로 설정하여 보이지 않게 합니다.
-          width: "800px",
-          height: "640px",
-        }}
-      ></canvas>
-      {/* Squat count display */}
+      {mediapipeActive && (
+        <>
+          <video
+            ref={videoRef}
+            style={{
+              display: "none", // 비디오 요소를 숨깁니다.
+            }}
+          ></video>
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              opacity: 0, // 투명도를 0으로 설정하여 보이지 않게 합니다.
+              width: "800px",
+              height: "640px",
+            }}
+          ></canvas>
+        </>
+      )}
+
+      {/* 스쿼트 카운트 표시 */}
       <div className="vs_container">
         <div className="vs_element">
           {/* 로컬 사용자의 스쿼트 횟수 */}
@@ -325,6 +334,15 @@ function MediapipeSquatTracking({
           durationInSeconds={remainingTime}
           onTimerEnd={endExercise}
           startTimeRef={timerStartTimeRef}
+        />
+      )}
+
+      {/* 운동 결과 모달 */}
+      {showResultModal && (
+        <ExerciseResultModal
+          onClose={() => setShowResultModal(false)}
+          userScore={squatCount}
+          opponentScore={remoteSquatCount}
         />
       )}
     </div>

@@ -1,9 +1,8 @@
 @font-face {
-  font-family: "DungGeunMo";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
-    format("woff");
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'establishRetrosansOTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 html,
@@ -84,7 +83,7 @@ body {
 }
 .opt {
   text-align: center;
-  font-family: "DungGeunMo";
+  font-family: "establishRetrosansOTF";
   font-size: 20px;
   display: flex;
   justify-content: center; /* 가로 중앙 정렬 */

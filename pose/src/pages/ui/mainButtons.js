@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../login/AuthContext"; // Import your token management functions
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import "./mainButtons.css";
 
 function Buttons({
@@ -18,12 +18,12 @@ function Buttons({
 
   useEffect(() => {
     const token = getToken();
-    if ( token ){
+    if (token) {
       setIsLoggedIn(true);
-      try{
+      try {
         const decodedToken = jwtDecode(token);
         setOwnerId(decodedToken.id);
-      } catch (error){
+      } catch (error) {
         console.error("Error decoding token:", error);
       }
     } else {
@@ -35,7 +35,7 @@ function Buttons({
     removeToken(); // Remove the token
     setIsLoggedIn(false); // Update state to reflect that the user is logged out
     onLogout(); // 로그아웃 콜백 호출하여 userId를 null로 설정
-    alert('로그아웃 되었습니다!')
+    alert("로그아웃 되었습니다!");
   };
 
   const handleLoginPageClick = () => {
@@ -113,9 +113,26 @@ function Buttons({
           onMouseEnter={handleMouseEnter}
         />
         <div className="btn" onClick={handleExerciseClick}>
-          운동하기
+          싱글플레이
           <span className="btn__glitch" aria-hidden="true">
-            운동하기
+            싱글플레이
+          </span>
+        </div>
+      </div>
+
+      <div className="radio-wrapper">
+        <input
+          className="input"
+          type="radio"
+          name="btn"
+          id="multiplayer"
+          onClick={handleMultiplayerClick}
+          onMouseEnter={handleMouseEnter}
+        />
+        <div className="btn" onClick={handleMultiplayerClick}>
+          멀티플레이
+          <span className="btn__glitch" aria-hidden="true">
+            멀티플레이
           </span>
         </div>
       </div>
@@ -135,24 +152,7 @@ function Buttons({
           </span>
         </div>
       </div>
-      
-      
-      <div className="radio-wrapper">
-        <input
-          className="input"
-          type="radio"
-          name="btn"
-          id="multiplayer"
-          onClick={handleMultiplayerClick}
-          onMouseEnter={handleMouseEnter}
-        />
-        <div className="btn" onClick={handleMultiplayerClick}>
-          멀티플레이
-          <span className="btn__glitch" aria-hidden="true">
-            멀티플레이
-          </span>
-        </div>
-      </div>
+
       <div className="radio-wrapper">
         <input
           className="input"

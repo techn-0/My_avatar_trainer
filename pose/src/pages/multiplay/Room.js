@@ -24,7 +24,7 @@ function Room() {
   const [selectedDuration, setSelectedDuration] = useState("");
 
   const exercises = ["squat", "pushup"]; // 운동 종목 리스트
-  const durations = ["60초", "120초"]; // 운동 시간 리스트
+  const durations = ["30초", "60초"]; // 운동 시간 리스트
 
   // 운동 종목 선택 핸들러
   const handleExerciseSelect = (exercise) => {
@@ -147,21 +147,25 @@ function Room() {
           </div>
 
           <div style={{ flex: 2 }} className="videoDiv">
-            {/* VideoStream 컴포넌트 */}
-            <VideoStream roomName={roomName} />
+            <div className="videoAndChat">
+              {/* VideoStream 컴포넌트 */}
+              <VideoStream roomName={roomName} />
 
-            <div className="romm_bottom_box">
-              {/* Ready Status and Start Message */}
-              <div style={{ marginTop: "1rem" }}>
-                <h2 className="green">Players in Room:</h2>
-                {users.map((user, index) => (
-                  <div className="white" key={index}>
-                    {user} - {readyStates[user] ? "Ready" : "Not Ready"}
-                  </div>
-                ))}
+              <div className="romm_bottom_box">
+                {/* Ready Status and Start Message */}
+                <div className="users" style={{ marginTop: "1rem" }}>
+                  <h2 className="green">Players in Room:</h2>
+                  {users.map((user, index) => (
+                    <div className="white" key={index}>
+                      {user} - {readyStates[user] ? "Ready" : "Not Ready"}
+                    </div>
+                  ))}
+                </div>
+                {/* Chat 컴포넌트 */}
+                <div className="chatBox">
+                  <Chat roomName={roomName} />
+                </div>
               </div>
-              {/* Chat 컴포넌트 */}
-              <Chat roomName={roomName} />
             </div>
           </div>
         </div>

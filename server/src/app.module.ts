@@ -11,7 +11,7 @@ import { CommentModule } from './my-page/comment/comment.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017'),
+    MongooseModule.forRoot('mongodb://localhost:27017/M_A_T'),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
