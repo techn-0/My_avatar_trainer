@@ -160,6 +160,8 @@ function Room() {
                   </div>
                 ))}
               </div>
+              {/* Chat 컴포넌트 */}
+              <Chat roomName={roomName} />
             </div>
           </div>
         </div>
