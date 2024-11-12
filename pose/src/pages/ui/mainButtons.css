@@ -1,19 +1,15 @@
 @font-face {
-  font-family: "MonoplexKR-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_Monoplex-kr@1.0/MonoplexKR-Regular.woff2")
-    format("woff2");
-  font-weight: 400;
-  font-style: normal;
+    font-family: 'establishRetrosansOTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 .button-container {
   padding-top: 20px;
   display: flex;
-  flex-direction: row;
-
-  display: flex;
-  flex-direction: row; /* 수평 정렬 */
-  gap: 35px; /* 수평 간격 */
+  flex-direction:column;
+  gap: 50px; /* 수평 간격 */
 }
 
 .radio-wrapper {
@@ -144,7 +140,7 @@
   line-height: 60px;
   text-align: center;
   transition: background 0.2s, 0.3s;
-  font-family: "MonoplexKR-Regular";
+  font-family: "establishRetrosansOTF";
 }
 
 /* .input:checked + .btn {
@@ -319,37 +315,4 @@
   top: 0;
   left: 81%;
   line-height: 6.2px;
-}
-
-.r_card-container {
-  filter: drop-shadow(46px 36px 24px #4090b5)
-    drop-shadow(-55px -40px 25px #9e30a9);
-  animation: blinkShadowsFilter 8s ease-in infinite;
-}
-
-@keyframes blinkShadowsFilter {
-  0% {
-    filter: drop-shadow(46px 36px 28px rgba(64, 144, 181, 0.3411764706))
-      drop-shadow(-55px -40px 28px #9e30a9);
-  }
-
-  25% {
-    filter: drop-shadow(46px -36px 24px rgba(64, 144, 181, 0.8980392157))
-      drop-shadow(-55px 40px 24px #9e30a9);
-  }
-
-  50% {
-    filter: drop-shadow(46px 36px 30px rgba(64, 144, 181, 0.8980392157))
-      drop-shadow(-55px 40px 30px rgba(159, 48, 169, 0.2941176471));
-  }
-
-  75% {
-    filter: drop-shadow(20px -18px 25px rgba(64, 144, 181, 0.8980392157))
-      drop-shadow(-20px 20px 25px rgba(159, 48, 169, 0.2941176471));
-  }
-
-  to {
-    filter: drop-shadow(46px 36px 28px rgba(64, 144, 181, 0.3411764706))
-      drop-shadow(-55px -40px 28px #9e30a9);
-  }
 }

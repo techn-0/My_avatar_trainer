@@ -76,7 +76,7 @@ function ExerciseScene() {
   const exercises = ["squat", "pushup", "plank", "burpee"];
 
   // 운동 시간 리스트
-  const durations = [1, 2, 0.1, "챌린지 모드"]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
+  const durations = [0.5, 1, 0.1, "챌린지 모드"]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -488,14 +488,14 @@ function ExerciseScene() {
     }, durationInSeconds * 1000);
 
     // 남은 시간이 30초일 때 interaction 함수 호출
-    if (durationInSeconds > 30) {
+    if (durationInSeconds > 15) {
       setTimeout(() => {
         interaction(
           animationRepeatCountRef.current,
           exerciseCountRef.current,
           setInteractionMessage
         );
-      }, (durationInSeconds - 30) * 1000);
+      }, (durationInSeconds - 15) * 1000);
     }
   };
 
