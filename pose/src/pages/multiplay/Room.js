@@ -115,7 +115,7 @@ function Room() {
       className="roomss"
       style={{ height: "100vh", display: "flex", flexDirection: "column" }}
     >
-      <h1 className="white" style={{ textAlign: "center" }}>
+      <h1 className="Players_in_room" style={{ textAlign: "center" }}>
         Welcome to Room: {roomName}
       </h1>
 
@@ -155,7 +155,7 @@ function Room() {
               <div style={{ marginTop: "1rem" }}>
                 <h2 className="green">Players in Room:</h2>
                 {users.map((user, index) => (
-                  <div className="white" key={index}>
+                  <div className="Players_in_room" key={index}>
                     {user} - {readyStates[user] ? "Ready" : "Not Ready"}
                   </div>
                 ))}

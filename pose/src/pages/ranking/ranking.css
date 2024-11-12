@@ -8,7 +8,8 @@
 html,
 body {
 
-  background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
+  background-image: url("https://raw.githubusercontent.com/ParkYoungWoong/overwatch-hero-selector-vanilla/master/images/bg.jpg");
+  background-size: cover;
 }
 
 .ranking-page {

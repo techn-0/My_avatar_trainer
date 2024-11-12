@@ -1,13 +1,12 @@
-
-.green{
-  color: #00ff1e;
-  
+.green {
+  color: rgb(255, 141, 20);
 }
 
-.white{
-  color: white;
+.Players_in_room {
+  font-style: italic;
+  color: rgb(27, 29, 18);
 }
-.romm_bottom_box{
+.romm_bottom_box {
   display: flex; /* 플렉스박스 사용 */
   flex-direction: row; /* 가로 방향으로 나열 */
   justify-content: space-between; /* 자식 원소들 사이의 여백 */

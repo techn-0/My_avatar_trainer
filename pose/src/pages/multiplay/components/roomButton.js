@@ -77,7 +77,7 @@ function RoomButtons({
             ))}
           </div>
           {/* 준비 완료 버튼 */}
-          <button
+          {/* <button
             className={`EX_btn ${isReady ? "ready" : ""} ${
               !selectedExercise || !selectedDuration ? "disabled" : ""
             }`}
@@ -86,7 +86,34 @@ function RoomButtons({
             onMouseEnter={handleMouseEnter}
           >
             {isReady ? "준비 완료" : "준비하기"}
-          </button>
+          </button> */}
+          {/* 준비 완료 버튼 */}
+          <div className="input-div" onClick={handleReadyClick}>
+            <button
+              className={`btn ready-button ${isReady ? "ready" : ""} ${
+                !selectedExercise || !selectedDuration ? "disabled" : ""
+              }`}
+              
+              disabled={!selectedExercise || !selectedDuration}
+              onMouseEnter={handleMouseEnter}
+            >
+              {isReady ? "Wait" : "Ready"}
+            </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              fill="none"
+              stroke="currentColor"
+              className="icon"
+            >
+
+            </svg>
+          </div>
         </div>
       </div>
       <audio ref={glitchSoundRef} src="/sound/Glitch.wav" />
