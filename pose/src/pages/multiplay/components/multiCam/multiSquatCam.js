@@ -6,6 +6,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import VideoStream from "../VideoStream";
 import MediapipeSquatTracking from "./squatCamera";
 import socket from "../../services/Socket";
+import OkGuide from "../../../ui/okCamGuide";
 
 const MultiSquatCam = ({ roomName }) => {
   const [localReady, setLocalReady] = useState(false);
@@ -141,31 +142,31 @@ const MultiSquatCam = ({ roomName }) => {
   }, [localReady, bothReady, roomName]);
 
   // 카운트다운 로직
-    useEffect(() => {
-      let timer;
-      if (
-        currentCountdownIndex !== null &&
-        currentCountdownIndex < countdownImages.length
-      ) {
-        // 카운트다운 시작 시 효과음 재생
-        if (countdownMusicRef.current && currentCountdownIndex === 0) {
-          countdownMusicRef.current.currentTime = 0;
-          countdownMusicRef.current.play();
-        }
-        // 1초마다 이미지 변경
-        timer = setTimeout(() => {
-          setCurrentCountdownIndex(currentCountdownIndex + 1);
-        }, 1000);
-      } else if (currentCountdownIndex === countdownImages.length) {
-        setCurrentCountdownIndex(null); // 카운트다운 초기화
-        setCountdownFinished(true); // 카운트다운 완료 설정
+  useEffect(() => {
+    let timer;
+    if (
+      currentCountdownIndex !== null &&
+      currentCountdownIndex < countdownImages.length
+    ) {
+      // 카운트다운 시작 시 효과음 재생
+      if (countdownMusicRef.current && currentCountdownIndex === 0) {
+        countdownMusicRef.current.currentTime = 0;
+        countdownMusicRef.current.play();
       }
-  
-      return () => {
-        clearTimeout(timer);
-      };
-    }, [currentCountdownIndex]);
-  
+      // 1초마다 이미지 변경
+      timer = setTimeout(() => {
+        setCurrentCountdownIndex(currentCountdownIndex + 1);
+      }, 1000);
+    } else if (currentCountdownIndex === countdownImages.length) {
+      setCurrentCountdownIndex(null); // 카운트다운 초기화
+      setCountdownFinished(true); // 카운트다운 완료 설정
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentCountdownIndex]);
+
   //카운트 다운 이미지 프리로드
   useEffect(() => {
     countdownImages.forEach((image) => {
@@ -178,27 +179,27 @@ const MultiSquatCam = ({ roomName }) => {
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       {bothReady ? (
         <>
-        {/* 카운트다운 이미지 */}
-        {currentCountdownIndex !== null &&
-                currentCountdownIndex < countdownImages.length && (
-                  <img
-                    src={
-                      process.env.PUBLIC_URL +
-                      `/ExerciseCountdown/${countdownImages[currentCountdownIndex]}`
-                    }
-                    alt="Countdown"
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: "300px",
-                      height: "300px",
-                      zIndex: 3,
-                      animation: "fadeInOut 1s linear",
-                    }}
-                  />
-                )}
+          {/* 카운트다운 이미지 */}
+          {currentCountdownIndex !== null &&
+            currentCountdownIndex < countdownImages.length && (
+              <img
+                src={
+                  process.env.PUBLIC_URL +
+                  `/ExerciseCountdown/${countdownImages[currentCountdownIndex]}`
+                }
+                alt="Countdown"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "300px",
+                  height: "300px",
+                  zIndex: 3,
+                  animation: "fadeInOut 1s linear",
+                }}
+              />
+            )}
 
           {/* 카운트다운 음악 */}
           <audio ref={countdownMusicRef} src="/sound/3secCount.mp3" />
@@ -232,31 +233,38 @@ const MultiSquatCam = ({ roomName }) => {
       ) : (
         // OK 포즈 감지 화면
         <div>
-          <p>OK 포즈를 취해주세요...</p>
-          <video
-            ref={videoRef}
-            width="800"
-            height="640"
-            style={{
-              display: "block",
-              width: "50%",
-              height: "50%",
-              objectFit: "cover",
-            }}
-          ></video>
-          <canvas
-            ref={canvasRef}
-            width="800"
-            height="640"
-            style={{
-              display: "block",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "50%",
-              height: "50%",
-            }}
-          ></canvas>
+          <p style={{ color: "white" }}>OK 포즈를 취해주세요...</p>
+          <div
+            style={{ display: "flex", gap: "100px", justifyContent: "center" }}
+          >
+            <video
+              ref={videoRef}
+              width="800"
+              height="640"
+              style={{
+                display: "block",
+                width: "50%",
+                height: "50%",
+                objectFit: "cover",
+              }}
+            ></video>
+            <canvas
+              ref={canvasRef}
+              width="800"
+              height="640"
+              style={{
+                display: "block",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "50%",
+                height: "50%",
+              }}
+            ></canvas>
+            <div>
+              <OkGuide />
+            </div>
+          </div>
         </div>
       )}
     </div>
