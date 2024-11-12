@@ -54,7 +54,7 @@ const MyPage = () => {
   const { ownerId } = useParams(); // URL에서 ownerId를 가져옵니다.
   const [workoutData, setWorkoutData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDuration, setSelectedDuration] = useState(1); // 1분 또는 2분 선택
+  const [selectedDuration, setSelectedDuration] = useState(0.5); // 1분 또는 2분 선택
   const [comment, setComment] = useState("");
   const [friendUserId, setFriendUserId] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
