@@ -8,11 +8,6 @@ import { RoomModule } from './room/room.module';
 @Module({
   controllers: [],
   providers: [],
-  imports: [
-    FriendModule,
-    MessageModule,
-    CommentModule,
-    RoomModule
-  ]
+  imports: [FriendModule, MessageModule, CommentModule, RoomModule],
 })
 export class MyPageModule {}
