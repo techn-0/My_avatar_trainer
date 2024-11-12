@@ -20,11 +20,13 @@
 
 .room_tx_box {
   margin-top: 50px;
-  color: rgb(255, 141, 20);
+  font-style: italic;
+  color: rgb(95, 223, 252);
 }
 .room_tx_box h3 {
-  color: rgb(95, 223, 252);
+  font-style: italic;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  color: rgb(255, 141, 20);
 }
 
 .room_btn_1 {
