@@ -12,17 +12,7 @@ import CountDown from "../../../ui/countDown";
 const MultiSquatCam = ({ roomName }) => {
   const [localReady, setLocalReady] = useState(false);
   const [bothReady, setBothReady] = useState(false);
-
-  // 카운트다운 상태 변수
-  // const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
-  // const countdownImages = [
-  //   "count3.png",
-  //   "count2.png",
-  //   "count1.png",
-  //   "countStart.png",
-  // ];
   const countdownMusicRef = useRef(null);
-
   const [countdownFinished, setCountdownFinished] = useState(false);
 
   // OK 포즈 감지를 위한 참조 및 상태
@@ -147,34 +137,6 @@ const MultiSquatCam = ({ roomName }) => {
       }
     };
   }, [localReady, bothReady, roomName]);
-
-  // 카운트다운 로직
-    // useEffect(() => {
-    //   let timer;
-    //   if (
-    //     currentCountdownIndex !== null &&
-    //     currentCountdownIndex < countdownImages.length
-    //   ) {
-    //     // 카운트다운 시작 시 효과음 재생
-    //     if (countdownMusicRef.current && currentCountdownIndex === 0) {
-    //       countdownMusicRef.current.currentTime = 0;
-    //       countdownMusicRef.current.play();
-    //     }
-    //     // 1초마다 이미지 변경
-    //     timer = setTimeout(() => {
-    //       setCurrentCountdownIndex(currentCountdownIndex + 1);
-    //     }, 1000);
-    //   } else if (currentCountdownIndex === countdownImages.length) {
-    //     setCurrentCountdownIndex(null); // 카운트다운 초기화
-    //     setCountdownFinished(true); // 카운트다운 완료 설정
-    //   }
-  
-    //   return () => {
-    //     clearTimeout(timer);
-    //   };
-    // }, [currentCountdownIndex]);
-  
- 
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
