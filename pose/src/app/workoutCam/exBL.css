@@ -23,3 +23,37 @@
   font-size: 45px;
   color: rgb(255, 0, 247);
 }
+
+@keyframes scaleAndGlow {
+  0% {
+    transform: scale(1);
+    filter: brightness(100%);
+    text-shadow: 0 0 0px var(--glow, #fff);
+  }
+  30% {
+    transform: scale(1.2); /* 점진적으로 확대 */
+    filter: brightness(110%);
+    text-shadow: 0 0 5px var(--glow, #fda802);
+  }
+  60% {
+    transform: scale(1.4); /* 부드럽게 확대 */
+    filter: brightness(115%);
+    text-shadow: 0 0 8px var(--glow, #fda802);
+  }
+  80% {
+    transform: scale(1.5); /* 최대 확대 */
+    filter: brightness(120%) drop-shadow(0 0 10px var(--glow, #fda802));
+    text-shadow: 0 0 10px var(--glow, #fda802);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(100%);
+    text-shadow: 0 0 0px var(--glow, #fff);
+  }
+}
+
+.squat-count {
+  display: inline-block;
+  animation: scaleAndGlow 0.5s ease-in-out; /* 두 효과를 동시에 적용 */
+}
+

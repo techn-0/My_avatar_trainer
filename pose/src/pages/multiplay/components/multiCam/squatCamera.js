@@ -40,6 +40,7 @@ function MediapipeSquatTracking({
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
   const [squatCount, setSquatCount] = useState(0);
+  const [animateCount, setAnimateCount] = useState(false);
   const [remoteSquatCount, setRemoteSquatCount] = useState(0);
   const squatStateRef = useRef("up");
 
@@ -63,6 +64,10 @@ function MediapipeSquatTracking({
     setSquatCount((prevCount) => {
       const newCount = prevCount + 1;
 
+      // 애니메이션 트리거
+      setAnimateCount(true);
+      setTimeout(() => setAnimateCount(false), 300); // 애니메이션 지속 시간 후 제거
+      
       // 효과음 재생
       const audio = new Audio("/sound/good.wav"); // 효과음 파일 경로
       audio.play();
@@ -322,7 +327,8 @@ function MediapipeSquatTracking({
       <div className="vs_container">
         <div className="vs_element">
           {/* 로컬 사용자의 스쿼트 횟수 */}
-          <h1>{squatCount}</h1>
+          <h1 className={`gas ${animateCount ? "squat-count" : ""}`}>
+            {squatCount}</h1>
           <h1>&nbsp; VS &nbsp;</h1>
           {/* 상대방의 스쿼트 횟수 */}
           <h1>{remoteSquatCount}</h1>
