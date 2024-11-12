@@ -1,9 +1,8 @@
 @font-face {
-  font-family: "DungGeunMo";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
-    format("woff");
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'establishRetrosansOTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 /* 전체 컨테이너 */
 .myPage-container {
@@ -13,7 +12,7 @@
   flex-direction: column;
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
   color: rgb(0, 0, 0);
-  font-family: "DungGeunMo";
+  font-family: "establishRetrosansOTF";
   padding: 50px 190px 50px 190px;
 }
 
@@ -313,72 +312,39 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
+  padding: 0 180px 0 180px;
 }
 
 /* 블록 크기 커스텀 가능 */
 .myPage-tierSection {
   flex: 1; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #ff0000, 0px 0px 20px #ff0000; */
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
+  border-radius: 20px;
 }
 
 .myPage-recentRecordSection {
   flex: 2; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #d400ff, 0px 0px 20px #ff00d4; */
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    60px 100%,
-    0% calc(100% - 60px)
-  );
+  border-radius: 20px;
 }
 
 .myPage-bestRecordSection {
   flex: 0.7; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #00ff2f, 0px 0px 20px #40ff00; */
-  clip-path: polygon(
-    0% 0%,
-    calc(100% - 60px) 0%,
-    100% 60px,
-    100% 100%,
-    60px 100%,
-    0% calc(100% - 60px)
-  );
+  border-radius: 20px;
 }
 
 .comment_box {
-  flex: 0.7; /* 비율 조정 가능 */
+  flex: 0.5; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #00f2ff, 0px 0px 20px #02ffff; */
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
+  border-radius: 20px;
 }
 
 .friend-management {
   flex: 0.5; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #1100ff, 0px 0px 20px #0015ff; */
-  clip-path: polygon(
-    0% 0%,
-    calc(100% - 60px) 0%,
-    100% 60px,
-    100% 100%,
-    60px 100%,
-    0% calc(100% - 60px)
-  );
+  border-radius: 20px;
+
   padding-left: 100px;
 }
 
