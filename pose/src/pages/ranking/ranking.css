@@ -9,7 +9,7 @@ html,
 body {
 
   background-image: url("https://raw.githubusercontent.com/ParkYoungWoong/overwatch-hero-selector-vanilla/master/images/bg.jpg");
-  background-size: cover;
+  background-size:auto;
 }
 
 .ranking-page {
