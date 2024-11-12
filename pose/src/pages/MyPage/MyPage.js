@@ -584,7 +584,7 @@ const MyPage = () => {
     }
 
     try{
-      const response = await fetch(`/room/checkRoom/${roomName}`,{
+      const response = await fetch(`${apiUrl}/room/checkRoom/${roomName}`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json",
@@ -597,7 +597,7 @@ const MyPage = () => {
 
       const data = await response.json();
       const roomExists = !!data.exists;
-
+      console.log(roomExists);
       if(roomExists){
         // 방이 존재한다면, 형성된 방에 들어간다.
         console.log(`Joined existing Room ${roomName} successfully`);
@@ -605,7 +605,7 @@ const MyPage = () => {
 
       }else{
         // 방이 존재하지 않는다면 DB에 해당 정보를 저장하고, 방을 형성한다. 
-        const createRoomResponse = await fetch(`/room/create`,{
+        const createRoomResponse = await fetch(`${apiUrl}/room/create`,{
           method:'POST',
           headers:{
             "Content-Type":"application/json",
