@@ -713,40 +713,43 @@ const MyPage = () => {
         {/* 2층: 하단 블록 (방명록, 친구 추가/검색) */}
         <div className="myPage-bottom">
           <section className="glow-container friend-management">
-            <h2>유저 검색</h2>
-            <input
-              type="text"
-              placeholder="ID 입력"
-              value={searchUserId}
-              onChange={handleSearchUserChange}
-              className="friend-input"
-            />
-            <button onClick={handleSearchUser} className="cyberpunk-btn">
-              검색
-            </button>
+            <div>
+              <h2 className="friendAdd">유저 검색</h2>
+              <input
+                type="text"
+                placeholder="ID 입력"
+                value={searchUserId}
+                onChange={handleSearchUserChange}
+                className="friend-input"
+              />
+              <button onClick={handleSearchUser} className="cyberpunk-btn">
+                검색
+              </button>
 
-            {searchResult && (
-              <div
-                className="search-result"
-                onClick={() => handleFriendClick(searchResult.user.username)}
-              >
-                <p>검색된 유저 ID: {searchResult.user.username}</p>
-              </div>
-            )}
+              {searchResult && (
+                <div
+                  className="search-result"
+                  onClick={() => handleFriendClick(searchResult.user.username)}
+                >
+                  <p>검색된 유저 ID: {searchResult.user.username}</p>
+                </div>
+              )}
 
-            <h2>친구 추가</h2>
-            <input
-              type="text"
-              placeholder="ID 입력"
-              value={friendUserId}
-              onChange={handleAddFriendChange}
-              className="friend-input"
-            />
-            <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
-              추가
-            </button>
-
-            <h2>친구 목록</h2>
+              <h2 className="friendAdd">친구 추가</h2>
+              <input
+                type="text"
+                placeholder="ID 입력"
+                value={friendUserId}
+                onChange={handleAddFriendChange}
+                className="friend-input"
+              />
+              <button onClick={handleAddFriendSubmit} className="cyberpunk-btn">
+                추가
+              </button>
+            </div>
+          </section>
+          <section className="glow-container friend-management">
+            <h2 className="friendAdd">친구 목록</h2>
             <div className="friend-list scrollable-box2">
               {friendData.map((friend, index) => (
                 <div
