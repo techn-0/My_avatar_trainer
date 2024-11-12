@@ -359,7 +359,6 @@ const MyPage = () => {
         fill: true,
         tension: 0.4,
       },
-      
     ],
   };
 
@@ -651,22 +650,13 @@ const MyPage = () => {
     <div className="myPage-container">
       {/* 상단 헤더 */}
       <header className="myPage-header">
-        <div className="radio-wrapper cyberpunk">
-          <input
-            className="input"
-            type="radio"
-            name="btn"
-            id="mainPage"
-            onClick={handleMainClick}
-            onMouseEnter={handleMouseEnter}
-          />
-          <div className="btn" onClick={handleMainClick}>
-            <span aria-hidden="true"></span>메인페이지
-            <span className="btn__glitch" aria-hidden="true">
-              메인페이지
-            </span>
-          </div>
-        </div>
+        <p
+          className="EX_btn"
+          onClick={handleMainClick}
+          onMouseEnter={handleMouseEnter}
+        >
+          메인페이지
+        </p>
         <h1 className="my_User_name">{ownerId} 님의 마이페이지</h1>
       </header>
 
