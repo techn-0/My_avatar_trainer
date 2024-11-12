@@ -1,25 +1,23 @@
 import React, { useEffect } from "react";
 import "./exerciseResult.css";
 
-
-function ExerciseResultModal({ onClose, bestScore, userScore, opponentScore}) {
+function ExerciseResultModal({ onClose, bestScore, userScore, opponentScore }) {
   // 비교 결과 메시지 생성
   let resultMessage;
   let soundEffect;
 
-  if(opponentScore !== undefined && opponentScore !== null){
+  if (opponentScore !== undefined && opponentScore !== null) {
     if (userScore > opponentScore) {
-      resultMessage = '승리!';
+      resultMessage = "승리!";
       soundEffect = "/sound/victory.mp3";
     } else if (userScore < opponentScore) {
-      resultMessage = '패배!';
+      resultMessage = "패배!";
       soundEffect = "/sound/fail.mp3";
     } else {
-      resultMessage = '무승부!';
+      resultMessage = "무승부!";
       soundEffect = "/sound/fail2.mp3";
-    }  
-  }
-  else {
+    }
+  } else {
     if (bestScore === null || bestScore === undefined || bestScore === 0) {
       // 이전 기록이 없거나, 0으로 첫 운동 기록인 경우
       if (userScore > 0) {
@@ -58,7 +56,7 @@ function ExerciseResultModal({ onClose, bestScore, userScore, opponentScore}) {
       <div className="card">
         <div className="modal-content">
           <button
-            className="Btn"
+            className="result_close_btn"
             onClick={() => {
               onClose();
               window.location.reload(); // 새로고침 추가
@@ -73,20 +71,19 @@ function ExerciseResultModal({ onClose, bestScore, userScore, opponentScore}) {
           </button>
           {opponentScore !== undefined && opponentScore !== null ? (
             <>
-            <h1>승부 결과</h1>
-            <h2>나: {userScore}</h2>
-            <h2>상대: {opponentScore}</h2>
-            <h2>결과: {resultMessage}</h2>
+              <h1>승부 결과</h1>
+              <h2>나: {userScore}</h2>
+              <h2>상대: {opponentScore}</h2>
+              <h2>결과: {resultMessage}</h2>
             </>
-            
           ) : (
-          <>
-          <h1>운동 결과</h1>
-          <h2>아바타: {bestScore}</h2>
-          <h2>나: {userScore}</h2>
-          <h2>결과: {resultMessage}</h2>
-          </>
-        )}
+            <>
+              <h1>운동 결과</h1>
+              <h2>아바타: {bestScore}</h2>
+              <h2>나: {userScore}</h2>
+              <h2>결과: {resultMessage}</h2>
+            </>
+          )}
         </div>
       </div>
     </div>
