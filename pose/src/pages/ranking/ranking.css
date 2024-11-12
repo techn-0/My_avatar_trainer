@@ -1,15 +1,15 @@
 @font-face {
-  font-family: 'GangwonEduPowerExtraBoldA';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff') format('woff');
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 html,
 body {
-
   background-image: url("https://raw.githubusercontent.com/ParkYoungWoong/overwatch-hero-selector-vanilla/master/images/bg.jpg");
-  background-size:auto;
+  background-size: cover; /* 화면 크기에 맞게 이미지 확대/축소 */
 }
 
 .ranking-page {
@@ -90,7 +90,6 @@ body {
   display: flex;
   justify-content: center; /* 가로 중앙 정렬 */
   color: #00ff00;
-
 }
 
 .ranking_subtitle {
@@ -118,18 +117,17 @@ body {
   top: -100px; /* 위로 이동 */
 }
 
-
-.ranking_subtitle label{
+.ranking_subtitle label {
   font-size: 40px;
 }
 
-.rankin_title h2{
+.rankin_title h2 {
   font-size: 50px;
   position: relative; /* 필요 시 absolute로 변경 */
   top: -100px; /* 위로 이동 */
 }
 
-.rankin_main_btn_cnt{
+.rankin_main_btn_cnt {
   padding-top: 30px;
   padding-left: 30px;
 }
