@@ -1,32 +1,146 @@
 .room_btn_box {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.623);
+  background-color: rgba(42, 34, 103, 0.756);
   margin-left: 20px;
   width: 320px;
-  height: 750px;
-  padding-left: 30px;
+  height: 700px;
+
   padding-top: 30px;
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
+  border-radius: 20px;
 
-  border: 4px solid; /* 테두리 두께와 스타일 설정 */
-  border-color: #4a21ff; /* 초기 색상 */
-  animation: borderGlow 5s infinite; /* 애니메이션 적용 */
+  border: 5px solid rgb(0, 115, 255); /* 내부 테두리 */
+  outline: 2px solid rgb(0, 115, 255); /* 외부 테두리 */
+  outline-offset: -13px; /* 외부 테두리를 안쪽으로 이동 */
+
+  box-shadow: 0 0 5px rgb(0, 115, 255), 0 0 10px rgb(0, 115, 255),
+    0 0 5px rgb(0, 115, 255);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  padding-left: 3%;
 }
 
-.room_tx_box{
-    margin-top: 50px;
+.room_tx_box {
+  font-style: italic;
+  color: rgb(95, 223, 252);
+}
+.room_tx_box h3 {
+  font-style: italic;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  color: rgb(255, 141, 20);
 }
 
-.room_btn_1{
-    margin-bottom: 50px;
+.room_btn_1 {
+  margin-bottom: 50px;
 }
-*{
-    font-size: 30px;
+* {
+  font-size: 30px;
+}
+
+/* From Uiverse.io by akshat-patel28 */
+.input-div {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid rgb(1, 235, 252);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0px 0px 100px rgb(1, 235, 252),
+    inset 0px 0px 10px rgb(1, 235, 252), 0px 0px 5px rgb(255, 255, 255);
+  animation: flicker 2s linear infinite;
+  left: 10%;
+  margin: 20px;
+  animation: iconflicker 2s linear infinite;
+}
+
+.ready-button {
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  text-shadow: 0px 0px 8px rgba(1, 235, 252, 0.8);
+  font-size: 20px;
+}
+
+.ready-button.disabled {
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  text-shadow: none;
+}
+
+.ready-button:disabled {
+  pointer-events: none;
+}
+
+.icon {
+  color: rgb(1, 235, 252);
+  font-size: 2rem;
+  pointer-events: none;
+  animation: iconflicker 2s linear infinite;
+}
+
+@keyframes flicker {
+  0% {
+    border: 2px solid rgb(1, 235, 252);
+    box-shadow: 0px 0px 100px rgb(1, 235, 252),
+      inset 0px 0px 10px rgb(1, 235, 252), 0px 0px 5px rgb(255, 255, 255);
+  }
+
+  5% {
+    border: none;
+    box-shadow: none;
+  }
+
+  10% {
+    border: 2px solid rgb(1, 235, 252);
+    box-shadow: 0px 0px 100px rgb(1, 235, 252),
+      inset 0px 0px 10px rgb(1, 235, 252), 0px 0px 5px rgb(255, 255, 255);
+  }
+
+  25% {
+    border: none;
+    box-shadow: none;
+  }
+
+  30% {
+    border: 2px solid rgb(1, 235, 252);
+    box-shadow: 0px 0px 100px rgb(1, 235, 252),
+      inset 0px 0px 10px rgb(1, 235, 252), 0px 0px 5px rgb(255, 255, 255);
+  }
+
+  100% {
+    border: 2px solid rgb(1, 235, 252);
+    box-shadow: 0px 0px 100px rgb(1, 235, 252),
+      inset 0px 0px 10px rgb(1, 235, 252), 0px 0px 5px rgb(255, 255, 255);
+  }
+}
+
+@keyframes iconflicker {
+  0% {
+    opacity: 1;
+  }
+
+  5% {
+    opacity: 0.2;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  25% {
+    opacity: 0.2;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

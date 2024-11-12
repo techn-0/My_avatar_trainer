@@ -263,22 +263,20 @@ function ThreeScene() {
         </div>
       </div>
       {/* 우측 상단에 userId 표시 */}
+
       <div className="welcome btn_box">
+        {tier >= 1 && tier <= 5 && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              style={{ width: "100px" }}
+              src={preloadImages[tier - 1].src}
+              className="tier-image"
+            />
+          </div>
+        )}
         {userId && (
           <div className="welcome_text">
-            안녕하세요 <br />
-            <span className="name">{userId}</span>님<br />
-            {tier >= 1 && tier <= 5 && (
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <img
-                  style={{ width: "50px" }}
-                  src={preloadImages[tier - 1].src}
-                  // alt={`Tier ${tier}`}
-                  className="tier-image"
-                />
-                <div>TIER {tier}</div>
-              </div>
-            )}
+            <span className="name">{userId}</span>
           </div>
         )}
       </div>
