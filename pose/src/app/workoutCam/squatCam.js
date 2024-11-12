@@ -166,7 +166,7 @@ function MediapipeSquatTracking({
           rightTorsoAngle > 30;
 
         // 스쿼트 업 조건
-        const isSquatUp = leftKneeAngle > 140 && rightKneeAngle > 140;
+        const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
 
         // 상태 전환 및 카운트 업데이트
         if (isSquatDown && squatStateRef.current === "up") {
