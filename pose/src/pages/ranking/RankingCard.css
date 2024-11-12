@@ -71,7 +71,8 @@
 .ranking_number {
   position: relative;
   color: #ffc64b;
-  font-family: "establishRetrosansOTF";
+  font-family: "GangwonEduPowerExtraBoldA";
+  font-style: italic;
   font-weight: 700;
   font-size: 80px;
   left: 20px;
@@ -130,7 +131,8 @@
   margin-left: 60px;
   color: #424c50;
   letter-spacing: 6px;
-  font-family: "establishRetrosansOTF";
+  font-family: "GangwonEduPowerExtraBoldA";
+  font-style: italic;
   margin-top: 20px;
   font-weight: 800;
   font-size: 13px;
@@ -139,7 +141,8 @@
 
 .gradesBoxNum {
   position: relative;
-  font-family: "establishRetrosansOTF";
+  font-family: "GangwonEduPowerExtraBoldA";
+  font-style: italic;
   display: block;
   font-size: 25px;
   font-weight: 800;

@@ -1,8 +1,9 @@
 @font-face {
-    font-family: 'establishRetrosansOTF';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* 전체 컨테이너 */
@@ -13,7 +14,7 @@
   flex-direction: column;
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
   color: rgb(0, 0, 0);
-  font-family: "establishRetrosansOTF";
+  font-family: "GangwonEduPowerExtraBoldA";
   justify-content: space-between;
 }
 
@@ -137,28 +138,12 @@
   border: 3px solid #4a21ff; /* 초기 보라색 테두리 */
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(111, 149, 162, 0.3); /* 네온 느낌의 그림자 */
-  animation: borderGlow 3s infinite; /* 테두리 애니메이션 */
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .rooms li:hover {
   transform: translateY(-4px);
   box-shadow: 0 0 20px rgba(78, 255, 29, 0.5); /* 호버 시 네온 효과 강조 */
-}
-
-@keyframes borderGlow {
-  0% {
-    border-color: #4a21ff;
-    box-shadow: 0 0 10px #4a21ff;
-  }
-  50% {
-    border-color: #4ef51d; /* 네온 그린 */
-    box-shadow: 0 0 20px #4ef51d;
-  }
-  100% {
-    border-color: #4a21ff;
-    box-shadow: 0 0 10px #4a21ff;
-  }
 }
 
 .rooms button {
