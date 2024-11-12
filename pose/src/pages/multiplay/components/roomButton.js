@@ -93,7 +93,6 @@ function RoomButtons({
               className={`btn ready-button ${isReady ? "ready" : ""} ${
                 !selectedExercise || !selectedDuration ? "disabled" : ""
               }`}
-              
               disabled={!selectedExercise || !selectedDuration}
               onMouseEnter={handleMouseEnter}
             >
@@ -110,9 +109,7 @@ function RoomButtons({
               fill="none"
               stroke="currentColor"
               className="icon"
-            >
-
-            </svg>
+            ></svg>
           </div>
         </div>
       </div>
