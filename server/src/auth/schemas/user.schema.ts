@@ -22,6 +22,9 @@ export class User extends Document {
   tier: number;
 
   @Prop()
+  profilepic:string;
+
+  @Prop()
   percentile: number;
 }
 
