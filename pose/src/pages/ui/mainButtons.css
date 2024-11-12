@@ -137,7 +137,7 @@
   font-weight: 900;
   width: 130%;
   height: 160%;
-  line-height: 60px;
+  line-height: 68px;
   text-align: center;
   transition: background 0.2s, 0.3s;
   font-family: "establishRetrosansOTF";
@@ -151,7 +151,7 @@
 .input:hover + .btn {
   --primary: #8b00ff;
   --shadow-primary: #00e572;
-  line-height: 70px;
+  line-height: 80px;
   transform: scale(1.2); /* 글자 크기 확대 */
   z-index: 1;
 }
