@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* 전체 컨테이너 스타일 */
 .wrapper {
   --input-focus: #2d8cf0;
@@ -185,6 +192,7 @@
 
 /* 입력 필드 스타일 */
 .flip-card__input {
+  font-family: 'SBAggroB';
   width: 250px;
   height: 40px;
   border-radius: 5px;
@@ -229,6 +237,7 @@
   font-weight: 600;
   color: var(--font-color);
   cursor: pointer;
+  line-height: 1.6;
 }
 
 /* Login.css */

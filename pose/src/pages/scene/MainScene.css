@@ -47,3 +47,13 @@
 .tier-image {
   background-color: rgba(125, 249, 158, 0.696);
 }
+
+html,
+body {
+  background-image: url("https://raw.githubusercontent.com/ParkYoungWoong/overwatch-hero-selector-vanilla/master/images/bg.jpg");
+  background-size: cover; /* 화면 크기에 맞게 이미지 확대/축소 */
+  background-position: center; /* 이미지를 가운데 정렬 */
+  background-repeat: no-repeat; /* 이미지를 반복하지 않음 */
+  height: 100%; /* 전체 화면 크기를 채우기 위해 설정 */
+  margin: 0; /* 기본 여백 제거 */
+}

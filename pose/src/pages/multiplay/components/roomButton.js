@@ -40,7 +40,7 @@ function RoomButtons({
           onClick={onLeaveRoomClick}
           onMouseEnter={handleMouseEnter}
         >
-          메인페이지
+          나가기
         </p>
 
         {/* 운동 설정 UI */}

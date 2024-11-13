@@ -6,6 +6,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* 전체 컨테이너 */
 .myPage-container {
   height: 100vh;
@@ -334,7 +341,7 @@
 
 .friend-input {
   width: 300px !important;
-  font-family: Arial, sans-serif;
+  font-family: SBAggroB;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
 }
