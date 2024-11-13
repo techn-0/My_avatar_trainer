@@ -332,7 +332,7 @@ function MediapipeSquatTracking({
           {/* 로컬 사용자의 스쿼트 횟수 */}
           <h1 className={`${animateCount ? "work-count" : ""}`}>
             {squatCount}</h1>
-          <h1>&nbsp; VS &nbsp;</h1>
+          <h1>VS</h1>
           {/* 상대방의 스쿼트 횟수 */}
           <h1 className={`${remoteAnimateCount ?  "work-count" : ""}`}>{remoteSquatCount}</h1>
         </div>
