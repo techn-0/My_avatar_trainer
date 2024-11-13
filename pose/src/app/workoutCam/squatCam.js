@@ -259,10 +259,10 @@ function MediapipeSquatTracking({
       <div className="vs_container">
         <div className="vs_element">
           {/* 아바타 운동 횟수 */}
-          <h1 className={`gas ${animateRepeatCount ? "squat-count" : ""}`}>{animationRepeatCount}</h1>
+          <h1 className={`${animateRepeatCount ? "work-count" : ""}`}>{animationRepeatCount}</h1>
           <h1>&nbsp; VS &nbsp;</h1>
           {/* 플레이어 운동 횟수 */}
-          <h1 className={`gas ${animateCount ? "squat-count" : ""}`}>{squatCountRef.current}</h1>
+          <h1 className={`${animateCount ? "work-count" : ""}`}>{squatCountRef.current}</h1>
         </div>
       </div>
     </div>

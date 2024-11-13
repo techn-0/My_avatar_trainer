@@ -1,59 +1,59 @@
 .vs_container {
   position: absolute;
-  width: 250px;
   text-align: center;
+  justify-content: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
   border: 4px solid rgb(0, 255, 174);
   border-radius: 30px;
-  background: white;
-  display: flex;
+  display: inline-flex;
   flex-direction: row; /* 가로 배치 */
   place-content: center; /* 가로와 세로 모두 중앙 정렬 */
   background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
+  width: fit-content; /* 자식 콘텐츠에 맞춰 너비 자동 조정 */
+  height: 10vh; /* 자식 콘텐츠에 맞춰 높이 자동 조정 */
+  padding: 10px; /* 여백 추가 */
 }
 .vs_element {
+  padding-top: 50px;
+  justify-content: center;
   display: inline-flex; /* 요소를 가로 정렬에 적합하게 조정 */
   align-items: center; /* 요소 내부 중앙 정렬 */
 }
 
 .vs_element h1 {
-  font-size: 45px;
-  color: rgb(255, 0, 247);
+  font-size: 100px;
+  color: rgb(255, 255, 255);
 }
 
-@keyframes scaleAndGlow {
+.vs_element h3 {
+  place-content: center;
+  font-size: 80px;
+  color: rgb(255, 255, 255);
+}
+
+@keyframes changeColor {
   0% {
-    transform: scale(1);
-    filter: brightness(100%);
-    text-shadow: 0 0 0px var(--glow, #fff);
+    color: #fff;
   }
-  30% {
-    transform: scale(1.2); /* 점진적으로 확대 */
-    filter: brightness(110%);
-    text-shadow: 0 0 5px var(--glow, #fda802);
+  25% {
+    color: #ffd700; /* 점진적인 색 변화 시작 */
   }
-  60% {
-    transform: scale(1.4); /* 부드럽게 확대 */
-    filter: brightness(115%);
-    text-shadow: 0 0 8px var(--glow, #fda802);
+  50% {
+    color: #fda802; /* 강조 색상 */
   }
-  80% {
-    transform: scale(1.5); /* 최대 확대 */
-    filter: brightness(120%) drop-shadow(0 0 10px var(--glow, #fda802));
-    text-shadow: 0 0 10px var(--glow, #fda802);
+  75% {
+    color: #ffd700; /* 강조 색상에서 원래 색으로 되돌아오는 과정 */
   }
   100% {
-    transform: scale(1);
-    filter: brightness(100%);
-    text-shadow: 0 0 0px var(--glow, #fff);
+    color: #fff;
   }
 }
 
-.squat-count {
+.work-count {
   display: inline-block;
-  animation: scaleAndGlow 0.5s ease-in-out; /* 두 효과를 동시에 적용 */
+  animation: changeColor 0.5s ease-in-out; /* 두 효과를 동시에 적용 */
 }
 

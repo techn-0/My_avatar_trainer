@@ -40,7 +40,8 @@ function MediapipeSquatTracking({
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
   const [squatCount, setSquatCount] = useState(0);
-  const [animateCount, setAnimateCount] = useState(false);
+  const [animateCount, setAnimateCount] = useState(false);// 나의 카운트 애니메이션화
+  const [remoteAnimateCount, setRemoteAnimateCount] = useState(false); // 상대 카운트 애니메이션
   const [remoteSquatCount, setRemoteSquatCount] = useState(0);
   const squatStateRef = useRef("up");
 
@@ -279,6 +280,8 @@ function MediapipeSquatTracking({
     // 서버로부터 상대방의 스쿼트 횟수 업데이트 수신
     socket.on("remoteSquatCountUpdate", ({ username, count }) => {
       setRemoteSquatCount(count);
+      setRemoteAnimateCount(true);
+      setTimeout(() => setRemoteAnimateCount(false), 300); // 애니메이션 지속 시간 후 제거
     });
 
     return () => {
@@ -327,11 +330,11 @@ function MediapipeSquatTracking({
       <div className="vs_container">
         <div className="vs_element">
           {/* 로컬 사용자의 스쿼트 횟수 */}
-          <h1 className={`gas ${animateCount ? "squat-count" : ""}`}>
+          <h1 className={`${animateCount ? "work-count" : ""}`}>
             {squatCount}</h1>
           <h1>&nbsp; VS &nbsp;</h1>
           {/* 상대방의 스쿼트 횟수 */}
-          <h1>{remoteSquatCount}</h1>
+          <h1 className={`${remoteAnimateCount ?  "work-count" : ""}`}>{remoteSquatCount}</h1>
         </div>
       </div>
       {/* 운동 타이머 */}
