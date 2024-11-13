@@ -5,6 +5,7 @@ import { getToken } from "../login/AuthContext";
 import { jwtDecode } from 'jwt-decode';
 
 function ChatRoom() {
+  const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
   const { roomName } = useParams();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -124,6 +125,23 @@ function ChatRoom() {
     
   };
 
+  // 페이지 이동
+  const handleMainClick = () => {
+    navigate("/"); // 메인 페이지로 이동
+  };
+  
+  const handleMouseEnter = () => {
+    if (glitchSoundRef.current) {
+      glitchSoundRef.current.currentTime = 0;
+      glitchSoundRef.current.play().catch((error) => {
+        // play() failed due to lack of user interaction. We can ignore this error.
+        console.log(
+          "Sound play prevented due to user interaction requirement."
+        );
+      });
+    }
+  };
+
   useEffect(()=>{
      // Scroll to the bottom whenever messages change
      if (messagesEndRef.current) {
@@ -133,7 +151,14 @@ function ChatRoom() {
 
   return (
     <div className="chat-room">
-      <h1 style={{ color: 'white' }}>Chat Room: {roomName}</h1>
+        <p
+            className="My_MAIN_btn"
+            onClick={handleMainClick}
+            onMouseEnter={handleMouseEnter}
+            style = {{marginRight:'1000px'}}
+          >
+            메인페이지
+          </p>
       
       <div>
       {/* <h2 style={{ color: 'white' }}>Users in Room:</h2>  */}
@@ -151,7 +176,7 @@ function ChatRoom() {
       <div className="chat-window" style={{ border: '1px solid #ccc', padding: '10px', height: '500px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
           <div key={index} style={{ textAlign: msg.sender === username ? 'right' : 'left', margin: '10px 0' }}>
-            <span style={{ fontWeight: 'bold', color: msg.sender === username ? 'lightblue' : 'green' }}>
+            <span style={{ fontWeight: 'bold', color: msg.sender === username ? 'blue' : 'green' }}>
               {msg.sender}:
             </span>
             <span style={{ display: 'inline-block', padding: '5px 10px', borderRadius: '10px', backgroundColor: msg.sender === username ? '#e0f7fa' : '#f1f1f1', marginLeft: '10px' }}>
@@ -169,8 +194,8 @@ function ChatRoom() {
         placeholder="Type a message..."
         style={{ width: '80%', padding: '10px', marginTop: '10px' }}
       />
-      <button onClick={sendMessage} style={{ padding: '10px 20px', marginLeft: '10px' }}>Send</button>
-      <button onClick={handleExitRoom} style={{ padding: '10px 20px', marginLeft: '10px' }}>Exit Room</button>
+      <button onClick={sendMessage} style={{ padding: '10px 20px', marginLeft: '10px' }}>보내기</button>
+      <button onClick={handleExitRoom} style={{ padding: '10px 20px', marginLeft: '10px' }}>방 나가기</button>
     </div>
   );
 }
