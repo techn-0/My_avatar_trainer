@@ -325,9 +325,18 @@ function MediapipeSquatTracking({
           ></canvas>
         </>
       )}
-
-      {/* 스쿼트 카운트 표시 */}
-      <div className="vs_container">
+       
+     
+      {/* 운동 타이머 */}
+      {showTimer && remainingTime !== null && (
+        <>
+        <ExerciseTimer
+          durationInSeconds={remainingTime}
+          onTimerEnd={endExercise}
+          startTimeRef={timerStartTimeRef}
+        />
+        {/* 스쿼트 카운트 표시 */}
+       <div className="vs_container">
         <div className="vs_element">
           {/* 로컬 사용자의 스쿼트 횟수 */}
           <h1 className={`${animateCount ? "work-count" : ""}`}>
@@ -337,13 +346,8 @@ function MediapipeSquatTracking({
           <h1 className={`${remoteAnimateCount ?  "work-count" : ""}`}>{remoteSquatCount}</h1>
         </div>
       </div>
-      {/* 운동 타이머 */}
-      {showTimer && remainingTime !== null && (
-        <ExerciseTimer
-          durationInSeconds={remainingTime}
-          onTimerEnd={endExercise}
-          startTimeRef={timerStartTimeRef}
-        />
+
+        </>
       )}
 
       {/* 운동 결과 모달 */}
