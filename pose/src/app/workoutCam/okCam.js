@@ -64,6 +64,7 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
     });
 
     pose.onResults((results) => {
+      if (!canvasRef.current) return;
       const canvasCtx = canvasRef.current.getContext("2d");
       const landmarks = results.poseLandmarks;
 
@@ -179,6 +180,19 @@ const OkCam = ({ active, onCanvasUpdate, onOkPoseDetected }) => {
           //   border: "5px solid white",
         }}
       ></canvas>
+      <img
+        src="/ok.png"
+        alt="Guideline"
+        style={{
+          position: "absolute",
+          top: 100,
+          right: "280px",
+          width: "500px",
+          height: "600px",
+          opacity: 0.5,
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 };

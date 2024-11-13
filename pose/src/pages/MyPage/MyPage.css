@@ -1,62 +1,68 @@
 @font-face {
-    font-family: 'establishRetrosansOTF';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
+
 /* 전체 컨테이너 */
 .myPage-container {
   height: 100vh;
   overflow-x: auto;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
   color: rgb(0, 0, 0);
-  font-family: "establishRetrosansOTF";
-  padding: 50px 190px 50px 190px;
+  font-family: "GangwonEduPowerExtraBoldA";
+  font-style: italic;
+  padding: 40px 190px 50px 190px;
+  position: absolute;
+
 }
 
 /* 헤더 */
 .myPage-header {
-  padding: 20px 20px 35px 20px;
+  padding: 20px 20px 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(111, 149, 162, 0.5);
-  color: rgb(78, 255, 29);
   z-index: 1;
-  margin-bottom: 80px;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
+}
+.My_MAIN_btn {
+  font-size: 80px;
+  color: white;
+  margin: 20px 0 0 0;
+  font-style: italic;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, color 0.3s ease; /* 스무스 효과 추가 */
 
-  border: 4px solid; /* 테두리 두께와 스타일 설정 */
-  border-color: #4a21ff; /* 초기 색상 */
-  animation: borderGlow 5s infinite; /* 애니메이션 적용 */
+  border: none; /* 기본 테두리 제거 */
+  outline: none; /* 포커스 아웃라인 제거 */
+  background-color: #ffffff00; /* 버튼 배경색 */
+}
 
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
+.My_MAIN_btn:hover {
+  color: rgb(255, 141, 20);
+  transform: scale(1.1);
 }
 
 .cyberpunk-btn {
-  padding: 10px 20px;
-  background: #8c00ff;
+  margin-top: 10px;
+  padding: 0 20px;
+  padding-top: 13px;
+  background: rgb(0, 68, 255);
   border: none;
   color: rgb(255, 255, 255);
   font-weight: bold;
   cursor: pointer;
-  margin-right: 10px;
-  margin-left: 20px;
+  margin: 10px;
+  /* margin-left: 20px; */
 }
 
 .cyberpunk-btn:hover {
-  background: #00ff1e;
-  background: #00ff1e;
-  box-shadow: 0px 0px 10px #00ff9f, 0px 0px 20px #00ff9f;
+  background: rgb(0, 170, 255);
+  box-shadow: 0px 0px 10px rgb(0, 255, 221), 0px 0px 30px rgb(0, 255, 157);
 }
 
 /* 가로 스크롤 */
@@ -82,7 +88,7 @@
 }
 
 /* 공통 스타일 */
-.glow-container {
+.my_glow-container {
   padding: 34px;
 
   /* background: linear-gradient(
@@ -93,18 +99,17 @@
   ); */
   background-color: rgba(255, 255, 255, 0.626);
   color: black;
-  border: solid 5px rgb(212, 0, 255);
-  padding: 34px;
 
-  /* background: linear-gradient(
-    135deg,
-    #0f2027,
-    #203a43,
-    #2c5364
-  ); */
-  background-color: rgba(255, 255, 255, 0.626);
-  color: black;
-  border: solid 5px rgb(212, 0, 255);
+  --s: 60px; /* control the size */
+
+  --c: #00000000, #26234c 0.5deg 119.5deg, #0000 120deg;
+  --g1: conic-gradient(from 60deg at 56.25% calc(425% / 6), var(--c));
+  --g2: conic-gradient(from 180deg at 43.75% calc(425% / 6), var(--c));
+  --g3: conic-gradient(from -60deg at 50% calc(175% / 12), var(--c));
+  background: var(--g1), var(--g1) var(--s) calc(1.73 * var(--s)), var(--g2),
+    var(--g2) var(--s) calc(1.73 * var(--s)), var(--g3) var(--s) 0,
+    var(--g3) 0 calc(1.73 * var(--s)) #1e1e1e;
+  background-size: calc(2 * var(--s)) calc(3.46 * var(--s));
 }
 
 .chart-container {
@@ -147,20 +152,7 @@
   width: 80%;
   padding: 7px;
   margin-right: 10px;
-}
 
-.comment-input button {
-  padding: 10px 20px;
-  background: #8c00ff;
-  border: none;
-  color: rgb(255, 255, 255);
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.comment-input button:hover {
-  background: #00ff1e;
-  background: #00ff1e;
 }
 
 /* 친구 카드 */
@@ -169,7 +161,7 @@
   background: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
   margin: 10px 0;
-  color: rgb(0, 0, 0);
+  color: rgb(16, 22, 6);
   margin: 5px;
   height: 60px;
 
@@ -189,53 +181,6 @@
 
 .font_small {
   font-size: 30px;
-}
-
-.comment-card button {
-  padding: 5px 10px;
-  background: #8c00ff;
-  background: #8c00ff;
-  color: rgb(0, 0, 0);
-  border: none;
-  cursor: pointer;
-}
-
-.comment-card button:hover {
-  background: #00ff1e;
-  background: #00ff1e;
-}
-
-.friend-card button {
-  margin-left: 10px;
-  padding: 5px 10px;
-  background: #8c00ff;
-  color: rgb(255, 255, 255);
-  background: #8c00ff;
-  color: rgb(255, 255, 255);
-  border: none;
-  cursor: pointer;
-}
-
-.friend-card button:hover {
-  background: #00ff1e;
-  background: #00ff1e;
-}
-
-.pagination button {
-  margin-left: 10px;
-  margin-top: 20px;
-  padding: 5px 10px;
-  background: #8c00ff;
-  color: #ffffff;
-  background: #8c00ff;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
-}
-
-.pagination button:hover {
-  background: #00ff1e;
-  background: #00ff1e;
 }
 
 .myPage-tierImage {
@@ -311,8 +256,8 @@
 .myPage-bottom {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  padding: 0 180px 0 180px;
+  gap: 80px;
+  padding: 0 120px;
 }
 
 /* 블록 크기 커스텀 가능 */
@@ -320,36 +265,72 @@
   flex: 1; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #ff0000, 0px 0px 20px #ff0000; */
   border-radius: 20px;
+
+  border: 5px solid rgb(0, 68, 255); /* 내부 테두리 */
+  outline: 2px solid rgb(0, 60, 255); /* 외부 테두리 */
+  outline-offset: -13px; /* 외부 테두리를 안쪽으로 이동 */
+
+  box-shadow: 0 0 5px rgb(0, 153, 255), 0 0 10px rgb(0, 68, 255),
+    0 0 5px rgb(0, 153, 255);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  color: white;
 }
 
 .myPage-recentRecordSection {
   flex: 2; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #d400ff, 0px 0px 20px #ff00d4; */
   border-radius: 20px;
+
+  border: 5px solid rgb(0, 68, 255); /* 내부 테두리 */
+  outline: 2px solid rgb(0, 60, 255); /* 외부 테두리 */
+  outline-offset: -13px; /* 외부 테두리를 안쪽으로 이동 */
+
+  box-shadow: 0 0 5px rgb(0, 153, 255), 0 0 10px rgb(0, 68, 255),
+    0 0 5px rgb(0, 153, 255);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  color: white;
 }
 
 .myPage-bestRecordSection {
   flex: 0.7; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #00ff2f, 0px 0px 20px #40ff00; */
   border-radius: 20px;
-}
 
-.comment_box {
-  flex: 0.5; /* 비율 조정 가능 */
-  /* box-shadow: 0px 0px 10px #00f2ff, 0px 0px 20px #02ffff; */
-  border-radius: 20px;
+  border: 5px solid rgb(0, 68, 255); /* 내부 테두리 */
+  outline: 2px solid rgb(0, 60, 255); /* 외부 테두리 */
+  outline-offset: -13px; /* 외부 테두리를 안쪽으로 이동 */
+
+  box-shadow: 0 0 5px rgb(0, 153, 255), 0 0 10px rgb(0, 68, 255),
+    0 0 5px rgb(0, 153, 255);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  color: white;
 }
 
 .friend-management {
   flex: 0.5; /* 비율 조정 가능 */
   /* box-shadow: 0px 0px 10px #1100ff, 0px 0px 20px #0015ff; */
+
+  height: 110%;
   border-radius: 20px;
 
-  padding-left: 100px;
+  padding-left: 50px;
+
+  border: 5px solid rgb(255, 0, 0); /* 내부 테두리 */
+  outline: 2px solid rgb(255, 0, 0); /* 외부 테두리 */
+  outline-offset: -13px; /* 외부 테두리를 안쪽으로 이동 */
+
+  box-shadow: 0 0 5px rgb(255, 0, 0), 0 0 10px rgb(255, 0, 0),
+    0 0 5px rgb(255, 0, 0);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+  color: white;
 }
 
 .friend-input {
   width: 300px !important;
+  font-family: Arial, sans-serif;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
 }
 
 .chart-container canvas {
@@ -358,4 +339,10 @@
 
 .myPage-tierInfo p {
   margin-left: 15%;
+}
+
+.friend_list_header{
+  display: flex; /* 자식 요소를 가로로 정렬 */
+
+  gap: 90px; /* 자식 요소 간격 */
 }

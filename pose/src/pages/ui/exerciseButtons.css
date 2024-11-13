@@ -1,48 +1,64 @@
 @font-face {
-    font-family: 'establishRetrosansOTF';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
 .EX_btn_box {
-  background-color: rgba(187, 187, 187, 0.716);
-  /* 모서리 깎기 */
-  clip-path: polygon(
-    50px 0%,
-    /* 상단 왼쪽 */ 100% 0%,
-    /* 상단 오른쪽 */ 100% calc(100% - 50px),
-    /* 하단 오른쪽 */ calc(100% - 50px) 100%,
-    /* 하단 왼쪽 */ 0% 100%,
-    /* 하단 왼쪽 */ 0% 50px /* 상단 왼쪽 */
-  );
-  padding: 20px;
-  font-family: "establishRetrosansOTF";
-
-  border: 4px solid; /* 테두리 두께와 스타일 설정 */
-  border-color: #4a21ff; /* 초기 색상 */
-  animation: borderGlow 5s infinite; /* 애니메이션 적용 */
+  font-family: "GangwonEduPowerExtraBoldA";
+  font-style: italic;
+  padding-top: 7%;
   width: 350px;
   height: 870px;
-  padding-left: 35px;
-}
+  padding-left: 19%;
+  background-color: rgba(42, 34, 103, 0.756);
+  border-radius: 20px;
 
-.exercise-selection-container {
-  font-size: 25px;
+  border: 5px solid rgb(0, 68, 255); /* 내부 테두리 */
+  outline: 2px solid rgb(0, 60, 255); /* 외부 테두리 */
+  outline-offset: -13px; /* 외부 테두리를 안쪽으로 이동 */
+
+  box-shadow: 0 0 5px rgb(0, 153, 255), 0 0 10px rgb(0, 68, 255),
+    0 0 5px rgb(0, 153, 255);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .exercise-selection,
 .duration-selection {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
 }
 
-.exercise-label,
-.duration-label {
-  margin-bottom: 5px;
+.EX_btn {
+  font-size: 40px;
+  color: white;
+  margin: 20px 0 0 0;
+  font-style: italic;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, color 0.3s ease; /* 스무스 효과 추가 */
+
+  border: none; /* 기본 테두리 제거 */
+  outline: none; /* 포커스 아웃라인 제거 */
+  background-color: #ffffff00; /* 버튼 배경색 */
 }
 
-.Ex_btn {
-  margin-bottom: 30px;
+.EX_btn:hover {
+  color: rgb(255, 141, 20);
+  transform: scale(1.1);
+}
+
+.EX_btn.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.exercise-selection-container {
+  color: rgb(95, 223, 252);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.exercise-selection-container h3 {
+  color: rgb(255, 141, 20);
 }

@@ -23,6 +23,7 @@ import "./ExerciseScene.css";
 import ExerciseGuide from "../ui/selectExerciseGuide";
 import OkGuide from "../ui/okCamGuide";
 import QuestionMark from "../ui/questionMark";
+import CountDown from "../ui/countDown";
 
 // 주소전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
@@ -81,15 +82,6 @@ function ExerciseScene() {
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
 
-  // 카운트다운 상태 추가
-  const [countdownImages, setCountdownImages] = useState([
-    "count3.png",
-    "count2.png",
-    "count1.png",
-    "countStart.png",
-  ]);
-  const [currentCountdownIndex, setCurrentCountdownIndex] = useState(null);
-
   // 운동 카운트 상태
   const [exerciseCount, setExerciseCount] = useState(0);
   const exerciseCountRef = useRef(0); // 운동 카운트를 저장할 ref 생성
@@ -97,8 +89,10 @@ function ExerciseScene() {
   // 운동 타이머 표시 상태
   const [showTimer, setShowTimer] = useState(false);
   const timerStartTimeRef = useRef(null); // 타이머 시작 시간 저장
-
+  // 3초 카운트 끝남을 관리하기 위한 상태
+  const [countdownFinished, setCountdownFinished] = useState(false);
   // 3초 카운트 효과음 재생을 위한 참조
+  const [showCountdown, setShowCountdown] = useState(false);
   const countdownMusicRef = useRef(null); // 카운트다운 중에 재생될 노래 참조
 
   // 애니메이션 반복 횟수 추적을 위한 상태 및 ref 추가
@@ -232,14 +226,6 @@ function ExerciseScene() {
       }
     };
   }, []);
-
-  // 이미지 프리로드
-  useEffect(() => {
-    countdownImages.forEach((image) => {
-      const img = new Image();
-      img.src = process.env.PUBLIC_URL + `/ExerciseCountdown/${image}`;
-    });
-  }, [countdownImages]);
 
   // 로그인 모달 열기 함수
   const openLoginDialog = () => {
@@ -403,28 +389,20 @@ function ExerciseScene() {
 
   // 카운트다운 시작 함수
   const startCountdown = () => {
-    setCurrentCountdownIndex(0); // 카운트다운 시작
     setMediapipeActive(false); // Mediapipe 비활성화
+    setShowCountdown(true);
   };
+
+  useEffect(() => {
+    if (showCountdown && countdownMusicRef.current) {
+      countdownMusicRef.current.currentTime = 0;
+      countdownMusicRef.current.play();
+    }
+  }, [showCountdown]);
 
   // 카운트다운 진행
   useEffect(() => {
-    let timer;
-    if (
-      currentCountdownIndex !== null &&
-      currentCountdownIndex < countdownImages.length
-    ) {
-      // 3초 카운트 효과음 재생
-      if (countdownMusicRef.current && currentCountdownIndex === 0) {
-        countdownMusicRef.current.currentTime = 0; // 처음부터 재생
-        countdownMusicRef.current.play();
-      }
-      // 1초마다 이미지 변경
-      timer = setTimeout(() => {
-        setCurrentCountdownIndex(currentCountdownIndex + 1);
-      }, 1000);
-    } else if (currentCountdownIndex === countdownImages.length) {
-      setCurrentCountdownIndex(null); // 카운트다운 초기화
+   if (countdownFinished && selectedExercise) { 
       setMediapipeActive(true); // 카운트다운 완료 후 Mediapipe 활성화
 
       // 운동 시간 및 반복 횟수 설정
@@ -459,11 +437,7 @@ function ExerciseScene() {
       startExerciseTimer(durationInSeconds);
       console.log("best Score : ", bestScore);
     }
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [currentCountdownIndex]);
+  }, [countdownFinished, selectedExercise]);
 
   const [interactionMessage, setInteractionMessage] = useState(null); // 메시지 상태 추가
 
@@ -699,28 +673,13 @@ function ExerciseScene() {
       {/* Mediapipe 웹캠 화면 및 관절 트래킹을 표시하는 컴포넌트 */}
       {renderMediapipeComponent()}
 
-      {/* 카운트다운 이미지 표시 */}
-      {currentCountdownIndex !== null &&
-        currentCountdownIndex < countdownImages.length && (
-          <img
-            src={
-              process.env.PUBLIC_URL +
-              `/ExerciseCountdown/${countdownImages[currentCountdownIndex]}`
-            }
-            alt="Countdown"
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "300px",
-              height: "300px",
-              zIndex: 3,
-              animation: "fadeInOut 1s linear",
-            }}
-          />
-        )}
-
+   
+      {showCountdown && (
+        <CountDown onCountdownEnd={() => {
+          setCountdownFinished(true);
+          setShowCountdown(false); // 카운트다운 종료 후 숨김
+        }} />
+      )}
       {/* 카운트다운 중 효과음 재생 */}
       <audio ref={countdownMusicRef} src="/sound/3secCount.mp3" />
 

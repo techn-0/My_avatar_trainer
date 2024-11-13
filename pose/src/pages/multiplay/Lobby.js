@@ -101,38 +101,21 @@ function Lobby() {
               </button>
             </form>
             <div className="multiBtn">
-              <div className="mainP radio-wrapper cyberpunk">
-                <input
-                  className="input"
-                  type="radio"
-                  name="btn"
-                  id="mainPage"
-                  onClick={handleMainClick}
-                  onMouseEnter={handleMouseEnter}
-                />
-                <div className="btn" onClick={handleMainClick}>
-                  <span aria-hidden="true"></span>메인페이지
-                  <span className="btn__glitch" aria-hidden="true">
-                    메인페이지
-                  </span>
-                </div>
-              </div>
-              <div className="mypageP radio-wrapper cyberpunk">
-                <input
-                  className="input"
-                  type="radio"
-                  name="btn"
-                  id="myPage"
-                  onClick={handleMypageClick}
-                  onMouseEnter={handleMouseEnter}
-                />
-                <div className="btn" onClick={handleMypageClick}>
-                  <span aria-hidden="true"></span>마이페이지
-                  <span className="btn__glitch" aria-hidden="true">
-                    마이페이지
-                  </span>
-                </div>
-              </div>
+              <p
+                className="EX_btn"
+                onClick={handleMainClick}
+                onMouseEnter={handleMouseEnter}
+              >
+                메인페이지
+              </p>
+
+              <p
+                className="EX_btn"
+                onClick={handleMypageClick}
+                onMouseEnter={handleMouseEnter}
+              >
+                마이페이지
+              </p>
             </div>
           </div>
         </section>

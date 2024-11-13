@@ -1,81 +1,49 @@
 @font-face {
-    font-family: 'establishRetrosansOTF';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRetrosansOTF.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "GangwonEduPowerExtraBoldA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
 .btn_box {
   position: fixed;
-  background-color: rgba(221, 221, 221, 0.623);
   margin: 0px;
   width: auto;
   height: auto;
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
-
-  border: 4px solid; /* 테두리 두께와 스타일 설정 */
-  border-color: #4a21ff; /* 초기 색상 */
-  animation: borderGlow 5s infinite; /* 애니메이션 적용 */
+  top: 38%;
 }
 
 .btn_box_cont {
   position: fixed;
-  background-color: rgba(221, 221, 221, 0.623);
   margin-left: 10px;
   padding-left: 20px;
-  padding-top: 15px;
-  width: 300px;
-  height: 600px;
-  clip-path: polygon(
-    60px 0%,
-    100% 0%,
-    100% calc(100% - 60px),
-    calc(100% - 60px) 100%,
-    0% 100%,
-    0% 60px
-  );
 }
 
 .welcome {
   position: absolute;
-  top: 20px;
-  right: 20px; /* 오른쪽에 딱 붙게 설정 */
+  top: 0px;
+  margin: 50px;
+  right: 0px; /* 오른쪽에 딱 붙게 설정 */
   z-index: 1;
-  font-family: "establishRetrosansOTF";
-  width: 250px;
-  padding-left: 35px;
+  font-family: "GangwonEduPowerExtraBoldA";
+  width: 450px;
+  background-color: rgba(255, 255, 255, 0.567);
+  display: flex;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .welcome_text {
-  font-size: 25px;
-  margin: 20px 20px 20px 10px;
+  padding-left: 8%;
+  padding-top: 3%;
+  margin: 10px 0 0 0;
   white-space: pre-wrap;
   white-space: pre-line;
 }
 .name {
-  color: #33ff21;
+  color: black;
+  font-size: 45px;
 }
 
-@keyframes borderGlow {
-  0% {
-    border-color: #4a21ff;
-  }
-  25% {
-    border-color: #ff21e1;
-  }
-  50% {
-    border-color: #21ffa3;
-  }
-  75% {
-    border-color: #ffdd21;
-  }
-  100% {
-    border-color: #4a21ff;
-  }
+.tier-image {
+  background-color: rgba(125, 249, 158, 0.696);
 }
