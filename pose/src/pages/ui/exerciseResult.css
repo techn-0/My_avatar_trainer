@@ -117,6 +117,8 @@
   text-align: center;
   margin: 10px 0;
   animation: tracking-in-contract-bck-top 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+  line-height: 1; /* 글자 크기에 맞는 높이 설정 */
+  height: auto; /* 높이를 자동으로 맞춤 */
 }
 
 .score-container {
