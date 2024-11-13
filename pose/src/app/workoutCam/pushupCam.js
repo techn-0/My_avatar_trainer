@@ -314,7 +314,7 @@ function MediapipePushupTracking({
         <div className="vs_element">
           {/* 아바타 운동 횟수 */}
           <h1 className={`${animateRepeatCount ? "work-count" : ""}`}>{animationRepeatCount}</h1>
-          <h3>&nbsp; VS &nbsp;</h3>
+          <h1 >VS</h1>
           {/* 플레이어 운동 횟수 */}
           <h1 className={`${animateCount ? "work-count" : ""}`}>{pushupCountRef.current}</h1>
         </div>

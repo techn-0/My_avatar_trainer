@@ -1,6 +1,6 @@
 // MediapipeBurpeeTracking.js
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState} from "react";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
@@ -38,6 +38,8 @@ function MediapipeBurpeeTracking({
   const cameraRef = useRef(null);
   const burpeeCountRef = useRef(0);
   const burpeeStateRef = useRef("down"); // 초기 상태를 "down"으로 설정
+  const [animateCount, setAnimateCount] = useState(false); // 사용자 카운트 애니메이션화
+  const [animateRepeatCount, setAnimateRepeatCount] = useState(false); // 아바타 카운트 애니메이션
 
   // greenFlashEffect 훅 사용
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
@@ -47,11 +49,22 @@ function MediapipeBurpeeTracking({
     triggerGreenFlash();
   }
 
+  // 카운트 증가 시 애니메이션
+  useEffect(() => {
+    if (animationRepeatCount > 0) {
+      setAnimateRepeatCount(true);
+      setTimeout(() => setAnimateRepeatCount(false), 300); // 애니메이션 지속 시간 후 초기화
+    }
+  }, [animationRepeatCount]);
+
   function onCountIncrease() {
     triggerGreenFlash();
     triggerGoodBox(); // "Good!" 박스 표시
     burpeeCountRef.current += 1;
 
+    // 애니메이션 트리거
+    setAnimateCount(true);
+    setTimeout(() => setAnimateCount(false), 300); // 애니메이션 지속 시간 후 제거
     // 효과음 재생
     const audio = new Audio("/sound/good.wav"); // 효과음 파일 경로
     audio.play();
@@ -243,10 +256,10 @@ function MediapipeBurpeeTracking({
       <div className="vs_container">
         <div className="vs_element">
           {/* 아바타 운동 횟수 */}
-          <h1>{animationRepeatCount}</h1>
-          <h1>&nbsp; VS &nbsp;</h1>
+          <h1 className={`${animateRepeatCount ? "work-count" : ""}`}>{animationRepeatCount}</h1>
+          <h1 >VS</h1>
           {/* 플레이어 운동 횟수 */}
-          <h1>{burpeeCountRef.current}</h1>
+          <h1 className={`${animateCount ? "work-count" : ""}`}>{burpeeCountRef.current}</h1>
         </div>
       </div>
     </div>

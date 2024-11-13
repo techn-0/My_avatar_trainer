@@ -39,6 +39,7 @@ function MediapipeSquatTracking({
   const squatStateRef = useRef("up");
   const [animateCount, setAnimateCount] = useState(false); // 사용자 카운트 애니메이션화
   const [animateRepeatCount, setAnimateRepeatCount] = useState(false); // 아바타 카운트 애니메이션
+  
   const { triggerGreenFlash, triggerGoodBox, drawEffects } =
     useGreenFlashEffect();
 
@@ -260,7 +261,7 @@ function MediapipeSquatTracking({
         <div className="vs_element">
           {/* 아바타 운동 횟수 */}
           <h1 className={`${animateRepeatCount ? "work-count" : ""}`}>{animationRepeatCount}</h1>
-          <h1>&nbsp; VS &nbsp;</h1>
+          <h1 >VS</h1>
           {/* 플레이어 운동 횟수 */}
           <h1 className={`${animateCount ? "work-count" : ""}`}>{squatCountRef.current}</h1>
         </div>
