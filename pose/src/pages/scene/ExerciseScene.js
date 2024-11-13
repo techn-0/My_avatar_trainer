@@ -9,8 +9,6 @@ import { useNavigate } from "react-router-dom";
 import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // 스쿼트 Mediapipe 컴포넌트
 import MediapipePushupTracking from "../../app/workoutCam/pushupCam"; // 푸시업 Mediapipe 컴포넌트
 import MediapipeBurpeeTracking from "../../app/workoutCam/burpeeCam"; // 버피 Mediapipe 컴포넌트
-import MediapipeSitupTracking from "../../app/workoutCam/situpCam"; // 윗몸 일으키기 Mediapipe 컴포넌트
-import MediapipePlankTracking from "../../app/workoutCam/plankCam"; // 플랭크 Mediapipe 컴포넌트
 import OkCam from "../../app/workoutCam/okCam"; // OkCam 컴포넌트
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
@@ -74,10 +72,10 @@ function ExerciseScene() {
   const [selectedDuration, setSelectedDuration] = useState(null);
 
   // 운동 종목 리스트
-  const exercises = ["squat", "pushup", "plank", "burpee"];
+  const exercises = ["squat", "pushup", "burpee"];
 
   // 운동 시간 리스트
-  const durations = [0.5, 1, 0.1, "챌린지 모드"]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
+  const durations = [0.5, 1, 0.1]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -596,8 +594,6 @@ function ExerciseScene() {
         return <MediapipePushupTracking {...commonProps} />;
       case "burpee":
         return <MediapipeBurpeeTracking {...commonProps} />;
-      case "plank":
-        return <MediapipePlankTracking {...commonProps} />;
       default:
         return null;
     }
