@@ -17,6 +17,9 @@
   font-style: italic;
   padding: 40px 190px 50px 190px;
   position: absolute;
+    /* 스크롤바 숨기기 */
+  -ms-overflow-style: none; /* IE 및 Edge */
+  scrollbar-width: none; /* Firefox */
 
 }
 
