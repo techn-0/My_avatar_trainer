@@ -6,6 +6,14 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "SBAggroB";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* 전체 컨테이너 */
 .myPage-container {
   height: 100vh;
@@ -15,9 +23,15 @@
   color: rgb(0, 0, 0);
   font-family: "GangwonEduPowerExtraBoldA";
   font-style: italic;
-  padding: 40px 190px 50px 190px;
+
+  width: 100%;
+  padding: 0 200px;
+  padding-bottom: 200px;
   position: absolute;
 
+  /* 스크롤바 숨기기 */
+  -ms-overflow-style: none; /* IE 및 Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* 헤더 */
@@ -152,7 +166,6 @@
   width: 80%;
   padding: 7px;
   margin-right: 10px;
-
 }
 
 /* 친구 카드 */
@@ -328,7 +341,7 @@
 
 .friend-input {
   width: 300px !important;
-  font-family: Arial, sans-serif;
+  font-family: SBAggroB;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
 }
@@ -341,7 +354,7 @@
   margin-left: 15%;
 }
 
-.friend_list_header{
+.friend_list_header {
   display: flex; /* 자식 요소를 가로로 정렬 */
 
   gap: 90px; /* 자식 요소 간격 */
