@@ -133,7 +133,7 @@ function ChatRoom() {
 
   return (
     <div className="chat-room">
-      <h1 style={{ color: 'white' }}>Chat Room: {roomName}</h1>
+      <h1 style={{ color: 'white' }}>채팅방</h1>
       
       <div>
       {/* <h2 style={{ color: 'white' }}>Users in Room:</h2>  */}
@@ -169,8 +169,8 @@ function ChatRoom() {
         placeholder="Type a message..."
         style={{ width: '80%', padding: '10px', marginTop: '10px' }}
       />
-      <button onClick={sendMessage} style={{ padding: '10px 20px', marginLeft: '10px' }}>Send</button>
-      <button onClick={handleExitRoom} style={{ padding: '10px 20px', marginLeft: '10px' }}>Exit Room</button>
+      <button onClick={sendMessage} style={{ padding: '10px 20px', marginLeft: '10px' }}>보내기</button>
+      <button onClick={handleExitRoom} style={{ padding: '10px 20px', marginLeft: '10px' }}>방 나가기</button>
     </div>
   );
 }
