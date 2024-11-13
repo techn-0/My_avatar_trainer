@@ -7,8 +7,9 @@
 }
 
 @font-face {
-  font-family: 'SBAggroB';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+  font-family: "SBAggroB";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -27,6 +28,10 @@
   padding: 0 200px;
   padding-bottom: 200px;
   position: absolute;
+
+  /* 스크롤바 숨기기 */
+  -ms-overflow-style: none; /* IE 및 Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* 헤더 */
@@ -161,7 +166,6 @@
   width: 80%;
   padding: 7px;
   margin-right: 10px;
-
 }
 
 /* 친구 카드 */
@@ -350,7 +354,7 @@
   margin-left: 15%;
 }
 
-.friend_list_header{
+.friend_list_header {
   display: flex; /* 자식 요소를 가로로 정렬 */
 
   gap: 90px; /* 자식 요소 간격 */
