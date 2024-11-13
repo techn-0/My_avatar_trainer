@@ -84,22 +84,22 @@ function MediapipeSquatTracking({
   //컴포넌트 마운트 시 카운트다운 시작
   useEffect(() => {
     // 운동 타이머 시작
-      socket.emit("startExerciseTimer", {
-        roomName,
-        duration: 30, // 예를 들어 5분(300초) 동안 운동 타이머
-      });
-  
-      socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
-        const elapsedTime = (Date.now() - startTime) / 1000;
-        const initialRemainingTime = duration - elapsedTime;
-  
-        if (initialRemainingTime > 0) {
-          startExerciseTimer(Math.floor(initialRemainingTime));
-        } else {
-          setRemainingTime(0); // 이미 종료된 경우
-        }
-      });
-  
+    socket.emit("startExerciseTimer", {
+      roomName,
+      duration: 30, // 예를 들어 5분(300초) 동안 운동 타이머
+    });
+
+    socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
+      const elapsedTime = (Date.now() - startTime) / 1000;
+      const initialRemainingTime = duration - elapsedTime;
+
+      if (initialRemainingTime > 0) {
+        startExerciseTimer(Math.floor(initialRemainingTime));
+      } else {
+        setRemainingTime(0); // 이미 종료된 경우
+      }
+    });
+
     return () => {
       socket.off("exerciseTimerStarted");
     };
@@ -242,7 +242,7 @@ function MediapipeSquatTracking({
           rightTorsoAngle > 30;
 
         // Squat up condition
-        const isSquatUp = leftKneeAngle > 150 || rightKneeAngle > 150;
+        const isSquatUp = leftKneeAngle > 140 || rightKneeAngle > 140;
 
         // Update squat state and count
         if (isSquatDown && squatStateRef.current === "up") {
