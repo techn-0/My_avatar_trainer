@@ -15,7 +15,10 @@
   color: rgb(0, 0, 0);
   font-family: "GangwonEduPowerExtraBoldA";
   font-style: italic;
-  left: 12%;
+
+  width: 100%;
+  padding: 0 200px;
+  padding-bottom: 200px;
   position: absolute;
    /* 스크롤바 숨기기 */
   -ms-overflow-style: none; /* IE 및 Edge */
