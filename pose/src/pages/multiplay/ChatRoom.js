@@ -151,14 +151,15 @@ function ChatRoom() {
 
   return (
     <div className="chat-room">
-        <p
+        <header className="myPage-header">
+          <p
             className="My_MAIN_btn"
             onClick={handleMainClick}
             onMouseEnter={handleMouseEnter}
-            style = {{marginRight:'1000px'}}
           >
             메인페이지
           </p>
+        </header>
       
       <div>
       {/* <h2 style={{ color: 'white' }}>Users in Room:</h2>  */}
@@ -173,7 +174,7 @@ function ChatRoom() {
       </div>
 
       {/* Increase the height of the message box */}
-      <div className="chat-window" style={{ border: '1px solid #ccc', padding: '10px', height: '500px', overflowY: 'scroll' }}>
+      <div className="chat-window" style={{ border: '1px solid #ccc', padding: '10px', height: '475px', overflowY: 'scroll' }}>
         {messages.map((msg, index) => (
           <div key={index} style={{ textAlign: msg.sender === username ? 'right' : 'left', margin: '10px 0' }}>
             <span style={{ fontWeight: 'bold', color: msg.sender === username ? 'blue' : 'green' }}>
