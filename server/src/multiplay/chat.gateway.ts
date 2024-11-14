@@ -14,7 +14,7 @@ import {
     users: string[];
   }
   
-  @WebSocketGateway({ cors: true })
+  @WebSocketGateway({ namespace: '/chat-ws', cors: {origin: true, credentials:true} })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly messageService:MessageService,
                 // private readonly roomService:RoomService,
@@ -125,26 +125,26 @@ import {
   }
   
   @SubscribeMessage('sendMessage')
-  async handleSendMessage(client: Socket, payload: { roomName: string; message: string;username: string }) {
+  async handleSendMessage(client: Socket, payload: { roomName: string; content: string; sender: string }) {
     console.log('handleSendMessage invoked');
 
-    const { roomName, message, username } = payload;
+    const { roomName, content, sender } = payload;
     
     console.log('Message received on backend:', payload);
   
     // Check if message is empty or contains only whitespace
-    if (!message || message.trim() === "") {
+    if (!content || content.trim() === "") {
       console.error("Cannot send an empty message.");
       return; // Do not proceed if the message is empty
     }
   
     if (this.rooms[roomName]) {
-      console.log(`Broadcasting message from ${username} to room ${roomName}: ${message}`);
+      console.log(`Broadcasting message from ${sender} to room ${roomName}: ${content}`);
         
       // Broadcast the message to all users in the specified room
-      this.server.to(roomName).emit('receiveMessage', { sender: username, content: message });
+      this.server.to(roomName).emit('receiveMessage', { sender: sender, content: content });
       
-      await this.messageService.addMessage(roomName, username, message);
+      await this.messageService.addMessage(roomName, sender, content);
     
     } else {
       console.log(`Room ${roomName} does not exist for message broadcasting.`);

@@ -105,7 +105,7 @@ export default Chat;
 
 //     useEffect(() => {
 //         // Create socket connection
-//         const newSocket = io('http://localhost:3002', {
+//         const newSocket = io('https://techn0.shop', {
 //             transports: ['websocket'],
 //             reconnection: true,
 //             reconnectionAttempts: 5,

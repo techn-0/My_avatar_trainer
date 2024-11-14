@@ -24,13 +24,14 @@ import {
   Button,
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
-import { io } from "socket.io-client";
+import socket from '../multiplay/services/Socket';
+import chatSocket from '../multiplay/services/chatSocket';
 
 // 주소 전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_BASE_URL;
 
-const socket = io(apiUrl);
+// const socket = io(apiUrl);
 
 const imageNames = ["t1.png", "t2.png", "t3.png", "t4.png", "t5.png"];
 const preloadImages = imageNames.map((name) => {
@@ -98,6 +99,29 @@ const MyPage = () => {
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
     // Confirm socket connection
+    // Socket event listeners for chat
+    chatSocket.on('connect', () => {
+      console.log('Chat socket connected:', chatSocket.id);
+    });
+
+    chatSocket.on('joinedRoom', (data) => {
+      console.log('Joined room:', data);
+    });
+
+    chatSocket.on('updateUsers', (users) => {
+      console.log('Users in room:', users);
+    });
+
+    chatSocket.on('messageHistory', (history) => {
+      console.log('Message history:', history);
+    });
+
+    chatSocket.on('error', (error) => {
+      console.error('Socket error:', error);
+      alert(error);
+    });    
+
+
 
     socket.emit("userOnline", userId);
 
@@ -208,6 +232,10 @@ const MyPage = () => {
     fetchWorkouts();
 
     return () => {
+      chatSocket.off('joinedRoom');
+      chatSocket.off('updateUsers');
+      chatSocket.off('messageHistory');
+      chatSocket.off('error');
       socket.off("statusUpdate"); // Clean up status update listener
     };
   }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
@@ -504,8 +532,8 @@ const MyPage = () => {
       console.log(roomExists);
       if (roomExists) {
         // 방이 존재한다면, 형성된 방에 들어간다.
-        console.log(`Joined existing Room ${roomName} successfully`);
-        socket.emit("createRoom", { roomName, username });
+        console.log(`Joining existing Room ${roomName}`);
+        chatSocket.emit("createRoom", { roomName, username });
       } else {
         // 방이 존재하지 않는다면 DB에 해당 정보를 저장하고, 방을 형성한다.
         const createRoomResponse = await fetch(`${apiUrl}/room/create`, {
@@ -525,10 +553,16 @@ const MyPage = () => {
 
         console.log(`Room ${roomName} created successfully`);
 
-        socket.emit("createRoom", { roomName, username });
+        chatSocket.emit("createRoom", { roomName, username });
       }
 
       navigate(`/chatroom/${roomName}`);
+
+      chatSocket.on('error', (error) => {
+        console.error('Room error:', error);
+        alert(error);
+      });
+
     } catch (error) {
       alert("Failed to create or find room");
     }

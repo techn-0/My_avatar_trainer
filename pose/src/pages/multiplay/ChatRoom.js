@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import socket from './services/Socket';
+import chatSocket from './services/chatSocket';
 import { getToken } from "../login/AuthContext";
 import { jwtDecode } from 'jwt-decode';
 
@@ -37,26 +37,27 @@ function ChatRoom() {
     // console.log(`Joining room: ${roomName} as user: ${username}`);
     
     // Frontend의 코드가 Backend와 연결 돼 있는지 확인하는 코드이다.
-    socket.on('connect', () => {
+    chatSocket.on('connect', () => {
       console.log('Connected to backend');
     });
 
     if (username && roomName) {
-      socket.emit('joinRoom', { roomName, username });
+      chatSocket.emit('joinRoom', { roomName, username });
     }
 
     // Listen for incoming messages 
-    socket.on("receiveMessage", (message) => {
-      if (!message.content || message.content.trim() === "") {
-        console.warn("Received empty message; ignoring.");
-        return; // Skip empty messages
-      }
-      
-      console.log("Received message:", message);
-      setMessages((prev) => [...prev, message]); // Add new message to the message list
+    chatSocket.on("receiveMessage", (messageData) => {
+      console.log("Received Message", messageData)
+
+      // if (!message.content || message.content.trim() === "") {
+      //   console.warn("Received empty message; ignoring.");
+      //   return; // Skip empty messages
+      // }
+
+      setMessages((prev) => [...prev, messageData]); // Add new message to the message list
     });
     
-    socket.on("messageHistory", (messageHistory)=>{
+    chatSocket.on("messageHistory", (messageHistory)=>{
       if (messageHistory){
         console.log("Message History received");
         setMessages(messageHistory);
@@ -67,7 +68,7 @@ function ChatRoom() {
     })
 
     // Listen for user updates in the room
-    socket.on("updateUsers", (updatedUsers) => {
+    chatSocket.on("updateUsers", (updatedUsers) => {
       console.log("Updated users in room:", updatedUsers);
       setUsers(updatedUsers);
     });
@@ -85,9 +86,9 @@ function ChatRoom() {
 
     // Clean up listeners on component unmount
     return () => {
-      socket.off("connect");
-      socket.off("updateUsers");
-      socket.off("receiveMessage");
+      chatSocket.off("connect");
+      chatSocket.off("updateUsers");
+      chatSocket.off("receiveMessage");
       // socket.off('pong');
     };
   }, [roomName, username]);
@@ -99,10 +100,10 @@ function ChatRoom() {
     return;
   }
  else{
-    const payload = { roomName, message: newMessage, username };
+    const payload = { roomName, sender:username, content: newMessage};
     console.log('Frontend payload :',payload);
     // Emit the message to the server
-    socket.emit('sendMessage', payload);
+    chatSocket.emit('sendMessage', payload);
 
     // Clear the message input
     setNewMessage('');
