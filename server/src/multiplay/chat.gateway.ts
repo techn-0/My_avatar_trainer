@@ -14,7 +14,7 @@ import {
     users: string[];
   }
   
-  @WebSocketGateway({ namespace: '/chat-ws', cors: {origin: true, credentials:true} })
+  @WebSocketGateway({ namespace: '/chat-ws', cors: {origin: 'https://techn0.shop', credentials:true} })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly messageService:MessageService,
                 // private readonly roomService:RoomService,
@@ -90,7 +90,7 @@ import {
     console.log('Current room list with names:', roomsWithNames);
   
     // Broadcast updated room list to all clients
-    this.server.emit('updateRooms', roomsWithNames);
+    this.server.emit('updateChatRooms', roomsWithNames);
   }
   
     @SubscribeMessage('joinRoom')
@@ -151,11 +151,11 @@ import {
     }
   }
   
-    @SubscribeMessage('getRooms')
-    handleGetRooms(client: Socket) {
+    @SubscribeMessage('getChatRooms')
+    handleGetChatRooms(client: Socket) {
       const roomsWithNames = Object.keys(this.rooms).map((name) => ({ roomName: name }));
       console.log('Sending room list to client:', roomsWithNames);
-      client.emit('updateRooms', roomsWithNames);
+      client.emit('updateChatRooms', roomsWithNames);  // Changed this emit event name too
     }
 
     // @SubscribeMessage('ping')
@@ -164,6 +164,14 @@ import {
     //     client.emit('pong', 'Pong from backend');  // Send "pong" response to the frontend
     // }
 
+    @SubscribeMessage('ping')
+    handlePing(client: Socket, payload: any, callback?: Function) {
+      console.log('Debug: Ping received from client:', client.id);
+      if (callback) {
+        callback({ success: true, time: new Date().toISOString() });
+      }
+      return { success: true, time: new Date().toISOString() };
+    }
 
   }
   

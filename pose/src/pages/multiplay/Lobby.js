@@ -5,8 +5,8 @@ import { getToken } from "../login/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import "./Lobby.css";
 import NoRoom from "./components/ui/noRoom";
-const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
 
+const justUrl = process.env.REACT_APP_FRONTEND_just_UR; // url 리다이렉트
 const socket = io(`https://techn0.shop`); // 서버 URL
 
 function Lobby() {

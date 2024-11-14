@@ -8,29 +8,29 @@ interface RoomData {
     userIdList: string[];
   }
 @Injectable()
-export class RoomService implements OnModuleInit{
+export class RoomService{
     private rooms: {[key:string]:RoomData} = {};
 
     constructor(@InjectModel(Room.name) private roomModel:Model<Room>){}
 
-    async onModuleInit(){
-        await this.loadRoomsIntoMemory();
-    }
+    // async onModuleInit(){
+    //     await this.loadRoomsIntoMemory();
+    // }
 
-    async loadRoomsIntoMemory(){
-        const rooms = await this.roomModel.find();
-        rooms.forEach((room)=>{
-            this.rooms[room.roomName] = {
-                roomName:room.roomName, 
-                userIdList:room.userIdList,
-            };
-        });
-        console.log('Rooms successfully loaded into memory', this.rooms);
-    }
+    // async loadRoomsIntoMemory(){
+    //     const rooms = await this.roomModel.find();
+    //     rooms.forEach((room)=>{
+    //         this.rooms[room.roomName] = {
+    //             roomName:room.roomName, 
+    //             userIdList:room.userIdList,
+    //         };
+    //     });
+    //     console.log('Rooms successfully loaded into memory', this.rooms);
+    // }
 
-    getRoomsInMemory(){
-        return this.rooms;
-    }
+    // getRoomsInMemory(){
+    //     return this.rooms;
+    // }
     
     async createRoom(roomName:string, userIdList:string[]):Promise<Room>{
         return new this.roomModel({roomName, userIdList}).save();

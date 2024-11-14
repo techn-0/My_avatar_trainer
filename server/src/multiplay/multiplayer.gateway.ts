@@ -189,6 +189,11 @@ export class MultiplayerGateway
     payload: { roomName: string; message: string; username: string },
   ) {
     const { roomName, message, username } = payload;
+    // Check if message is empty or contains only whitespace
+    if (!message || message.trim() === "") {
+      console.error("Cannot send an empty message.");
+      return; // Do not proceed if the message is empty
+    }
     console.log(`Message from ${username} in room ${roomName}: ${message}`);
     this.server.to(roomName).emit('receiveMessage', { username, message });
   }

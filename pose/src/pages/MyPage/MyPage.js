@@ -24,8 +24,8 @@ import {
   Button,
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
-// import socket from '../multiplay/services/Socket';
-import chatSocket from '../multiplay/services/chatSocket';
+// import chatSocket from '../multiplay/services/chatSocket';
+import { socketService } from '../multiplay/services/socketService';
 
 // 주소 전환
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
@@ -53,6 +53,8 @@ ChartJS.register(
 );
 
 const MyPage = () => {
+  const [socketStatus, setSocketStatus] = useState('disconnected');
+  const socketRef = useRef(null);
   const glitchSoundRef = useRef(null); // 버튼 효과음 레퍼런스
   const navigate = useNavigate();
   const { ownerId } = useParams(); // URL에서 ownerId를 가져옵니다.
@@ -95,28 +97,41 @@ const MyPage = () => {
   const [consecutiveDays, setConsecutiveDays] = useState(0);
 
   // 운동 기록 데이터를 백엔드에서 가져오기
-  const [status, setStatus] = useState(chatSocket.connected ? 'connected' : 'disconnected');
-
 
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
     // Confirm socket connection
     // Socket event listeners for chat
+    const socket = socketService.connect('/chat-ws');
+    socketRef.current = socket;
 
-    const handleConnect = () => setStatus('connected');
-    const handleDisconnect = () => setStatus('disconnected');
-    chatSocket.on('connect', handleConnect);
-    chatSocket.on('disconnect', handleDisconnect);
+    const handleConnect = () => {
+      console.log('Debug: Socket connected to chat namespace');
+      setSocketStatus('connected');
+    };
 
-    // socket.emit("userOnline", userId);
+    const handleDisconnect = (reason) => {
+      console.log('Debug: Socket disconnected:', reason);
+      setSocketStatus('disconnected');
+    };
 
-    // socket.on("statusUpdate", ({ userId, isOnline }) => {
-    //   setFriendData((prevFriends) =>
-    //     prevFriends.map((friend) =>
-    //       friend.userId === userId ? { ...friend, isOnline } : friend
-    //     )
-    //   );
-    // });
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+     // Optional: Handle user online status
+     if (userId) {
+      console.log('Debug: Emitting userOnline event');
+      socket.emit("userOnline", userId);
+    }
+
+    socket.on("statusUpdate", ({ userId, isOnline }) => {
+      console.log('Debug: Status update received:', { userId, isOnline });
+      setFriendData((prevFriends) =>
+        prevFriends.map((friend) =>
+          friend.userId === userId ? { ...friend, isOnline } : friend
+        )
+      );
+    });
+
     console.log("Friend Data", friendData.isOnline);
 
     const fetchTier = async () => {
@@ -216,10 +231,14 @@ const MyPage = () => {
 
     fetchWorkouts();
 
-    return () => {
-      chatSocket.off('connect', handleConnect);
-      chatSocket.off('disconnect', handleDisconnect);
-      // socket.off("statusUpdate"); // Clean up status update listener
+     return () => {
+      console.log('Debug: Cleaning up socket listeners');
+      if (socketRef.current) {
+        socket.off('connect', handleConnect);
+        socket.off('disconnect', handleDisconnect);
+        socket.off('statusUpdate');
+        socketService.disconnect();
+      }
     };
   }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
@@ -493,16 +512,38 @@ const MyPage = () => {
 
     const roomName = [username, friendUserId].sort().join("&");
 
-     // First check if socket is connected
-     if (!chatSocket.connected) {
-      console.error('Socket not connected!');
-      return;
-    }
+     // Get or establish socket connection
+  let socket = socketService.getSocket();
+  console.log('Debug: Current socket status:', {
+    exists: !!socket,
+    connected: socket?.connected
+  });
 
-    if (!roomName) {
-      alert("Please enter a valid friend ID");
+  if (!socket || !socket.connected) {
+    console.log('Debug: Establishing new connection');
+    socket = socketService.connect('/chat-ws');
+    
+    // Wait for connection
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Connection timeout'));
+      }, 5000);
+
+      socket.once('connect', () => {
+        clearTimeout(timeout);
+        resolve();
+      });
+
+      socket.once('connect_error', (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
+    }).catch(error => {
+      console.error('Debug: Connection failed:', error);
+      alert("채팅 연결에 실패했습니다. 다시 시도해주세요.");
       return;
-    }
+    });
+  }
 
     try {
       const response = await fetch(`${apiUrl}/room/checkRoom/${roomName}`, {
@@ -522,7 +563,7 @@ const MyPage = () => {
       if (roomExists) {
         // 방이 존재한다면, 형성된 방에 들어간다.
         console.log(`Joining existing Room ${roomName}`);
-        chatSocket.emit("createRoom", { roomName, username });
+        socket.emit("createRoom", { roomName, username });
       } else {
         // 방이 존재하지 않는다면 DB에 해당 정보를 저장하고, 방을 형성한다.
         const createRoomResponse = await fetch(`${apiUrl}/room/create`, {
@@ -542,12 +583,12 @@ const MyPage = () => {
 
         console.log(`Room ${roomName} created successfully`);
 
-        chatSocket.emit("createRoom", { roomName, username });
+        socket.emit("createRoom", { roomName, username });
       }
 
       navigate(`/chatroom/${roomName}`);
 
-      chatSocket.on('error', (error) => {
+      socket.on('error', (error) => {
         console.error('Room error:', error);
         alert(error);
       });
