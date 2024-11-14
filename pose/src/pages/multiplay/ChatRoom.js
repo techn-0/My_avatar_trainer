@@ -130,6 +130,10 @@ function ChatRoom() {
     navigate("/"); // 메인 페이지로 이동
   };
   
+  const handleMultiplayerClick = () =>{
+    navigate("/lobby");
+  }
+
   const handleMouseEnter = () => {
     if (glitchSoundRef.current) {
       glitchSoundRef.current.currentTime = 0;
@@ -151,14 +155,22 @@ function ChatRoom() {
 
   return (
     <div className="chat-room">
-        <header className="myPage-header">
+        <header className="myPage-header" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '0 20px' }}>
           <p
             className="My_MAIN_btn"
             onClick={handleMainClick}
             onMouseEnter={handleMouseEnter}
+            style={{ fontSize: '50px', padding: '5px 10px', marginRight:'50px'}}
           >
             메인페이지
           </p>
+          <p
+          className="My_MAIN_btn"
+          onClick={handleMultiplayerClick} // Add a function to handle this button click
+          style={{ fontSize: '50px', padding: '5px 10px' }}
+        >
+          멀티플레이
+        </p>
         </header>
       
       <div>
