@@ -24,7 +24,7 @@ import {
   Button,
 } from "@mui/material"; // MUI 카드 컴포넌트
 import DeleteIcon from "@mui/icons-material/Delete"; // 삭제 아이콘
-import socket from '../multiplay/services/Socket';
+// import socket from '../multiplay/services/Socket';
 import chatSocket from '../multiplay/services/chatSocket';
 
 // 주소 전환
@@ -95,43 +95,28 @@ const MyPage = () => {
   const [consecutiveDays, setConsecutiveDays] = useState(0);
 
   // 운동 기록 데이터를 백엔드에서 가져오기
+  const [status, setStatus] = useState(chatSocket.connected ? 'connected' : 'disconnected');
+
 
   useEffect(() => {
     //////////////////////// 티어 구현 /////////////////////////////////////////////////
     // Confirm socket connection
     // Socket event listeners for chat
-    chatSocket.on('connect', () => {
-      console.log('Chat socket connected:', chatSocket.id);
-    });
 
-    chatSocket.on('joinedRoom', (data) => {
-      console.log('Joined room:', data);
-    });
+    const handleConnect = () => setStatus('connected');
+    const handleDisconnect = () => setStatus('disconnected');
+    chatSocket.on('connect', handleConnect);
+    chatSocket.on('disconnect', handleDisconnect);
 
-    chatSocket.on('updateUsers', (users) => {
-      console.log('Users in room:', users);
-    });
+    // socket.emit("userOnline", userId);
 
-    chatSocket.on('messageHistory', (history) => {
-      console.log('Message history:', history);
-    });
-
-    chatSocket.on('error', (error) => {
-      console.error('Socket error:', error);
-      alert(error);
-    });    
-
-
-
-    socket.emit("userOnline", userId);
-
-    socket.on("statusUpdate", ({ userId, isOnline }) => {
-      setFriendData((prevFriends) =>
-        prevFriends.map((friend) =>
-          friend.userId === userId ? { ...friend, isOnline } : friend
-        )
-      );
-    });
+    // socket.on("statusUpdate", ({ userId, isOnline }) => {
+    //   setFriendData((prevFriends) =>
+    //     prevFriends.map((friend) =>
+    //       friend.userId === userId ? { ...friend, isOnline } : friend
+    //     )
+    //   );
+    // });
     console.log("Friend Data", friendData.isOnline);
 
     const fetchTier = async () => {
@@ -232,11 +217,9 @@ const MyPage = () => {
     fetchWorkouts();
 
     return () => {
-      chatSocket.off('joinedRoom');
-      chatSocket.off('updateUsers');
-      chatSocket.off('messageHistory');
-      chatSocket.off('error');
-      socket.off("statusUpdate"); // Clean up status update listener
+      chatSocket.off('connect', handleConnect);
+      chatSocket.off('disconnect', handleDisconnect);
+      // socket.off("statusUpdate"); // Clean up status update listener
     };
   }, [selectedDuration, ownerId, userId]); // 선택한 시간 또는 ownerId 변경 시 데이터 다시 불러오기
 
@@ -510,6 +493,12 @@ const MyPage = () => {
 
     const roomName = [username, friendUserId].sort().join("&");
 
+     // First check if socket is connected
+     if (!chatSocket.connected) {
+      console.error('Socket not connected!');
+      return;
+    }
+
     if (!roomName) {
       alert("Please enter a valid friend ID");
       return;
@@ -529,7 +518,7 @@ const MyPage = () => {
 
       const data = await response.json();
       const roomExists = !!data.exists;
-      console.log(roomExists);
+      console.log('roomexists', roomExists);
       if (roomExists) {
         // 방이 존재한다면, 형성된 방에 들어간다.
         console.log(`Joining existing Room ${roomName}`);

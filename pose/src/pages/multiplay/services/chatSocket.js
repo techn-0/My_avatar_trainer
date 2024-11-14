@@ -1,10 +1,11 @@
 // src/services/chatSocket.js
 import { io } from "socket.io-client";
 
-const chatSocket = io('https://techn0.shop/chat-ws', {
+// chatSocket.js - Update your configuration
+const chatSocket = io('https://techn0.shop', {
   autoConnect: true,
   withCredentials: true
-});
+}).connect('/chat-ws');
 
 // Add these debug listeners
 chatSocket.on('connect', () => {

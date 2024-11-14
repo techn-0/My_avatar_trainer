@@ -49,12 +49,19 @@ function ChatRoom() {
     chatSocket.on("receiveMessage", (messageData) => {
       console.log("Received Message", messageData)
 
+      const messageSender = messageData.username;
+      const messageContent = messageData.message;
       // if (!message.content || message.content.trim() === "") {
       //   console.warn("Received empty message; ignoring.");
       //   return; // Skip empty messages
       // }
 
-      setMessages((prev) => [...prev, messageData]); // Add new message to the message list
+      const formattedMessage = {
+        sender:messageSender,
+        content:messageContent,
+      }
+
+      setMessages((prev) => [...prev, formattedMessage]); // Add new message to the message list
     });
     
     chatSocket.on("messageHistory", (messageHistory)=>{
@@ -100,7 +107,7 @@ function ChatRoom() {
     return;
   }
  else{
-    const payload = { roomName, sender:username, content: newMessage};
+    const payload = { roomName, message: newMessage, username:username};
     console.log('Frontend payload :',payload);
     // Emit the message to the server
     chatSocket.emit('sendMessage', payload);
@@ -192,7 +199,7 @@ function ChatRoom() {
         type="text"
         value={newMessage}
         onChange={(e) => setNewMessage(e.target.value)} // Update newMessage on input change
-        placeholder="Type a message..."
+        placeholder="메시지를 입력하세요."
         style={{ width: '80%', padding: '10px', marginTop: '10px' }}
       />
       <button onClick={sendMessage} style={{ padding: '10px 20px', marginLeft: '10px' }}>보내기</button>
