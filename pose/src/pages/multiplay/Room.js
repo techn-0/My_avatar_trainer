@@ -24,7 +24,7 @@ function Room() {
   const [selectedDuration, setSelectedDuration] = useState("");
 
   const exercises = ["squat", "pushup"]; // 운동 종목 리스트
-  const durations = ["30초", "60초"]; // 운동 시간 리스트
+  const durations = [30, 60]; // 운동 시간 리스트
 
   // 운동 종목 선택 핸들러
   const handleExerciseSelect = (exercise) => {
@@ -121,7 +121,9 @@ function Room() {
 
       {startMessage ? (
         // 모든 플레이어가 준비되었을 때 multiSquatCam 렌더링
-        <MultiSquatCam roomName={roomName} />
+        <MultiSquatCam roomName={roomName}
+        selectedExercise={selectedExercise}
+        selectedDuration={selectedDuration} />
       ) : (
         // 그 외의 경우 기존 컴포넌트 렌더링
         <div

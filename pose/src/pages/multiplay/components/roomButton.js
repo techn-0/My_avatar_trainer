@@ -72,7 +72,7 @@ function RoomButtons({
                   checked={selectedDuration === duration}
                   onChange={() => handleDurationSelect(duration)}
                 />
-                {duration}
+                {duration}초
               </label>
             ))}
           </div>

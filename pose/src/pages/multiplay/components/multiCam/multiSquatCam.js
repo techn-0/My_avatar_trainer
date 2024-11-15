@@ -9,7 +9,7 @@ import socket from "../../services/Socket";
 import OkGuide from "../../../ui/okCamGuide";
 import CountDown from "../../../ui/countDown";
 
-const MultiSquatCam = ({ roomName }) => {
+const MultiSquatCam = ({ roomName, selectedExercise, selectedDuration }) => {
   const [localReady, setLocalReady] = useState(false);
   const [bothReady, setBothReady] = useState(false);
   const countdownMusicRef = useRef(null);
@@ -154,6 +154,7 @@ const MultiSquatCam = ({ roomName }) => {
                 onCanvasUpdate={() => {}}
                 onCountUpdate={() => {}}
                 roomName={roomName}
+                duration={selectedDuration}
               />
               {/* WebRTC Video Streams */}
               <div

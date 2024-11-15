@@ -92,7 +92,7 @@ function MediapipeSquatTracking({
     // 운동 타이머 시작
     socket.emit("startExerciseTimer", {
       roomName,
-      duration: 30, // 예를 들어 5분(300초) 동안 운동 타이머
+      duration: duration, // 예를 들어 5분(300초) 동안 운동 타이머
     });
 
     socket.on("exerciseTimerStarted", ({ startTime, duration }) => {
