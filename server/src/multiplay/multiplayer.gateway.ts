@@ -252,6 +252,18 @@ export class MultiplayerGateway
     client.to(roomName).emit('remoteSquatCountUpdate', { username, count });
   }
 
+  @SubscribeMessage('pushupCountUpdate')
+  handlePushupCountUpdate(
+    client: Socket,
+    payload: { roomName: string; count: number },
+  ) {
+    const { roomName, count } = payload;
+    const username = client.data.username;
+
+    // 같은 방의 다른 사용자들에게 스쿼트 횟수 업데이트 브로드캐스트
+    client.to(roomName).emit('remotePushupCountUpdate', { username, count });
+  }
+
   @SubscribeMessage('startExerciseTimer')
   handleStartExerciseTimer(client: Socket, payload: { roomName: string, duration: number}) {
     const { roomName, duration } = payload;

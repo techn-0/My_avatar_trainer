@@ -5,6 +5,7 @@ import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import VideoStream from "../VideoStream";
 import MediapipeSquatTracking from "./squatCamera";
+import MediapipePushupTracking from "./pushupCamera";
 import socket from "../../services/Socket";
 import OkGuide from "../../../ui/okCamGuide";
 import CountDown from "../../../ui/countDown";
@@ -150,12 +151,22 @@ const MultiSquatCam = ({ roomName, selectedExercise, selectedDuration }) => {
           ) : (
             <>
               {/* MediaPipe Squat Tracking */}
-              <MediapipeSquatTracking
+              {selectedExercise === "squat" ? (
+                <MediapipeSquatTracking
                 onCanvasUpdate={() => {}}
                 onCountUpdate={() => {}}
                 roomName={roomName}
                 duration={selectedDuration}
               />
+              ) : (
+                <MediapipePushupTracking
+                onCanvasUpdate={() => {}}
+                onCountUpdate={() => {}}
+                roomName={roomName}
+                duration={selectedDuration}
+                />
+              )}
+             
               {/* WebRTC Video Streams */}
               <div
                 style={{
