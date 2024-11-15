@@ -8,7 +8,6 @@ import { createPlane } from "../../app/createPlane"; // 바닥 추가
 import { useNavigate } from "react-router-dom";
 import MediapipeSquatTracking from "../../app/workoutCam/squatCam"; // 스쿼트 Mediapipe 컴포넌트
 import MediapipePushupTracking from "../../app/workoutCam/pushupCam"; // 푸시업 Mediapipe 컴포넌트
-import MediapipeBurpeeTracking from "../../app/workoutCam/burpeeCam"; // 버피 Mediapipe 컴포넌트
 import OkCam from "../../app/workoutCam/okCam"; // OkCam 컴포넌트
 import Buttons from "../ui/exerciseButtons";
 import LoginModal from "../login/LoginModal";
@@ -72,10 +71,10 @@ function ExerciseScene() {
   const [selectedDuration, setSelectedDuration] = useState(null);
 
   // 운동 종목 리스트
-  const exercises = ["squat", "pushup", "burpee"];
+  const exercises = ["squat", "pushup"];
 
   // 운동 시간 리스트
-  const durations = [0.5, 1, 0.1]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
+  const durations = [0.5, 1]; // 듀레이션 디버깅 배포시 디버깅용 0.1 제거 해야함
 
   // Mediapipe 활성화 상태
   const [mediapipeActive, setMediapipeActive] = useState(false);
@@ -100,8 +99,6 @@ function ExerciseScene() {
   // 애니메이션의 기본 반복 시간 (1회 반복에 걸리는 시간)
   const normalRepetitionDuration = 1.88; // 스쿼트 1회에 1.88초 소요
   const normalPushupRepetitionDuration = 1.55; // 푸시업 1회에 1.55초 소요
-  const normalBurpeeRepetitionDuration = 3.13; // 버피 테스트 1회에 3.13초 소요
-  const normalSitupRepetitionDuration = 2.23; // 윗몸일으키기 1회에 2.23초 소요
 
   // 애니메이션 액션 및 이벤트 핸들러를 저장하기 위한 ref 추가
   const animationActionRef = useRef(null);
@@ -371,12 +368,6 @@ function ExerciseScene() {
     if (selectedExercise === "pushup") {
       // 푸시업: 애니메이션 번호 10번을 한 번 재생하고 대기
       playAnimation(10, THREE.LoopOnce);
-    } else if (selectedExercise === "burpee") {
-      // 버피: 애니메이션 번호 9번을 한 번 재생하고 대기
-      playAnimation(9, THREE.LoopOnce);
-    } else if (selectedExercise === "plank") {
-      // 플랭크: 애니메이션 번호 16번을 한 번 재생하고 대기
-      playAnimation(16, THREE.LoopOnce);
     } else {
       // 스쿼트 또는 기타 운동: 애니메이션 번호 4번을 한 번 재생하고 대기
       playAnimation(7, THREE.LoopOnce);
@@ -414,12 +405,6 @@ function ExerciseScene() {
       if (selectedExercise === "pushup") {
         timeScale = normalPushupRepetitionDuration / desiredRepetitionDuration; // 푸시업 속도 조절
         animationIndex = 12; // 푸시업 애니메이션 번호
-      } else if (selectedExercise === "burpee") {
-        timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 버피 속도 조절
-        animationIndex = 0; // 버피 애니메이션 번호
-      } else if (selectedExercise === "plank") {
-        timeScale = normalBurpeeRepetitionDuration / desiredRepetitionDuration; // 플랭크 속도 조절 -> 얜 사실 노상관
-        animationIndex = 11; // 플랭크 애니메이션 번호
       } else {
         timeScale = normalRepetitionDuration / desiredRepetitionDuration; // 스쿼트 등 기타 운동 속도 조절
         animationIndex = 15; // 스쿼트 애니메이션 번호
@@ -484,12 +469,6 @@ function ExerciseScene() {
 
     if (selectedExercise === "pushup") {
       endAnimationIndex = 13; // 푸시업 종료 애니메이션 번호
-    } else if (selectedExercise === "burpee") {
-      endAnimationIndex = 1; // 버피 종료 애니메이션 번호
-    } else if (selectedExercise === "situp") {
-      endAnimationIndex = 5; // 윗몸 종료 애니메이션 번호
-    } else if (selectedExercise === "plank") {
-      endAnimationIndex = 4; // 플랭크 종료 애니메이션 번호
     } else {
       endAnimationIndex = 6; // 스쿼트 종료 애니메이션 번호
     }
@@ -592,8 +571,6 @@ function ExerciseScene() {
         return <MediapipeSquatTracking {...commonProps} />;
       case "pushup":
         return <MediapipePushupTracking {...commonProps} />;
-      case "burpee":
-        return <MediapipeBurpeeTracking {...commonProps} />;
       default:
         return null;
     }
