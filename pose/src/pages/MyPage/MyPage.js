@@ -410,22 +410,29 @@ const MyPage = () => {
   };
 
   const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top",
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+    title: {
+      display: true,
+    },
+  },
+  scales: {
+    x: {
+      ticks: {
+        display: false, // X축의 날짜를 표시하지 않음
       },
-      title: {
-        display: true,
+      grid: {
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
+    y: {
+      beginAtZero: true,
     },
-  };
+  },
+};
 
   const radarOptions = {
     responsive: true,
@@ -798,12 +805,6 @@ const MyPage = () => {
                         gap: "3px",
                       }}
                     >
-                      <button
-                        onClick={() => handleChat(friend.userId)}
-                        className="cyberpunk-btn"
-                      >
-                        대화
-                      </button>
                       <button
                         onClick={() => handleDeleteFriend(friend.userId)}
                         className="cyberpunk-btn"
