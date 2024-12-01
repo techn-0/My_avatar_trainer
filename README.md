@@ -29,7 +29,8 @@
 ---
 
 ## 📜 포스터  
-![나의 아바타 트레이너 포스터](https://github.com/user-attachments/assets/e61e06ef-7657-46d8-b560-d93efda4f4db)
+![Lavender Structured Duotone Portrait University Research Poster (594 x 841 mm)](https://github.com/user-attachments/assets/4be09cf9-26cb-4fd0-8abc-4bbb8f4fd412)
+
 
 ---
 
