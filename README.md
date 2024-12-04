@@ -13,7 +13,8 @@
 
 ## 🔗 바로가기  
 - **[서비스: 나의 아바타 트레이너]()**  
-- **[발표 영상: Youtube]([https://youtu.be/xrP23naImNA](https://www.youtube.com/watch?v=HrmuUP62Thg&t=1s))**
+- **[발표 영상: Youtube](https://www.youtube.com/watch?v=HrmuUP62Thg&t=1s)**
+- 
 
 ---
 
